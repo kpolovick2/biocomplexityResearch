@@ -6,6 +6,14 @@ from gurobipy import LinExpr
 import gurobipy as gp
 m = gp.Model()
 
+#reading in txt file
+list= []
+with open('file.txt', 'r') as file:
+    for line in file.readLines():
+        for value in line.split():
+            list.append(value)
+
+
 n= 4    #total number of data items
 N= 4    #total number of tags
 K= 2    #number of clusters
