@@ -2,7 +2,8 @@
 # wcb8ze
 # 2/17/2023
 
-def parseInput(input):
+def get_B_matrix(input):
+    input.replace("\n", "")
     input_array = input.split()
     n = int(input_array[0])  # number of data items
     K = int(input_array[1])  # number of clusters
@@ -12,11 +13,10 @@ def parseInput(input):
 
     B = []
     for i in range(n):
-        if int(input_array[i*(N+2)+6]) == 1 or 1==1:
-            temp = []
-            for j in range(N):
-                temp.append(int(input_array[i*(N+2)+7+j]))
-            B.append(temp)
+        temp = []
+        for j in range(N):
+            temp.append(int(input_array[i*(N+2)+7+j]))
+        B.append(temp)
 
     clusters = []
     for i in range(n):
@@ -25,11 +25,7 @@ def parseInput(input):
     print(B)
     print(clusters)
 
-example_input="5 2 7 2 1 " \
-              "1 1 1 1 1 0 0 0 0 " \
-              "2 1 0 0 0 1 0 0 1 " \
-              "3 1 1 0 0 0 1 1 0 " \
-              "4 2 0 1 0 1 0 0 1 " \
-              "5 2 0 0 0 0 1 1 0 "
+with open('input.txt') as f:
+    exin = f.read()
 
-parseInput(example_input)
+get_B_matrix(exin)
