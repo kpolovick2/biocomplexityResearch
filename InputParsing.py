@@ -18,12 +18,12 @@ def parseInput(input):
                 temp.append(int(input_array[i*(N+2)+7+j]))
             B.append(temp)
 
-    cluster_matrix = []
+    clusters = []
     for i in range(n):
-        cluster_matrix.append(input_array[i*(N+2)+6])
+        clusters.append(input_array[i*(N+2)+6])
 
     print(B)
-    print(cluster_matrix)
+    print(clusters)
 
 example_input="5 2 7 2 1 " \
               "1 1 1 1 1 0 0 0 0 " \

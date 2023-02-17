@@ -1,5 +1,6 @@
 # Name: Keara Polovick (and William Bradford)
 # Computing ID: uzy2ws (and wcb8ze)
+# duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 
 from gurobipy import LinExpr, QuadExpr
 
@@ -14,6 +15,7 @@ alpha= 2
 beta= 1
 
 B= [[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [1, 0, 0, 1]]
+clusters = [1,1,2,2]
 
 #create y[j,k] variables
 y= {}
@@ -33,19 +35,19 @@ m.update()
 
 print("Constraint A: ")
 #(a) must contain at least one tag from each of the data items in that cluster --FIX
+A = [0 for c in range(n+1)]
 for i in range(1,n+1):
-    A1= 0
     for j in range(1,N+1):
-        #if data item is in cluster 1, k=1
-        #if data item is in cluster 2, k=2
-        k=1 # how do you know which cluster the data item is in?
-        if B[i-1][j-1]==1:
-            A1 += y[j,k]
+        k = clusters[i-1]
+        if B[i - 1][j - 1] == 1:
+            A[k] += y[j, k]
 
     #Constraint: sum of variables in A should be >= 1
-    constraint1 = m.addConstr(A1, ">=", 1)
-    m.update()
-    print(f"{m.getRow(constraint1)} {constraint1.Sense} {constraint1.RHS}")
+    constraint1 = []
+    for i in range(1, n+1):
+        constraint1.append(m.addConstr(A[i] >= 1, "constraint A[%s]"%(i)))
+        m.update()
+        print(f"{m.getRow(constraint1)} {constraint1.Sense} {constraint1.RHS}")
 
 print("------------------------")
 
