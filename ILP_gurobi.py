@@ -1,9 +1,10 @@
-# Name: Keara Polovick
-# Computing ID: uzy2ws
+# Name: Keara Polovick (and William Bradford)
+# Computing ID: uzy2ws (and wcb8ze)
 
-from gurobipy import LinExpr
+from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
+
 m = gp.Model()
 
 n= 4    #total number of data items
@@ -16,6 +17,7 @@ B= [[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [1, 0, 0, 1]]
 
 #create y[j,k] variables
 y= {}
+y_int = []
 for j in range(1, N+1):
     for k in range(1, K+1):
         y[j,k] = m.addVar(vtype='B', name="y[%s,%s]"%(j,k))
@@ -60,26 +62,25 @@ print("------------------------")
 
 print("Constraint C: ")
 #(c) overlap between any pair of descriptors must be at most beta --FIX
-z= {}
+z = {}
+z_sum = 0
 for k in range(1, K):
     for l in range(k+1, K+1):
         for j in range(1, N+1):
-            #print(y[j,k])
-            #print(y[j,l])
-            z[j,k,l]= y[j,k]*y[j,l]
+            z[j,k,l] = y[j,k]*y[j,l]
+            z_sum = gp.quicksum([z_sum, z[j,k,l]])
 
-coef = [1 for k in range(1,K) for l in range(k+1, K+1) for j in range(1, N+1)]
+
+# coef = [1 for k in range(1,K) for l in range(k+1, K+1) for j in range(1, N+1)]
 var= [z[j,k,l] for k in range(1,K) for l in range(k+1, K+1) for j in range(1, N+1)]
+varsum = gp.quicksum(var)
 
-print(coef)
-print(var)
-
-constraint3= m.addConstr(LinExpr(coef, var), "<=", beta)
+constraint3 = m.addConstr(varsum, gp.GRB.LESS_EQUAL, beta)
 m.update()
-print(f"{m.getRow(constraint3)} {constraint3.Sense} {constraint3.RHS}")
+print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
 
 
-#m.optimize()
+m.optimize()
 
 # print(f"Optimal objective value: {m.objVal}")
 #
