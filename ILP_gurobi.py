@@ -13,6 +13,12 @@ with open('file.txt', 'r') as file:
         for value in line.split():
             list.append(value)
 
+n= list[0]
+K= list[1]
+N= list[2]
+alpha= list[3]
+beta= list[4]
+
 
 n= 4    #total number of data items
 N= 4    #total number of tags
