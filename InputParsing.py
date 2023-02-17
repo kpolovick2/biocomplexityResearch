@@ -20,7 +20,7 @@ def get_B_matrix(input):
 
     clusters = []
     for i in range(n):
-        clusters.append(input_array[i*(N+2)+6])
+        clusters.append(int(input_array[i*(N+2)+6]))
 
     print(B)
     print(clusters)

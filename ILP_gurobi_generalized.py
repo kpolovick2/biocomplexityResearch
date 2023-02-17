@@ -26,7 +26,7 @@ for i in range(n):
 
 clusters = []
 for i in range(n):
-    clusters.append(input_array[i*(N+2)+6])
+    clusters.append(int(input_array[i*(N+2)+6]))
 
 m = gp.Model()
 
