@@ -93,9 +93,10 @@ print("------------------------")
 
 m.optimize()
 
-print("-------------------------------------------")
+print("-------------------------------------------\nSolution:")
 
 m.printAttr("X")
+
 #
 # print(f"Optimal objective value: {m.objVal}")
 #
