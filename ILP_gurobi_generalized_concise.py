@@ -7,6 +7,13 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 import time
+import numpy as np
+
+def form_z(vector, vector_sum):
+    if len(vector_sum) == 0:
+        return vector
+    else:
+        return [np.add(vector, vector_sum), np.dot(vector, vector_sum)]
 
 start = time.time()
 
