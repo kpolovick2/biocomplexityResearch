@@ -1,10 +1,14 @@
 # Name: Keara Polovick (and William Bradford)
 # Computing ID: uzy2ws (and wcb8ze)
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
+# timed (25% faster execution)
 
 from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
+import time
+
+start = time.time()
 
 with open('input.txt') as f:
     input = f.read()
@@ -74,7 +78,7 @@ z_sum = 0
 for k in range(1, K):
     for l in range(k+1, K+1):
         for j in range(1, N+1):
-            z_sum = gp.quicksum([z_sum, y[j,k]*y[j,l]])
+            z_sum += y[j,k]*y[j,l]
 
 constraint3 = m.addConstr(z_sum, gp.GRB.LESS_EQUAL, beta)
 m.update()
@@ -92,3 +96,4 @@ m.printAttr("X")
 #
 # print(f"Solution values: A= {A}, y[1,1]= {y[1,1].X}, y[2,1]= {y[2,1].X}, y[3,1]= {y[3,1].X}")
 
+print(f"\nexecution time: {time.time()-start}")

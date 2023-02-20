@@ -5,6 +5,9 @@
 from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
+import time
+
+start = time.time()
 
 with open('input.txt') as f:
     input = f.read()
@@ -102,3 +105,5 @@ m.printAttr("X")
 #
 # print(f"Solution values: A= {A}, y[1,1]= {y[1,1].X}, y[2,1]= {y[2,1].X}, y[3,1]= {y[3,1].X}")
 
+
+print(f"\nexecution time: {time.time()-start}")
