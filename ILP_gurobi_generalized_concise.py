@@ -1,7 +1,7 @@
 # Name: Keara Polovick (and William Bradford)
 # Computing ID: uzy2ws (and wcb8ze)
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
-# timed (25% faster execution)
+# has a faster runtime complexity than the standard generalized version
 
 from gurobipy import LinExpr, QuadExpr
 
@@ -61,8 +61,9 @@ def ILP_concise():
     m.update()
 
     #Objective function is to minimize the sum of the variables in A
+    coef = [1 for j in range(1, N+1) for k in range(1,K+1)]
     var = [y[j, k] for j in range(1, N+1) for k in range(1,K+1)]
-    objective= m.setObjective(gp.quicksum(var), gp.GRB.MINIMIZE)
+    objective= m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
 
     #CONSTRAINTS
@@ -84,32 +85,28 @@ def ILP_concise():
 
     # print("Constraint B: ")
     #(b) size of each descriptor must be at most alpha --ALL GOOD
-    columns = []
+    columns = []                                # set up the columns array for later use in part C
+    coef = [1 for j in range(1, N + 1)]
     for k in range(1, K+1):
         var = [y[j, k] for j in range(1, N+1)]
         columns.append(var)
-        constraint2= m.addConstr(gp.quicksum(var), "<=", alpha)
+        constraint2= m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
         # print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
 
     # print("------------------------")
     #
     # print("Constraint C: ")
-    #(c) overlap between any pair of descriptors must be at most beta --ALL GOOD
+
+    # (c) overlap between any pair of descriptors must be at most beta --ALL GOOD
+    # this version of the algorithm uses vector operations (dot product and add)
+    # to build constraint c using memoization
 
     z_sum_2 = 0
     internal_sum = columns[K-1]
     for k in range(K-1, 0, -1):
         z_sum_2 += dot(columns[k-1], internal_sum)
         internal_sum = add(columns[k-1], internal_sum)
-
-    # print(z_sum_2)
-
-    # z_sum = 0
-    # for k in range(1, K):
-    #     for l in range(k+1, K+1):
-    #         for j in range(1, N+1):
-    #             z_sum += y[j,k]*y[j,l]
 
     constraint3 = m.addConstr(z_sum_2, gp.GRB.LESS_EQUAL, beta)
     m.update()
@@ -118,11 +115,4 @@ def ILP_concise():
 
 
     m.optimize()
-
-    # print("-------------------------------------------\nSolution:")
-    #
     m.printAttr("X")
-    #
-    # print(f"Optimal objective value: {m.objVal}")
-    #
-    # print(f"Solution values: A= {A}, y[1,1]= {y[1,1].X}, y[2,1]= {y[2,1].X}, y[3,1]= {y[3,1].X}")
