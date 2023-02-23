@@ -100,7 +100,7 @@ def ILP_concise():
 
     # (c) overlap between any pair of descriptors must be at most beta --ALL GOOD
     # this version of the algorithm uses vector operations (dot product and add)
-    # to build constraint c using memoization
+    # to build constraint c asymptotically faster than the alternative
 
     z_sum_2 = 0
     internal_sum = columns[K-1]
@@ -116,3 +116,5 @@ def ILP_concise():
 
     m.optimize()
     m.printAttr("X")
+
+ILP_concise()
