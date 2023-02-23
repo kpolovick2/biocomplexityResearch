@@ -63,7 +63,7 @@ def ILP_concise():
     #Objective function is to minimize the sum of the variables in A
     coef = [1 for j in range(1, N+1) for k in range(1,K+1)]
     var = [y[j, k] for j in range(1, N+1) for k in range(1,K+1)]
-    objective= m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
+    objective = m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
 
     #CONSTRAINTS
@@ -90,7 +90,7 @@ def ILP_concise():
     for k in range(1, K+1):
         var = [y[j, k] for j in range(1, N+1)]
         columns.append(var)
-        constraint2= m.addConstr(LinExpr(coef, var), "<=", alpha)
+        constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
         # print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
 
