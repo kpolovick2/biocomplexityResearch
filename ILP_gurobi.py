@@ -1,35 +1,38 @@
-# Name: Keara Polovick
-# Computing ID: uzy2ws
+# Name: Keara Polovick (and William Bradford)
+# Computing ID: uzy2ws (and wcb8ze)
+# duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 
-from gurobipy import LinExpr
+from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
+
+with open('input.txt') as f:
+    input = f.read()
+
+input.replace("\n", "")
+input_array = input.split()
+n = int(input_array[0])  # number of data items
+K = int(input_array[1])  # number of clusters
+N = int(input_array[2])  # number of tags
+alpha = int(input_array[3])  # maximum size of descriptor for each item
+beta = int(input_array[4])  # maximum overlap
+
+B = []
+for i in range(n):
+    temp = []
+    for j in range(N):
+        temp.append(int(input_array[i*(N+2)+7+j]))
+    B.append(temp)
+
+clusters = []
+for i in range(n):
+    clusters.append(int(input_array[i*(N+2)+6]))
+
 m = gp.Model()
-
-#reading in txt file
-list= []
-with open('file.txt', 'r') as file:
-    for line in file.readLines():
-        for value in line.split():
-            list.append(value)
-
-n= list[0]
-K= list[1]
-N= list[2]
-alpha= list[3]
-beta= list[4]
-
-
-n= 4    #total number of data items
-N= 4    #total number of tags
-K= 2    #number of clusters
-alpha= 2
-beta= 1
-
-B= [[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [1, 0, 0, 1]]
 
 #create y[j,k] variables
 y= {}
+y_int = []
 for j in range(1, N+1):
     for k in range(1, K+1):
         y[j,k] = m.addVar(vtype='B', name="y[%s,%s]"%(j,k))
@@ -45,19 +48,19 @@ m.update()
 
 print("Constraint A: ")
 #(a) must contain at least one tag from each of the data items in that cluster --FIX
+A = [0 for c in range(n+1)]
 for i in range(1,n+1):
-    A1= 0
     for j in range(1,N+1):
-        #if data item is in cluster 1, k=1
-        #if data item is in cluster 2, k=2
-        k=1 # how do you know which cluster the data item is in?
-        if B[i-1][j-1]==1:
-            A1 += y[j,k]
+        k = clusters[i-1]
+        if B[i - 1][j - 1] == 1:
+            A[i] += y[j, k]
 
     #Constraint: sum of variables in A should be >= 1
-    constraint1 = m.addConstr(A1, ">=", 1)
+constraint1 = []
+for i in range(1, n+1):
+    constraint1.append(m.addConstr(A[i], ">=", 1))
     m.update()
-    print(f"{m.getRow(constraint1)} {constraint1.Sense} {constraint1.RHS}")
+    print(f"{m.getRow(constraint1[i-1])} {constraint1[i-1].Sense} {constraint1[i-1].RHS}")
 
 print("------------------------")
 
@@ -74,28 +77,27 @@ print("------------------------")
 
 print("Constraint C: ")
 #(c) overlap between any pair of descriptors must be at most beta --FIX
-z= {}
+z = {}
+z_sum = 0
 for k in range(1, K):
     for l in range(k+1, K+1):
         for j in range(1, N+1):
-            #print(y[j,k])
-            #print(y[j,l])
-            z[j,k,l]= y[j,k]*y[j,l]
+            z[j,k,l] = y[j,k]*y[j,l]
+            z_sum = gp.quicksum([z_sum, z[j,k,l]])
 
-coef = [1 for k in range(1,K) for l in range(k+1, K+1) for j in range(1, N+1)]
+
+# coef = [1 for k in range(1,K) for l in range(k+1, K+1) for j in range(1, N+1)]
 var= [z[j,k,l] for k in range(1,K) for l in range(k+1, K+1) for j in range(1, N+1)]
+varsum = gp.quicksum(var)
 
-print(coef)
-print(var)
-
-constraint3= m.addConstr(LinExpr(coef, var), "<=", beta)
+constraint3 = m.addConstr(varsum, gp.GRB.LESS_EQUAL, beta)
 m.update()
-print(f"{m.getRow(constraint3)} {constraint3.Sense} {constraint3.RHS}")
+print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
+print("------------------------")
 
 
-#m.optimize()
+m.optimize()
 
-# print(f"Optimal objective value: {m.objVal}")
+print(f"Optimal objective value: {m.objVal}")
 #
-# print(f"Solution values: A= {A}, y[1,1]= {y[1,1]}, y[2,1]= {y[2,1]}, y[3,1]= {y[3,1]}")
-
+print(f"Solution values: A= {A}, y[1,1]= {y[1,1].X}, y[2,1]= {y[2,1].X}, y[3,1]= {y[3,1].X}")
