@@ -31,7 +31,7 @@ def form_z(vector, vector_sum):
 
 def ILP_concise():
 
-    with open('input.txt') as f:
+    with open('100_clusters.txt') as f:
         input = f.read()
 
     input.replace("\n", "")
@@ -60,13 +60,13 @@ def ILP_concise():
             y[j,k] = m.addVar(vtype='B', name="y[%s,%s]"%(j,k))
     m.update()
 
-    #Objective function is to minimize the sum of the variables in A
+    # Objective function is to minimize the sum of the variables in A
     coef = [1 for j in range(1, N+1) for k in range(1,K+1)]
     var = [y[j, k] for j in range(1, N+1) for k in range(1,K+1)]
     objective = m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
 
-    #CONSTRAINTS
+    # CONSTRAINTS
 
     # print("Constraint A: ")
     #(a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
