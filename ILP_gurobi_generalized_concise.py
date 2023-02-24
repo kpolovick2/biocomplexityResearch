@@ -31,7 +31,7 @@ def form_z(vector, vector_sum):
 
 def ILP_concise():
 
-    with open('100_clusters.txt') as f:
+    with open('20n14K13318N.txt') as f:
         input = f.read()
 
     input.replace("\n", "")

@@ -8,7 +8,7 @@ import gurobipy as gp
 
 def ILP():
 
-    with open('100_clusters.txt') as f:
+    with open('20n14K13318N.txt') as f:
         input = f.read()
 
     input.replace("\n", "")

@@ -12,7 +12,7 @@ import timeit
 # 10.795% of the time over 1000 executions with 38 data items, 16 clusters, and 56 tags (16x56.txt)
 #           (826.3% speedup)
 # negligible speedup for large values of n or N with small values of K
-# 17735.92% speedup for 39_clusters.txt
+# 17735.92% speedup for 39_clusters.txt on a singular execution
 
 # print("Naive approach:")
 a1 = timeit.timeit('a.ILP()', setup="import ILP_gurobi_generalized as a", number=1)
