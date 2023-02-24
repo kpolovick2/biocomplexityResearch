@@ -6,9 +6,9 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 
-def ILP():
+def ILP(filename):
 
-    with open('20n14K13318N.txt') as f:
+    with open(filename) as f:
         input = f.read()
 
     input.replace("\n", "")
@@ -103,5 +103,3 @@ def ILP():
     # print(f"Optimal objective value: {m.objVal}")
     #
     # print(f"Solution values: A= {A}, y[1,1]= {y[1,1].X}, y[2,1]= {y[2,1].X}, y[3,1]= {y[3,1].X}")
-
-ILP()

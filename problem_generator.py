@@ -7,6 +7,8 @@ import random
 
 def generate(n, K, N, alpha, beta, filename):
     output_s = f"{n} {K} {N} {alpha} {beta}\n"
+    output_s_p = f"{n} {K} {N} {alpha} {beta}\n"
+    perturb = random.randint(0, N)
 
     K_used_list = []
     for i in range(n):
@@ -15,39 +17,24 @@ def generate(n, K, N, alpha, beta, filename):
             K_val = (K_val) % K + 1
         K_used_list.append(K_val)
         temp_s = f"{i+1} {K_val} "
+        temp_s_p = f"{i+1} {K_val} "
         for j in range(N):
-            temp_s += str(random.randint(0,1)) + " "
+            x = str(random.randint(0,1))
+            temp_s += x + " "
+            if j != perturb:
+                temp_s_p += x + " "
+            else:
+                temp_s_p += "0 "
         temp_s += "\n"
+        temp_s_p += "\n"
         output_s += temp_s
+        output_s_p += temp_s_p
 
     with open(filename+".txt", 'w') as f:
         f.write(output_s)
 
-    tag_removed = output_s.split("\n")
-    tag_removed_array = []
-    tag = random.randint(2, N+1)
-    for i in range(1, len(tag_removed)-1):
-        row = tag_removed[i].split()
-        del row[tag]
-        tag_removed_array.append(row)
-
-    tag_removed_s = ""
-    first_row = tag_removed[0]
-    new_first_row = ""
-    for item in first_row.split():
-        if item == f"{N}":
-            item = f"{N-1}"
-        new_first_row += f"{item} "
-
-    tag_removed_s += new_first_row + "\n"
-
-    for row in tag_removed_array:
-        for element in row:
-            tag_removed_s += f"{element} "
-        tag_removed_s += "\n"
-
-    with open(filename + f"_{tag-2}p.txt", 'w') as f:
-        f.write(tag_removed_s)
+    with open(f"{filename}_{perturb+1}p.txt", 'w') as f:
+        f.write(output_s_p)
 
 
 
@@ -59,4 +46,4 @@ def parameter_crunch(n):
     filename = f"{n}n_{K}K_{N}N"
     generate(n, K, N, alpha, beta, filename)
 
-parameter_crunch(20)
+parameter_crunch(50)

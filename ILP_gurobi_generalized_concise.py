@@ -29,9 +29,9 @@ def form_z(vector, vector_sum):
         return [add(vector, vector_sum), dot(vector, vector_sum)]
 
 
-def ILP_concise():
+def ILP_concise(filename):
 
-    with open('20n14K13318N.txt') as f:
+    with open(filename) as f:
         input = f.read()
 
     input.replace("\n", "")
@@ -115,6 +115,5 @@ def ILP_concise():
 
 
     m.optimize()
-    m.printAttr("X")
-
-ILP_concise()
+    # m.printAttr("X")
+    return m.getAttr("X")
