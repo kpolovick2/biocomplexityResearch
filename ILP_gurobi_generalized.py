@@ -45,7 +45,7 @@ m.update()
 #CONSTRAINTS
 
 print("Constraint A: ")
-#(a) must contain at least one tag from each of the data items in that cluster
+#(a) must contain at least one tag from each of the data items in that cluster --FIX
 A = [0 for c in range(n+1)]
 constraint1 = []
 for i in range(1,n+1):
@@ -72,7 +72,7 @@ for k in range(1, K+1):
 print("------------------------")
 
 print("Constraint C: ")
-#(c) overlap between any pair of descriptors must be at most beta
+#(c) overlap between any pair of descriptors must be at most beta --FIX
 
 z_sum = 0
 for k in range(1, K):
