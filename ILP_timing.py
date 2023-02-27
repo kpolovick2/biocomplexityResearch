@@ -14,13 +14,13 @@ import timeit
 # negligible speedup for large values of n or N with small values of K
 # 17735.92% speedup for 39_clusters.txt on a singular execution
 
-filename = "50n_22K_304N.txt"
+filename = "250-7-35-4-2.txt.txt"
 
 # print("Naive approach:")
 a1 = timeit.timeit(f'a.ILP(\"{filename}\")', setup="import ILP_gurobi_generalized as a", number=1)
 # print("Non-naive approach:")
 a2 = timeit.timeit(f'b.ILP_concise(\"{filename}\")',  setup="import ILP_gurobi_generalized_concise as b", number=1)
 
-print(f"Naive: {a1}")
-print(f"Concise: {a2}")
-print(f"{((1/(a2/a1)) - 1)*100}% speedup")
+print(f"Generalized: {a1} seconds")
+print(f"Concise: {a2} seconds")
+print(f"{(((a1/a2)))} speedup factor")

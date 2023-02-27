@@ -4,6 +4,8 @@
 
 import random
 
+# request: input total number of tags, total number of data items, total number of clusters,
+# max tags/data item
 
 def generate(n, K, N, alpha, beta, filename):
     output_s = f"{n} {K} {N} {alpha} {beta}\n"
@@ -37,7 +39,6 @@ def generate(n, K, N, alpha, beta, filename):
         f.write(output_s_p)
 
 
-
 def parameter_crunch(n):
     K = random.randint(2, n)
     N = random.randint(n, 10*n)
@@ -46,4 +47,4 @@ def parameter_crunch(n):
     filename = f"{n}n_{K}K_{N}N"
     generate(n, K, N, alpha, beta, filename)
 
-parameter_crunch(50)
+generate(250, 7, 35, 4, 2, "250-5-35-4-2.txt")

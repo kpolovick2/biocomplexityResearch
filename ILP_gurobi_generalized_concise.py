@@ -3,6 +3,8 @@
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 # has a faster runtime complexity than the standard generalized version
 
+# changes: make gurobi output in order of k value instead of j
+
 from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
@@ -20,13 +22,6 @@ def add(arr1, arr2):
     for i in range(len(arr1)):
         answer.append(arr1[i] + arr2[i])
     return answer
-
-
-def form_z(vector, vector_sum):
-    if len(vector_sum) == 0:
-        return vector
-    else:
-        return [add(vector, vector_sum), dot(vector, vector_sum)]
 
 
 def ILP_concise(filename):
@@ -115,5 +110,5 @@ def ILP_concise(filename):
 
 
     m.optimize()
-    # m.printAttr("X")
-    return m.getAttr("X")
+    m.printAttr("X")
+    # return m.getAttr("X")
