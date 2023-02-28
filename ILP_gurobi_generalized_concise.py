@@ -1,7 +1,6 @@
 # Name: Keara Polovick (and William Bradford)
 # Computing ID: uzy2ws (and wcb8ze)
-# duplicate of ILP_gurobi for the purpose of generalizing the algorithm
-# has a faster runtime complexity than the standard generalized version
+# linear version of ILP
 
 from gurobipy import LinExpr, QuadExpr
 
@@ -68,8 +67,7 @@ def ILP_concise(filename):
 
     # CONSTRAINTS
 
-    # print("Constraint A: ")
-    #(a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
+    #(a) must contain at least one tag from each of the data items in that cluster
     A = [0 for c in range(n+1)]
     constraint1 = []
     for i in range(1,n+1):
@@ -80,11 +78,9 @@ def ILP_concise(filename):
         constraint1.append(m.addConstr(A[i], ">=", 1))
         m.update()
     #     print(f"{m.getRow(constraint1[i - 1])} {constraint1[i - 1].Sense} {constraint1[i - 1].RHS}")
-    #
-    # print("------------------------")
 
-    # print("Constraint B: ")
-    #(b) size of each descriptor must be at most alpha --ALL GOOD
+
+    #(b) size of each descriptor must be at most alpha
     columns = []                                # set up the columns array for later use in part C
     coef = [1 for j in range(1, N + 1)]
     for k in range(1, K+1):
@@ -94,25 +90,30 @@ def ILP_concise(filename):
         m.update()
         # print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
 
-    # print("------------------------")
-    #
-    # print("Constraint C: ")
 
-    # (c) overlap between any pair of descriptors must be at most beta --ALL GOOD
-    # this version of the algorithm uses vector operations (dot product and add)
-    # to build constraint c asymptotically faster than the alternative
+    # (c) z[j,k,l]<= y[j,k] and z[j,k,l] ,= y[j,l]
+    L= 0.5*K
+    z=[]
+    for j in range(1, N):
+        for k in range[1, L]:
+            for l in range[L,K]:
+                if(y[j,k]==0 or y[j,l]==0):
+                    m.addConstr(z[j,k,l], gp.GRB.LESS_EQUAL, y[j,k])
+                    m.addConstr(z[j, k, l], gp.GRB.LESS_EQUAL, y[j, l])
+                elif(y[j,k]==1 or y[j,l]==1):
+                    m.addConstr(z[j, k, l], gp.GRB.GREATER_EQUAL, y[j,k]+y[j,l]-1)
 
+
+    # (d) overlap between any pair of descriptors must be at most beta
     z_sum_2 = 0
-    internal_sum = columns[K-1]
-    for k in range(K-1, 0, -1):
-        z_sum_2 += dot(columns[k-1], internal_sum)
-        internal_sum = add(columns[k-1], internal_sum)
+    internal_sum = columns[K - 1]
+    for k in range(K - 1, 0, -1):
+        z_sum_2 += dot(columns[k - 1], internal_sum)
+        internal_sum = add(columns[k - 1], internal_sum)
 
     constraint3 = m.addConstr(z_sum_2, gp.GRB.LESS_EQUAL, beta)
     m.update()
     # print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
-    # print("------------------------")
-
 
     m.optimize()
     # m.printAttr("X")
