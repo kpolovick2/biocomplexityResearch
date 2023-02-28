@@ -4,47 +4,83 @@
 
 import random
 
+
 # request: input total number of tags, total number of data items, total number of clusters,
 # max tags/data item
 
-def generate(n, K, N, alpha, beta, filename):
+# a function to generate synthetic data from inputs n, K, N, alpha, beta,
+# max_tags (the max number of tags per item)
+# min_tags (the min number of tags per item)
+# min_items (the minimum number of items per cluster, item count permitting)
+def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items):
+    # assigns the first line of the output file
     output_s = f"{n} {K} {N} {alpha} {beta}\n"
-    output_s_p = f"{n} {K} {N} {alpha} {beta}\n"
-    perturb = random.randint(0, N)
+    # auto-generate the file name
+    filename = f"{n}n_{K}K_{N}N_{alpha}a_{beta}b"
 
-    K_used_list = []
+    k_used = {} # used to store which clusters have items in them
+    previous_tags = random.sample(range(0, N-1),
+                                  random.randint(min_tags, max_tags)) # used to set up overlap between data items
     for i in range(n):
-        K_val = random.randint(1, K)
-        while (K_val in K_used_list) and (len(K_used_list) < K):
-            K_val = (K_val) % K + 1
-        K_used_list.append(K_val)
-        temp_s = f"{i+1} {K_val} "
-        temp_s_p = f"{i+1} {K_val} "
-        for j in range(N):
-            x = str(random.randint(0,1))
-            temp_s += x + " "
-            if j != perturb:
-                temp_s_p += x + " "
-            else:
-                temp_s_p += "0 "
-        temp_s += "\n"
-        temp_s_p += "\n"
-        output_s += temp_s
-        output_s_p += temp_s_p
+        # insures that every cluster has at least one data item in it
+        if len(k_used) < K:
+            k_val = random.randint(1, K)
+            while k_val in k_used:
+                k_val = k_val % K + 1
+        # handles continued addition to the clusters after each cluster has at least one data item in it
+        else:
+            # print(k_used)
+            below_keys = list(dict((key,val) for key, val in k_used.items() if val <= min_items).keys())
+            if len(below_keys) != 0:
+                k_val = below_keys[random.sample(range(len(below_keys)), 1)[0]]
+            # print("---")
 
-    with open(filename+".txt", 'w') as f:
+        # counts the usages of each k value
+        if k_val not in k_used:
+            k_used[k_val] = 1
+        else:
+            k_used[k_val] += 1
+        temp_s = f"{i + 1} {k_val} "
+
+        # generate a list of tags that will be used for the current data item
+        used_tags = random.sample(range(0, N-1),
+                                  random.randint(min_tags, max_tags))
+        overlap = 0
+
+        for tag in used_tags:
+            if tag in previous_tags:
+                overlap += 1
+
+        # correct output to ensure overlap between data items for the first K*2 data items
+        # converts to a 50/50 chance of overlap correction after K*2 items
+        if overlap == 0 and (i < K or random.randint(1, 100) <= 50):
+            used_tags[random.randint(0, len(used_tags)-1)] \
+                = previous_tags[random.randint(0, len(previous_tags)-1)]
+
+        # assign the tags to the temp string
+        for j in range(N):
+            if j in used_tags:
+                temp_s += "1 "
+            else:
+                temp_s += "0 "
+
+        previous_tags = used_tags
+
+        # add new line to move on to the next data item
+        temp_s += "\n"
+        output_s += temp_s
+
+    # store the synthetic data in a file in the test files folder
+    with open(f"test_txt_files/{filename}.txt", 'w') as f:
         f.write(output_s)
 
-    with open(f"{filename}_{perturb+1}p.txt", 'w') as f:
-        f.write(output_s_p)
-
-
+# a function that generates a synthetic data set from an input of the number of data items
 def parameter_crunch(n):
     K = random.randint(2, n)
-    N = random.randint(n, 10*n)
-    alpha = random.randint(2, int(N/10))
+    N = random.randint(n, 10 * n)
+    alpha = random.randint(2, int(N / 10))
     beta = 1
-    filename = f"{n}n_{K}K_{N}N"
-    generate(n, K, N, alpha, beta, filename)
+    generate(n, K, N, alpha, beta)
 
-generate(250, 7, 35, 4, 2, "250-5-35-4-2.txt")
+
+generate(20, 7, 35, 4, 2, 5, 3, 2)
