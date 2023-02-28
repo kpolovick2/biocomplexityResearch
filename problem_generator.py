@@ -1,9 +1,8 @@
 # William Bradford
 # wcb8ze
-# generation script for k cluster problems
+# generation script for minimum descriptor problems
 
 import random
-
 
 # request: input total number of tags, total number of data items, total number of clusters,
 # max tags/data item
@@ -66,7 +65,7 @@ def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items):
 
         previous_tags = used_tags
 
-        # add new line to move on to the next data item
+        # add new line and move on to the next data item
         temp_s += "\n"
         output_s += temp_s
 
@@ -83,4 +82,4 @@ def parameter_crunch(n):
     generate(n, K, N, alpha, beta)
 
 
-generate(20, 7, 35, 4, 2, 5, 3, 2)
+generate(100, 7, 100, 15, 1, 8, 2, 4)

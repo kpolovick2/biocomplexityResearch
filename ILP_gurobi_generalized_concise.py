@@ -9,21 +9,22 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 
-
+# helper function that takes the dot product of two arrays
 def dot(arr1, arr2):
     answer = 0
     for i in range(len(arr1)):
         answer += (arr1[i] * arr2[i])
     return answer
 
-
+# helper function that adds the ith elements of two arrays,
+# then stores the resulting value in another array's ith index
 def add(arr1, arr2):
     answer = []
     for i in range(len(arr1)):
         answer.append(arr1[i] + arr2[i])
     return answer
 
-
+# takes a file as an argument and finds the minimum descriptor of the file using integer quadratic programming
 def ILP_concise(filename):
 
     with open(filename) as f:
@@ -37,6 +38,8 @@ def ILP_concise(filename):
     alpha = int(input_array[3])  # maximum size of descriptor for each item
     beta = int(input_array[4])  # maximum overlap
 
+    # create the list of which data items belong to which clusters
+    # create the matrix of tags
     B = []
     clusters = []
     for i in range(n):

@@ -9,21 +9,22 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 
-
+# helper function that takes the dot product of two arrays
 def dot(arr1, arr2):
     answer = 0
     for i in range(len(arr1)):
         answer += (arr1[i] * arr2[i])
     return answer
 
-
+# helper function that adds the ith elements of two arrays,
+# then stores the resulting value in another array's ith index
 def add(arr1, arr2):
     answer = []
     for i in range(len(arr1)):
         answer.append(arr1[i] + arr2[i])
     return answer
 
-
+# takes a file as an argument and finds the minimum descriptor of the file using integer quadratic programming
 def ILP_linear_g(filename):
 
     with open(filename) as f:
@@ -37,6 +38,8 @@ def ILP_linear_g(filename):
     alpha = int(input_array[3])  # maximum size of descriptor for each item
     beta = int(input_array[4])  # maximum overlap
 
+    # create the list of which data items belong to which clusters
+    # create the matrix of tags
     B = []
     clusters = []
     for i in range(n):
@@ -44,7 +47,6 @@ def ILP_linear_g(filename):
         clusters.append(int(input_array[i * (N + 2) + 6]))
         for j in range(N):
             B[i].append(int(input_array[i*(N+2)+7+j]))
-
 
     m = gp.Model()
 
@@ -104,6 +106,7 @@ def ILP_linear_g(filename):
         internal_sum = add(columns[k-1], internal_sum)
 
     constraint3 = m.addConstr(z_sum_2, gp.GRB.LESS_EQUAL, beta)
+    # use gurpbo presolve to linearize the c constraint
     m.Params.PreQLinearize = 2
     m.update()
     # print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
