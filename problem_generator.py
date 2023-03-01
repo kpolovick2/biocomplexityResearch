@@ -11,7 +11,8 @@ import random
 # max_tags (the max number of tags per item)
 # min_tags (the min number of tags per item)
 # min_items (the minimum number of items per cluster, item count permitting)
-def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items):
+# percent_overlap (the percentage of overlap between items, ranging from 0 to 100)
+def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items, percent_overlap):
     # assigns the first line of the output file
     output_s = f"{n} {K} {N} {alpha} {beta}\n"
     # auto-generate the file name
@@ -50,9 +51,8 @@ def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items):
             if tag in previous_tags:
                 overlap += 1
 
-        # correct output to ensure overlap between data items for the first K*2 data items
-        # converts to a 50/50 chance of overlap correction after K*2 items
-        if overlap == 0 and (i < K or random.randint(1, 100) <= 50):
+        # correct output to make overlap occur about 10% of the time
+        if overlap == 0 and (random.randint(1, 100) <= percent_overlap):
             used_tags[random.randint(0, len(used_tags)-1)] \
                 = previous_tags[random.randint(0, len(previous_tags)-1)]
 
@@ -82,4 +82,4 @@ def parameter_crunch(n):
     generate(n, K, N, alpha, beta)
 
 
-generate(100, 7, 100, 15, 1, 8, 2, 4)
+generate(100, 7, 100, 15, 1, 12, 2, 4, 15)

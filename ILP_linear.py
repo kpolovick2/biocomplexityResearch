@@ -98,6 +98,7 @@ def ILP_linear(filename):
     # to build constraint c asymptotically faster than the alternative
 
     z = {}
+    z_sum = 0
     for k in range(1, K):
         for l in range(k + 1, K + 1):
             for j in range(1, N + 1):
@@ -105,7 +106,10 @@ def ILP_linear(filename):
                 m.addConstr(z[j,k,l], "<=", y[j, k])
                 m.addConstr(z[j,k,l], "<=", y[j, l])
                 m.addConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
+                z_sum += z[j,k,l]
                 m.update()
+    constraint3 = m.addConstr(z_sum, gp.GRB.LESS_EQUAL, beta)
+    m.update()
 
     # z_sum_2 = 0
     # internal_sum = columns[K-1]
