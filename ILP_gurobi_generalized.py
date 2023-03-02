@@ -2,7 +2,7 @@
 # Computing ID: uzy2ws (and wcb8ze)
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 
-from gurobipy import LinExpr, QuadExpr
+from gurobipy import LinExpr, QuadExpr, math
 
 import gurobipy as gp
 
@@ -16,6 +16,8 @@ K = int(input_array[1])  # number of clusters
 N = int(input_array[2])  # number of tags
 alpha = int(input_array[3])  # maximum size of descriptor for each item
 beta = int(input_array[4])  # maximum overlap
+
+print("K: " + str(K))
 
 B = []
 clusters = []
@@ -44,7 +46,7 @@ m.update()
 
 #CONSTRAINTS
 
-print("Constraint A: ")
+#print("Constraint A: ")
 #(a) must contain at least one tag from each of the data items in that cluster --FIX
 A = [0 for c in range(n+1)]
 constraint1 = []
@@ -55,23 +57,23 @@ for i in range(1,n+1):
             A[i] += y[j, k]
     constraint1.append(m.addConstr(A[i], ">=", 1))
     m.update()
-    print(f"{m.getRow(constraint1[i - 1])} {constraint1[i - 1].Sense} {constraint1[i - 1].RHS}")
+    #print(f"{m.getRow(constraint1[i - 1])} {constraint1[i - 1].Sense} {constraint1[i - 1].RHS}")
 
 
-print("------------------------")
+#print("------------------------")
 
-print("Constraint B: ")
+#print("Constraint B: ")
 #(b) size of each descriptor must be at most alpha --ALL GOOD
 for k in range(1, K+1):
     coef = [1 for j in range(1, N+1)]
     var = [y[j, k] for j in range(1, N+1)]
     constraint2= m.addConstr(LinExpr(coef, var), "<=", alpha)
     m.update()
-    print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
+    #print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
 
-print("------------------------")
+#print("------------------------")
 
-print("Constraint C: ")
+#print("Constraint C: ")
 #(c) overlap between any pair of descriptors must be at most beta --FIX
 
 z_sum = 0
@@ -87,9 +89,24 @@ for k in range(1, K):
 
 constraint3 = m.addConstr(z_sum, gp.GRB.LESS_EQUAL, beta)
 m.update()
-print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
-print("------------------------")
+#print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
+#print("------------------------")
 
+#print("Constraint D: ")
+# (d)
+L= 8
+z =[]
+for j in range(1, N):
+    for k in range(1, L):
+        for l in range(L,K):
+            if(y[j,k]==0 or y[j,l]==0):
+                z[j, k, l] = 0
+                m.addConstr(z[j,k,l], gp.GRB.LESS_EQUAL, y[j,k])
+                m.addConstr(z[j, k, l], gp.GRB.LESS_EQUAL, y[j, l])
+            elif(y[j,k]==1 or y[j,l]==1):
+                z[j, k, l] = 1
+                m.addConstr(z[j, k, l], gp.GRB.GREATER_EQUAL, y[j,k]+y[j,l]-1)
+#print("------------------------")
 
 m.optimize()
 
