@@ -8,6 +8,8 @@ import math
 # request: input total number of tags, total number of data items, total number of clusters,
 # max tags/data item
 
+# TODO: add max_items
+
 # a function to generate synthetic data from inputs n, K, N, alpha, beta,
 # max_tags (the max number of tags per item)
 # min_tags (the min number of tags per item)
@@ -30,7 +32,7 @@ def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items, percent_overla
             overlap_count += 1
 
     # if the number of overlaps is less than the desired amount
-    if (overlap_count/n < percent_overlap/100):
+    if overlap_count/n < percent_overlap/100:
         # store the number of items that need to be 'fixed'
         fix_count = math.floor((percent_overlap*n/100)) - overlap_count
         while fix_count > 0:
@@ -112,4 +114,5 @@ def parameter_crunch(n):
     generate(n, K, N, alpha, beta)
 
 
-generate(100, 7, 100, 15, 1, 12, 2, 4, 15)
+# n, K, N, alpha, beta, max_tags, min_tags, min_items, percent_overlap
+generate(250, 7, 250, 80, 1, 16, 3, 6, 5)

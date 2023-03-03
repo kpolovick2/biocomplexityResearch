@@ -43,16 +43,18 @@ def ILP_concise(filename):
     B = []
     clusters = []
     for i in range(n):
+        # create an empty line in B
         B.append([])
+        # the six is the offset that describes the location of each K value within the array
         clusters.append(int(input_array[i * (N + 2) + 6]))
         for j in range(N):
+            # the seven corresponds to the location of the first tag value in the input array
             B[i].append(int(input_array[i*(N+2)+7+j]))
-
 
     m = gp.Model()
 
     #create y[j,k] variables
-    y= {}
+    y = {}
     for j in range(1, N+1):
         for k in range(1, K+1):
             y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
@@ -106,11 +108,10 @@ def ILP_concise(filename):
         z_sum_2 += dot(columns[k-1], internal_sum)
         internal_sum = add(columns[k-1], internal_sum)
 
-    constraint3 = m.addConstr(z_sum_2, gp.GRB.LESS_EQUAL, beta)
+    constraint3 = m.addConstr(z_sum_2, "<=", beta)
     m.update()
     # print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
     # print("------------------------")
-
 
     m.optimize()
 
@@ -122,15 +123,23 @@ def ILP_concise(filename):
     vars_used = []
     for i in range(len(x_values)):
         if x_values[i] == 1.0:
+            # adds a string containing the name of the variable
             vars_used.append(y_values[i].getAttr("VarName"))
 
     # sort the array alphabetically
     vars_used.sort()
 
+    output_string = ""
     # print the values of the solution that equal one
     print("Solution:\n---------------------------")
     for var in vars_used:
         # use a temp variable to only output the variable's name rather than the k value
         temp = var.split()
-        print(f"{temp[1]} = 1")
+        output_string += f"{temp[1]} = 1\n"
+    # return m.getAttr("X")
+
+    # TODO: add implementation for outputting the above in descriptor notation
+
+    print(output_string)
+    return output_string
     # return m.getAttr("X")

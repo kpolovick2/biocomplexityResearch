@@ -2,7 +2,8 @@
 # wcb8ze
 # solution checker file to verify that solutions truly are minimum descriptors for the problem in question
 
-import ILP_linear as ilp
+import ILP_linear as ilp_L
+import ILP_gurobi_generalized_concise as ilp_G
 
 def check(solution_string, filename):
 
@@ -79,11 +80,12 @@ def check(solution_string, filename):
             if tag == alt_tag:
                 use_count += 1
 
-        # if the tag is used more than beta times, terminate and return false
-        if use_count <= beta:
+        # if the tag is used more than beta + 1 times, terminate and return false
+        if use_count <= beta+1:
             print(f"Solution does not overuse tag {tag}.")
         else:
-            print(f"Solution overuses tag {tag}. It was used {use_count} times across all clusters.")
+            print(f"Solution overuses tag {tag}. It was used {use_count} times across all clusters."
+                  f"\nThis is {use_count-(beta+1)} uses more than is permitted by the beta constraint.")
             return False
 
     print("\nBeta constraint satisfied.\n")
@@ -104,4 +106,5 @@ def check(solution_string, filename):
     print("All constraints satisfied.")
     return True
 
-check(ilp.ILP_linear("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")
+# check(ilp_G.ILP_concise("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")
+check(ilp_L.ILP_linear("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")

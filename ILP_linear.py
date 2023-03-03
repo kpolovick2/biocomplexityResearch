@@ -64,7 +64,7 @@ def ILP_linear(filename):
     # CONSTRAINTS
 
     # print("Constraint A: ")
-    #(a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
+    # (a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
     A = [0 for c in range(n+1)]
     constraint1 = []
     for i in range(1,n+1):
@@ -79,7 +79,7 @@ def ILP_linear(filename):
     # print("------------------------")
 
     # print("Constraint B: ")
-    #(b) size of each descriptor must be at most alpha --ALL GOOD
+    # (b) size of each descriptor must be at most alpha --ALL GOOD
     columns = []                                # set up the columns array for later use in part C
     coef = [1 for j in range(1, N + 1)]
     for k in range(1, K+1):
@@ -94,22 +94,20 @@ def ILP_linear(filename):
     # print("Constraint C: ")
 
     # (c) overlap between any pair of descriptors must be at most beta --ALL GOOD
-    # this version of the algorithm uses vector operations (dot product and add)
-    # to build constraint c asymptotically faster than the alternative
 
     z = {}
     z_sum = 0
     for k in range(1, K):
         for l in range(k + 1, K + 1):
             for j in range(1, N + 1):
-                if B[k-1][j-1] * B [l-1][j-1] == 1:
+                if B[k-1][j-1] * B[l-1][j-1] == 1:
                     z[j, k, l] = m.addVar(vtype='B', name=f"z[%s,%s,%s]" % (j, k, l))
                     m.addConstr(z[j,k,l], "<=", y[j, k])
                     m.addConstr(z[j,k,l], "<=", y[j, l])
                     m.addConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
                     z_sum += z[j,k,l]
                     m.update()
-    constraint3 = m.addConstr(z_sum, gp.GRB.LESS_EQUAL, beta)
+    m.addConstr(z_sum, "<=", beta)
     m.update()
 
     # z_sum_2 = 0
@@ -134,7 +132,7 @@ def ILP_linear(filename):
     # make an array of the names of used variables
     vars_used = []
     for i in range(len(x_values)):
-        if x_values[i] == 1.0:
+        if x_values[i] == 1.0 and y_values[i].getAttr("VarName")[0] != 'z':
             vars_used.append(y_values[i].getAttr("VarName"))
 
     # sort the array alphabetically

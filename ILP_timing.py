@@ -14,8 +14,8 @@ import timeit
 # negligible speedup for large values of n or N with small values of K
 # 17735.92% speedup for 39_clusters.txt on a singular execution
 
-filename = "test_txt_files/100n_7K_100N_15a_1b.txt"
-test_count = 100
+filename = "test_txt_files/250n_7K_250N_80a_1b.txt"
+test_count = 3
 
 generalized_time = timeit.timeit(f'a.ILP(\"{filename}\")', setup="import ILP_gurobi_generalized as a", number=test_count)
 concise_time = timeit.timeit(f'b.ILP_concise(\"{filename}\")',  setup="import ILP_gurobi_generalized_concise as b", number=test_count)

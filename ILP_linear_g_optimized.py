@@ -114,5 +114,28 @@ def ILP_linear_g(filename):
 
 
     m.optimize()
-    m.printAttr("X")
+
+    # get the values of variables
+    x_values = m.getAttr("X")
+    y_values = m.getVars()
+
+    # make an array of the names of used variables
+    vars_used = []
+    for i in range(len(x_values)):
+        if x_values[i] == 1.0:
+            vars_used.append(y_values[i].getAttr("VarName"))
+
+    # sort the array alphabetically
+    vars_used.sort()
+
+    output_string = ""
+    # print the values of the solution that equal one
+    print("Solution:\n---------------------------")
+    for var in vars_used:
+        # use a temp variable to only output the variable's name rather than the k value
+        temp = var.split()
+        output_string += f"{temp[1]} = 1\n"
     # return m.getAttr("X")
+
+    print(output_string)
+    return output_string
