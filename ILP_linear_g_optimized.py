@@ -54,7 +54,7 @@ def ILP_linear_g(filename):
     y= {}
     for j in range(1, N+1):
         for k in range(1, K+1):
-            y[j,k] = m.addVar(vtype='B', name="y[%s,%s]"%(j,k))
+            y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
     m.update()
 
     # Objective function is to minimize the sum of the variables in A

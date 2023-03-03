@@ -3,6 +3,7 @@
 # generation script for minimum descriptor problems
 
 import random
+import math
 
 # request: input total number of tags, total number of data items, total number of clusters,
 # max tags/data item
@@ -12,11 +13,40 @@ import random
 # min_tags (the min number of tags per item)
 # min_items (the minimum number of items per cluster, item count permitting)
 # percent_overlap (the percentage of overlap between items, ranging from 0 to 100)
+#            this means that, in the set, this percentage or more of items will
+#            have at least one overlapping tag
 def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items, percent_overlap):
     # assigns the first line of the output file
     output_s = f"{n} {K} {N} {alpha} {beta}\n"
     # auto-generate the file name
     filename = f"{n}n_{K}K_{N}N_{alpha}a_{beta}b"
+    # generate a list of chance values for the overlapping items
+    overlapping_items = random.choices(range(0, 100), k=n)
+
+    overlap_count = 0
+    # count the number of overlapping items
+    for i in range(n):
+        if overlapping_items[i] < percent_overlap:
+            overlap_count += 1
+
+    # if the number of overlaps is less than the desired amount
+    if (overlap_count/n < percent_overlap/100):
+        # store the number of items that need to be 'fixed'
+        fix_count = math.floor((percent_overlap*n/100)) - overlap_count
+        while fix_count > 0:
+            # generate a random index
+            index = random.randint(0, n-1)
+            change = False
+            # while no item has been changed
+            while not change:
+                # if the item is not going to overlap, correct it to overlap
+                if overlapping_items[index] > percent_overlap:
+                        overlapping_items[index] = 0
+                        fix_count -= 1
+                        change = True
+                # if there is a collision, increment the index to be changed
+                else:
+                    index += 1
 
     k_used = {} # used to store which clusters have items in them
     previous_tags = random.sample(range(0, N-1),
@@ -51,8 +81,8 @@ def generate(n, K, N, alpha, beta, max_tags, min_tags, min_items, percent_overla
             if tag in previous_tags:
                 overlap += 1
 
-        # correct output to make overlap occur about 10% of the time
-        if overlap == 0 and (random.randint(1, 100) <= percent_overlap):
+        # correct output to make overlap occur the specified amount of the time or more
+        if overlap == 0 and (overlapping_items[i] < percent_overlap):
             used_tags[random.randint(0, len(used_tags)-1)] \
                 = previous_tags[random.randint(0, len(previous_tags)-1)]
 

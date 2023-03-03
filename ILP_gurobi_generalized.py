@@ -35,7 +35,7 @@ def ILP(filename):
     y= {}
     for j in range(1, N+1):
         for k in range(1, K+1):
-            y[j,k] = m.addVar(vtype='B', name="y[%s,%s]"%(j,k))
+            y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
     m.update()
 
     #Objective function is to minimize the sum of the variables in A
@@ -97,7 +97,25 @@ def ILP(filename):
 
     # print("-------------------------------------------\nSolution:")
     #
-    m.printAttr("X")
+    # get the values of variables
+    x_values = m.getAttr("X")
+    y_values = m.getVars()
+
+    # make an array of the names of used variables
+    vars_used = []
+    for i in range(len(x_values)):
+        if x_values[i] == 1.0:
+            vars_used.append(y_values[i].getAttr("VarName"))
+
+    # sort the array alphabetically
+    vars_used.sort()
+
+    # print the values of the solution that equal one
+    print("Solution:\n---------------------------")
+    for var in vars_used:
+        # use a temp variable to only output the variable's name rather than the k value
+        temp = var.split()
+        print(f"{temp[1]} = 1")
 
     #
     # print(f"Optimal objective value: {m.objVal}")

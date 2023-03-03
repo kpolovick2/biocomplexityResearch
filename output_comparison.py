@@ -1,3 +1,8 @@
+# William Bradford
+# wcb8ze
+# ____ NOT WORKING YET ____
+# comparison of output between files
+
 import ILP_gurobi_generalized_concise as ILP
 
 def compare(file_a, file_b, p):

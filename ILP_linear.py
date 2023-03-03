@@ -52,7 +52,7 @@ def ILP_linear(filename):
     y= {}
     for j in range(1, N+1):
         for k in range(1, K+1):
-            y[j,k] = m.addVar(vtype='B', name="y[%s,%s]"%(j,k))
+            y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
     m.update()
 
     # Objective function is to minimize the sum of the variables in A
@@ -102,12 +102,13 @@ def ILP_linear(filename):
     for k in range(1, K):
         for l in range(k + 1, K + 1):
             for j in range(1, N + 1):
-                z[j, k, l] = m.addVar(vtype='B', name=f"z[%s,%s,%s]"%(j,k,l))
-                m.addConstr(z[j,k,l], "<=", y[j, k])
-                m.addConstr(z[j,k,l], "<=", y[j, l])
-                m.addConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
-                z_sum += z[j,k,l]
-                m.update()
+                if B[k-1][j-1] * B [l-1][j-1] == 1:
+                    z[j, k, l] = m.addVar(vtype='B', name=f"z[%s,%s,%s]" % (j, k, l))
+                    m.addConstr(z[j,k,l], "<=", y[j, k])
+                    m.addConstr(z[j,k,l], "<=", y[j, l])
+                    m.addConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
+                    z_sum += z[j,k,l]
+                    m.update()
     constraint3 = m.addConstr(z_sum, gp.GRB.LESS_EQUAL, beta)
     m.update()
 
@@ -125,7 +126,30 @@ def ILP_linear(filename):
 
 
     m.optimize()
-    m.printAttr("X")
+
+    # get the values of variables
+    x_values = m.getAttr("X")
+    y_values = m.getVars()
+
+    # make an array of the names of used variables
+    vars_used = []
+    for i in range(len(x_values)):
+        if x_values[i] == 1.0:
+            vars_used.append(y_values[i].getAttr("VarName"))
+
+    # sort the array alphabetically
+    vars_used.sort()
+
+    output_string = ""
+    # print the values of the solution that equal one
+    print("Solution:\n---------------------------")
+    for var in vars_used:
+        # use a temp variable to only output the variable's name rather than the k value
+        temp = var.split()
+        output_string += f"{temp[1]} = 1\n"
     # return m.getAttr("X")
 
-# ILP_linear("test_txt_files/4x14.txt")
+    print(output_string)
+    return output_string
+
+# ILP_linear("test_txt_files/example_2.txt")
