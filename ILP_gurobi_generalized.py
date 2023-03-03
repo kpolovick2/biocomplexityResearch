@@ -94,18 +94,16 @@ m.update()
 
 #print("Constraint D: ")
 # (d)
-L= 8
-z =[]
+L = (int)(0.5 * K) #what should value of L be?
+z = []
 for j in range(1, N):
     for k in range(1, L):
-        for l in range(L,K):
-            if(y[j,k]==0 or y[j,l]==0):
-                z[j, k, l] = 0
-                m.addConstr(z[j,k,l], gp.GRB.LESS_EQUAL, y[j,k])
+        for l in range(L+1, K):
+            if (y[j, k] == 0 or y[j, l] == 0):
+                m.addConstr(z[j, k, l], gp.GRB.LESS_EQUAL, y[j, k])
                 m.addConstr(z[j, k, l], gp.GRB.LESS_EQUAL, y[j, l])
-            elif(y[j,k]==1 or y[j,l]==1):
-                z[j, k, l] = 1
-                m.addConstr(z[j, k, l], gp.GRB.GREATER_EQUAL, y[j,k]+y[j,l]-1)
+            elif (y[j, k] == 1 or y[j, l] == 1):
+                m.addConstr(z[j, k, l], gp.GRB.GREATER_EQUAL, y[j, k] + y[j, l] - 1)
 #print("------------------------")
 
 m.optimize()

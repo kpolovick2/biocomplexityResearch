@@ -96,7 +96,7 @@ def ILP_concise(filename):
     z=[]
     for j in range(1, N):
         for k in range(1, L):
-            for l in range(L,K):
+            for l in range(L+1,K):
                 if(y[j,k]==0 or y[j,l]==0):
                     m.addConstr(z[j,k,l], gp.GRB.LESS_EQUAL, y[j,k])
                     m.addConstr(z[j, k, l], gp.GRB.LESS_EQUAL, y[j, l])
