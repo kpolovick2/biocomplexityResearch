@@ -138,8 +138,6 @@ def ILP_concise(filename):
         output_string += f"{temp[1]} = 1\n"
     # return m.getAttr("X")
 
-    # TODO: add implementation for outputting the above in descriptor notation
-
     print(output_string)
     return output_string
     # return m.getAttr("X")

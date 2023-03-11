@@ -26,10 +26,13 @@ def add(arr1, arr2):
 
 def ILP_linear(filename):
 
+    # open the data set file
     with open(filename) as f:
         input = f.read()
 
+    # remove new lines from the data set
     input.replace("\n", "")
+    # split input file on spaces
     input_array = input.split()
     n = int(input_array[0])  # number of data items
     K = int(input_array[1])  # number of clusters
@@ -37,11 +40,16 @@ def ILP_linear(filename):
     alpha = int(input_array[3])  # maximum size of descriptor for each item
     beta = int(input_array[4])  # maximum overlap
 
+    # create an empty array to store B values
     B = []
+    # create an empty array to store cluster values corresponding to data items
     clusters = []
     for i in range(n):
+        # create a new line in the B matrix
         B.append([])
+        # add the cluster value corresponding to the data item to the array
         clusters.append(int(input_array[i * (N + 2) + 6]))
+        # append tags to the new line in the B array
         for j in range(N):
             B[i].append(int(input_array[i*(N+2)+7+j]))
 
@@ -69,8 +77,10 @@ def ILP_linear(filename):
     constraint1 = []
     for i in range(1,n+1):
         for j in range(1,N+1):
+            # find the k value
             k = clusters[i-1]
             if B[i - 1][j - 1] == 1:
+                # add the constraint that a descriptor must describe each data item within the cluster
                 A[i] += y[j, k]
         constraint1.append(m.addConstr(A[i], ">=", 1))
         m.update()
@@ -80,11 +90,9 @@ def ILP_linear(filename):
 
     # print("Constraint B: ")
     # (b) size of each descriptor must be at most alpha --ALL GOOD
-    columns = []                                # set up the columns array for later use in part C
     coef = [1 for j in range(1, N + 1)]
     for k in range(1, K+1):
         var = [y[j, k] for j in range(1, N+1)]
-        columns.append(var)
         constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
         # print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
@@ -110,19 +118,6 @@ def ILP_linear(filename):
     m.addConstr(z_sum, "<=", beta)
     m.update()
 
-    # z_sum_2 = 0
-    # internal_sum = columns[K-1]
-    # for k in range(K-1, 0, -1):
-    #     z_sum_2 += dot(columns[k-1], internal_sum)
-    #     internal_sum = add(columns[k-1], internal_sum)
-    #
-    # constraint3 = m.addConstr(z_sum_2, gp.GRB.LESS_EQUAL, beta)
-    # m.Params.PreQLinearize = 2
-    # m.update()
-    # print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
-    # print("------------------------")
-
-
     m.optimize()
 
     # get the values of variables
@@ -132,11 +127,21 @@ def ILP_linear(filename):
     # make an array of the names of used variables
     vars_used = []
     for i in range(len(x_values)):
+        # if the value of the variable is 1.0, include it in the array if the variable is a z variable, exclude it
         if x_values[i] == 1.0 and y_values[i].getAttr("VarName")[0] != 'z':
             vars_used.append(y_values[i].getAttr("VarName"))
 
     # sort the array alphabetically
     vars_used.sort()
+
+    # create an array of descriptors
+    D = [[] for i in range(K+1)]
+
+    for var in vars_used:
+        k = var.split()
+        j = int(k[1].split("[")[1].split(",")[0])
+        i = int(k[0].split("=")[1])
+        D[i].append(j)
 
     output_string = ""
     # print the values of the solution that equal one
@@ -148,6 +153,14 @@ def ILP_linear(filename):
     # return m.getAttr("X")
 
     print(output_string)
+
+    print("Descriptors:\n---------------------------")
+    print(f"Descriptor format:"
+          f"\nD_k : [tags in a comma separated list]")
+    for k in range(1, K+1):
+        D[k].sort()
+        print(f"D_{k} : {D[k]}")
+
     return output_string
 
 # ILP_linear("test_txt_files/example_2.txt")
