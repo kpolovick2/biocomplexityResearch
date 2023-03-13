@@ -57,16 +57,16 @@ def ILP_linear_g(filename):
             y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
     m.update()
 
-    # Objective function is to minimize the sum of the variables in A
+    # Objective function is to minimize the sum of the y[j,k] variables
     coef = [1 for j in range(1, N+1) for k in range(1,K+1)]
     var = [y[j, k] for j in range(1, N+1) for k in range(1,K+1)]
-    objective = m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
+    m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
+
 
     # CONSTRAINTS
 
-    # print("Constraint A: ")
-    #(a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
+    #(a) must contain at least one tag from each of the data items in that cluster
     A = [0 for c in range(n+1)]
     constraint1 = []
     for i in range(1,n+1):
@@ -76,12 +76,8 @@ def ILP_linear_g(filename):
                 A[i] += y[j, k]
         constraint1.append(m.addConstr(A[i], ">=", 1))
         m.update()
-    #     print(f"{m.getRow(constraint1[i - 1])} {constraint1[i - 1].Sense} {constraint1[i - 1].RHS}")
-    #
-    # print("------------------------")
 
-    # print("Constraint B: ")
-    #(b) size of each descriptor must be at most alpha --ALL GOOD
+    #(b) size of each descriptor must be at most alpha
     columns = []                                # set up the columns array for later use in part C
     coef = [1 for j in range(1, N + 1)]
     for k in range(1, K+1):
@@ -89,13 +85,8 @@ def ILP_linear_g(filename):
         columns.append(var)
         constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
-        # print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
 
-    # print("------------------------")
-    #
-    # print("Constraint C: ")
-
-    # (c) overlap between any pair of descriptors must be at most beta --ALL GOOD
+    # (c) overlap between any pair of descriptors must be at most beta
     # this version of the algorithm uses vector operations (dot product and add)
     # to build constraint c asymptotically faster than the alternative
 
@@ -109,8 +100,6 @@ def ILP_linear_g(filename):
     # use gurpbo presolve to linearize the c constraint
     m.Params.PreQLinearize = 2
     m.update()
-    # print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
-    # print("------------------------")
 
 
     m.optimize()
@@ -135,7 +124,6 @@ def ILP_linear_g(filename):
         # use a temp variable to only output the variable's name rather than the k value
         temp = var.split()
         output_string += f"{temp[1]} = 1\n"
-    # return m.getAttr("X")
 
     print(output_string)
     return output_string
