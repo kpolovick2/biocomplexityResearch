@@ -27,6 +27,7 @@ def add(arr1, arr2):
 # takes a file as an argument and finds the minimum descriptor of the file using integer quadratic programming
 def ILP_concise(filename):
 
+
     with open(filename) as f:
         input = f.read()
 
