@@ -14,13 +14,22 @@ def sample_with_exclusion(lower, upper, exclude, n):
     return random.sample(list(s), n)
 
 
-# generate a synthetic data set from its worst-case descriptors
+# a function that generates a minimum descriptor data set from:
+# n
+# K
+# N
+# alpha
+# beta
+# min_tags - the minimum number of tags that a data item can have
+# max_tags - the maximum number of tags that a data item can have
+# min_items - the minimum number of items that a cluster can have
+# max_items - the maximum number of items that a cluster can have
 def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
     # generate a synthetic descriptor set
     D = generate_descriptors(K, N, alpha, beta)
 
     # make an empty B matrix
-    B = [[0 for i in range(n)] for j in range(N)]
+    B = [[0 for i in range(N)] for j in range(n)]
     clusters = []
 
     # calculate K / n to ensure roughly even assignment of cluster values
@@ -36,8 +45,15 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
     # with the designated k value
     for i in range(K):
         # generate a number of items to add to the cluster. ensure that this value is between the max_tags value
-        for j in range(random.choice(range(max(n_over_K - variance, min_items),
-                                           min(n_over_K + variance + 1, max_items)))):
+        items_in_cluster = random.choice(range(max(n_over_K - variance, min_items),
+                            min(n_over_K + variance + 1, max_items)))
+
+        # if adding this number of items to the cluster would prevent every
+        # cluster from having an item, set items_in_cluster to 1
+        if (K - len(clusters) - items_in_cluster) / (K - i) < 1:
+            items_in_cluster = 1
+        # fill the clusters array
+        for j in range(items_in_cluster):
             clusters.append(i + 1)
 
     # make a list of tags that cannot be used to ensure that there is a solution
@@ -54,6 +70,7 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
     for i in range(n):
         # get the k value of the item
         k = clusters[i]
+
         # assign a random tag from the descriptor equal to 1
         B[i][random.choice(D[k - 1]) - 1] = 1
 
@@ -67,7 +84,7 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
         # check bounds
         if num_tags > 0:
             # take a random sample of tags to include
-            tags_to_add = sample_with_exclusion(0, N, unusable_tags, num_tags)
+            tags_to_add = sample_with_exclusion(0, N, [], num_tags)
             # set the tags values to 1
             for tag in tags_to_add:
                 row[tag] = 1
@@ -97,24 +114,31 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
     return output_text
 
 
+# removes tags from a set of usable tags
 def remove_tags(usable_tags, used_tags):
     # cast the lists to sets, then subtract them
     s = set(usable_tags) - set(used_tags)
     # return the list of the resulting set
     return list(s)
 
+
+# a function that generates a set of descriptors given K, N, alpha, and beta
 def generate_descriptors(K, N, alpha, beta):
+    # create an empty set of descriptors
     D = [[] for i in range(K)]
 
+    # make a list containing every tag
     usable_tags = list(range(1, N+1))
-    use_count = [beta for i in range(N)]
-
-    tags_used = []
 
     # generate descriptors
     for i in range(len(D)):
         # generate a number of tags for the selected descriptor
         num_tags = random.choice(range(1, alpha+1))
+
+        # check to make sure that the remaining number of tags
+        # can still be assigned to a cluster with the given alpha value
+        if (len(usable_tags) - num_tags) / (K-i) < 1:
+            num_tags = 1
         # set the current descriptor to be a random sample of the usable tags
         descriptor = random.sample(usable_tags, min(num_tags, len(usable_tags)))
 
@@ -122,26 +146,40 @@ def generate_descriptors(K, N, alpha, beta):
         usable_tags = remove_tags(usable_tags, descriptor)
         # assign the index of D to the descriptor
         D[i] = descriptor
-        for tag in descriptor:
-            tags_used.append(tag)
 
+    # create an array to store if a tag in a descriptor has been updated
     already_overlapping = [[False for i in range(len(D[j]))] for j in range(len(D))]
 
     # correct to ensure beta overlap
     for b in range(beta):
+        # choose a random descriptor
         x = random.choice(range(len(D)))
+        # choose a random tag from that descriptor
         y = random.choice(range(len(D[x])))
+        # set the overlapping tag value to be the chosen tag from the chosen descriptor
         overlapping_tag = D[x][y]
+        # make a temp variable to store if a change has been made
         change_made = False
+
+        # while no change has been made
         while not change_made:
+            # choose a random descriptor
             xx = random.choice(range(len(D)))
+            # choose a random tag from that descriptor
             yy = random.choice(range(len(D[xx])))
+
+            # if the overlapping tag is not equal to the selected tag,
+            #       they are not from the same descriptor,
+            #       and the tag has not already been updated
             if not overlapping_tag == D[xx][yy] and x != xx and not already_overlapping[xx][yy]:
+                # change the tag to be equal to the overlap tag
                 D[xx][yy] = overlapping_tag
+                # store that this tag was updated
                 already_overlapping[xx][yy] = True
+                # change temp variable to exit the loop
                 change_made = True
     return D
 
 
 # D, n, K, N, min_tags, max_tags
-print(generate(n=10, K=3, N=10, alpha=4, beta=1, min_tags=1, max_tags=5, min_items=2, max_items=5))
+print(generate(n=10000, K=20, N=25, alpha=2, beta=1, min_tags=1, max_tags=4, min_items=350, max_items=650))
