@@ -169,7 +169,7 @@ def ILP_linear(filename):
         # sort the descriptor in order of increasing tag number
         D[k].sort()
         # print the descriptor in the format specified in the print statement above
-        print(f"D_{k} : {D[k]}")
+        print(f"D_{k} : size {len(D[k])} : {D[k]}")
 
     return output_string
 
