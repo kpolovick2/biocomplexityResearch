@@ -20,20 +20,22 @@ def sample_with_exclusion(lower, upper, exclude, n):
 # N
 # alpha
 # beta
+# min_alpha - the minimum number of tags that can be in a descriptor
 # min_tags - the minimum number of tags that a data item can have
 # max_tags - the maximum number of tags that a data item can have
 # min_items - the minimum number of items that a cluster can have
 # max_items - the maximum number of items that a cluster can have
-def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
+# percent_overlap - the expected value of the percentage of items that are permitted to have overlap with other items
+def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max_items, percent_overlap):
     # generate a synthetic descriptor set
-    D = generate_descriptors(K, N, alpha, beta)
+    D = generate_descriptors(K, N, alpha, beta, min_alpha)
 
     # make an empty B matrix
     B = [[0 for i in range(N)] for j in range(n)]
     clusters = []
 
     # calculate K / n to ensure roughly even assignment of cluster values
-    n_over_K = math.floor(n / K)
+    n_over_k = math.floor(n / K)
     # make a variance value that affects the number of items that are assigned to each cluster
     variance = 0
     # if n >= 10, make variance the floor of n/10
@@ -45,8 +47,8 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
     # with the designated k value
     for i in range(K):
         # generate a number of items to add to the cluster. ensure that this value is between the max_tags value
-        items_in_cluster = random.choice(range(max(n_over_K - variance, min_items),
-                            min(n_over_K + variance + 1, max_items)))
+        items_in_cluster = random.choice(range(max(n_over_k - variance, min_items),
+                                               min(n_over_k + variance + 1, max_items)))
 
         # if adding this number of items to the cluster would prevent every
         # cluster from having an item, set items_in_cluster to 1
@@ -71,11 +73,17 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
         # get the k value of the item
         k = clusters[i]
 
-        # assign a random tag from the descriptor equal to 1
+        # assign a random tag from the corresponding descriptor equal to 1
         B[i][random.choice(D[k - 1]) - 1] = 1
 
+    # create a list of unusable tags within a given cluster
+    unusable_tags_within_k = [unusable_tags for i in range(K)]
+    # previous_tags = []
     # iterate over the set of data items and assign tags
-    for row in B:
+    for i in range(len(B)):
+        row = B[i]
+        k = clusters[i]
+
         # generate a number of tags for the data item to have
         num_tags = random.choice(range(min_tags - 1, max_tags))
         # generate the tags to add by selecting from a range of tag values
@@ -84,10 +92,14 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
         # check bounds
         if num_tags > 0:
             # take a random sample of tags to include
-            tags_to_add = sample_with_exclusion(0, N, [], num_tags)
+            tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k-1], num_tags)
+            # update the unusable tags within this cluster
+            if random.choice(range(100)) > percent_overlap:
+                unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]) - set(tags_to_add))
             # set the tags values to 1
             for tag in tags_to_add:
                 row[tag] = 1
+            # previous_tags = tags_to_add
 
     # commented print statements
     # for i in range(n):
@@ -100,7 +112,7 @@ def generate(n, K, N, alpha, beta, min_tags, max_tags, min_items, max_items):
     # append each line of the B matrix to the string
     for i in range(len(B)):
         # prepend the item and cluster numbers
-        output_text += f"{i+1} {clusters[i]} "
+        output_text += f"{i + 1} {clusters[i]} "
         for j in range(len(B[i])):
             # add each B value
             output_text += f"{B[i][j]} "
@@ -123,21 +135,21 @@ def remove_tags(usable_tags, used_tags):
 
 
 # a function that generates a set of descriptors given K, N, alpha, and beta
-def generate_descriptors(K, N, alpha, beta):
+def generate_descriptors(K, N, alpha, beta, min_alpha=1):
     # create an empty set of descriptors
     D = [[] for i in range(K)]
 
     # make a list containing every tag
-    usable_tags = list(range(1, N+1))
+    usable_tags = list(range(1, N + 1))
 
     # generate descriptors
     for i in range(len(D)):
         # generate a number of tags for the selected descriptor
-        num_tags = random.choice(range(1, alpha+1))
+        num_tags = random.choice(range(min_alpha, alpha + 1))
 
         # check to make sure that the remaining number of tags
         # can still be assigned to a cluster with the given alpha value
-        if (len(usable_tags) - num_tags) / (K-i) < 1:
+        if (len(usable_tags) - num_tags) / (K - i) < 1:
             num_tags = 1
         # set the current descriptor to be a random sample of the usable tags
         descriptor = random.sample(usable_tags, min(num_tags, len(usable_tags)))
@@ -178,8 +190,10 @@ def generate_descriptors(K, N, alpha, beta):
                 already_overlapping[xx][yy] = True
                 # change temp variable to exit the loop
                 change_made = True
+    print(D)
     return D
 
 
 # D, n, K, N, min_tags, max_tags
-print(generate(n=10000, K=20, N=25, alpha=2, beta=1, min_tags=1, max_tags=4, min_items=350, max_items=650))
+generate(n=10000, K=35, N=40, alpha=2, beta=1, min_alpha=2, min_tags=4, max_tags=9, min_items=20,
+         max_items=35, percent_overlap=15)

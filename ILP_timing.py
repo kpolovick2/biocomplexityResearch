@@ -35,7 +35,7 @@ import timeit
 # TODO: document running time of generation and solving separately
 #               run on n=1000, n=10000, n=100000
 
-filename = "test_txt_files/10000n_20K_25N_2a_1b.txt"
+filename = "test_txt_files/10000n_35K_40N_2a_1b.txt"
 test_count = 1
 
 generalized_time = timeit.timeit(f'a.ILP(\"{filename}\")', setup="import ILP_gurobi_generalized as a", number=test_count)
