@@ -14,7 +14,28 @@ import timeit
 # negligible speedup for large values of n or N with small values of K
 # 17735.92% speedup for 39_clusters.txt on a singular execution
 
-filename = "test_txt_files/250n_7K_250N_80a_1b.txt"
+# ------------- Timing on 1000n_20K_20N_250a_200b.txt --------------
+# Testing done on Intel i9-9880H CPU @ 2.30 GHz
+# Generalized: 24.8271618 seconds per execution
+# -------------------------
+# Concise: 25.1950017 seconds per execution
+# 0.9854002827870418 speedup factor
+# -------------------------
+# Gurobi Linearized: 25.7550016 seconds per execution
+# 0.9639743839115117 speedup factor
+# -------------------------
+# Linearized: 3.6334454999999934 seconds per execution
+# 6.83295285425364 speedup factor
+
+# ------------- Timing on 1000n_20K_20N_250a_200b.txt --------------
+# Testing done on Intel i9-9880H CPU @ 2.30 GHz
+# Generalized did not terminate after multiple hours of execution
+# Linearized: 1.2935439 seconds per execution
+
+# TODO: document running time of generation and solving separately
+#               run on n=1000, n=10000, n=100000
+
+filename = "test_txt_files/10000n_35K_40N_2a_1b.txt"
 test_count = 1
 
 generalized_time = timeit.timeit(f'a.ILP(\"{filename}\")', setup="import ILP_gurobi_generalized as a", number=test_count)

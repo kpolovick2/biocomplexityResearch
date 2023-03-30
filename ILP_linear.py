@@ -9,7 +9,7 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 
-
+# compute the dot product of two arrays (as if they were vectors)
 def dot(arr1, arr2):
     answer = 0
     for i in range(len(arr1)):
@@ -17,6 +17,7 @@ def dot(arr1, arr2):
     return answer
 
 
+# compute an array that stores the sums of the ith array elements at index i
 def add(arr1, arr2):
     answer = []
     for i in range(len(arr1)):
@@ -138,28 +139,37 @@ def ILP_linear(filename):
     D = [[] for i in range(K+1)]
 
     for var in vars_used:
+        # split the string on the space between the k value at the beginning and the y
         k = var.split()
+        # assign j to be the tag value
         j = int(k[1].split("[")[1].split(",")[0])
+        # assign i to be the k value of the string
         i = int(k[0].split("=")[1])
+        # add the tag number to the corresponding descriptor
         D[i].append(j)
 
+    # create an empty output string
     output_string = ""
     # print the values of the solution that equal one
     print("Solution:\n---------------------------")
     for var in vars_used:
         # use a temp variable to only output the variable's name rather than the k value
         temp = var.split()
+        # append the variable to the output string
         output_string += f"{temp[1]} = 1\n"
     # return m.getAttr("X")
 
     print(output_string)
 
+    # output the descriptors and descriptor format
     print("Descriptors:\n---------------------------")
     print(f"Descriptor format:"
           f"\nD_k : [tags in a comma separated list]")
     for k in range(1, K+1):
+        # sort the descriptor in order of increasing tag number
         D[k].sort()
-        print(f"D_{k} : {D[k]}")
+        # print the descriptor in the format specified in the print statement above
+        print(f"D_{k} : size {len(D[k])} : {D[k]}")
 
     return output_string
 
