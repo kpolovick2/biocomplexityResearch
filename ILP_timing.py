@@ -35,21 +35,21 @@ import timeit
 # TODO: document running time of generation and solving separately
 #               run on n=1000, n=10000, n=100000
 
-filename = "test_txt_files/10000n_35K_40N_2a_1b.txt"
+filename = "test_txt_files/eshop_example.txt"
 test_count = 1
 
-generalized_time = timeit.timeit(f'a.ILP(\"{filename}\")', setup="import ILP_gurobi_generalized as a", number=test_count)
+# generalized_time = timeit.timeit(f'a.ILP(\"{filename}\")', setup="import ILP_gurobi_generalized as a", number=test_count)
 concise_time = timeit.timeit(f'b.ILP_concise(\"{filename}\")',  setup="import ILP_gurobi_generalized_concise as b", number=test_count)
 g_linearized_time = timeit.timeit(f'c.ILP_linear_g(\"{filename}\")', setup="import ILP_linear_g_optimized as c", number=test_count)
 linearized_time = timeit.timeit(f'd.ILP_linear(\"{filename}\")', setup="import ILP_linear as d", number=test_count)
 
-print(f"Generalized: {generalized_time/test_count} seconds per execution")
+# print(f"Generalized: {generalized_time/test_count} seconds per execution")
 print("-------------------------")
 print(f"Concise: {concise_time/test_count} seconds per execution")
-print(f"{generalized_time/concise_time} speedup factor")
+# print(f"{generalized_time/concise_time} speedup factor")
 print("-------------------------")
 print(f"Gurobi Linearized: {g_linearized_time/test_count} seconds per execution")
-print(f"{generalized_time/g_linearized_time} speedup factor")
+# print(f"{generalized_time/g_linearized_time} speedup factor")
 print("-------------------------")
 print(f"Linearized: {linearized_time/test_count} seconds per execution")
-print(f"{generalized_time/linearized_time} speedup factor")
+# print(f"{generalized_time/linearized_time} speedup factor")

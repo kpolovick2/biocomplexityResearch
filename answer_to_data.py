@@ -93,7 +93,7 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         if num_tags > 0:
             # take a random sample of tags to include
             tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k-1], num_tags)
-            # update the unusable tags within this cluster
+            # update the unusable tags within this cluster if the random number is above the percent_overlap
             if random.choice(range(100)) > percent_overlap:
                 unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]) - set(tags_to_add))
             # set the tags values to 1
