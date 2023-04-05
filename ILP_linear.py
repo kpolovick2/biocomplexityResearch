@@ -5,7 +5,7 @@
 
 # changes: make gurobi output in order of k value instead of j
 
-from gurobipy import LinExpr, QuadExpr
+from gurobipy import LinExpr
 
 import gurobipy as gp
 
@@ -169,7 +169,9 @@ def ILP_linear(filename):
         # sort the descriptor in order of increasing tag number
         D[k].sort()
         # print the descriptor in the format specified in the print statement above
-        print(f"D_{k} : size {len(D[k])} : {D[k]}")
+        descriptor = f"D_{k} : size {len(D[k])} : {D[k]}"
+        output_string += f"{descriptor} \n"
+        print(descriptor)
 
     return output_string
 
