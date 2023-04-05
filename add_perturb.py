@@ -4,6 +4,28 @@
 
 import random, math, os, shutil
 
+def parse_dataset(filepath):
+    # open the dataset
+    with open(filepath) as dataset:
+        file_in = dataset.read()
+
+    # split the input on new lines
+    rows = file_in.split("\n")
+    # create an empty data array
+    data = []
+    # for each row in the input
+    for row in rows:
+        # split the data on spaces
+        data.append(row.split())
+
+    # for each row in data
+    for row in data:
+        # split the data on spaces to get tags
+        for i in range(len(row)):
+            row[i] = int(row[i])
+
+    return data
+
 
 def generate_deltas(clusters, percent_added, random_percent, cluster_index, N):
     delta = ""
@@ -38,24 +60,8 @@ def generate_deltas(clusters, percent_added, random_percent, cluster_index, N):
 #       - iteration_number: the number of the current iteration (for text file generation purposes)
 #       - random_percent: adds a tag to a random number of items in a cluster if true
 def random_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
-    # open the dataset
-    with open(filepath) as dataset:
-        file_in = dataset.read()
 
-    # split the input on new lines
-    rows = file_in.split("\n")
-    # create an empty data array
-    data = []
-    # for each row in the input
-    for row in rows:
-        # split the data on spaces
-        data.append(row.split())
-
-    # for each row in data
-    for row in data:
-        # split the data on spaces to get tags
-        for i in range(len(row)):
-            row[i] = int(row[i])
+    data = parse_dataset(filepath)
 
     # assign parameters
     n = int(data[0][0])
@@ -173,4 +179,3 @@ def random_single_cluster(filepath, percent_added, iteration_number, random_perc
     beta = data[0][4]
 
 
-random_all_clusters("test_txt_files/9x28.txt", 50, 3, True)
