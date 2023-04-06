@@ -2,93 +2,76 @@
 # wcb8ze
 # contains methods for perturbing datasets
 
-import random, math, os, shutil
-
-def parse_dataset(filepath):
-    # open the dataset
-    with open(filepath) as dataset:
-        file_in = dataset.read()
-
-    # split the input on new lines
-    rows = file_in.split("\n")
-    # create an empty data array
-    data = []
-    # for each row in the input
-    for row in rows:
-        # split the data on spaces
-        data.append(row.split())
-
-    # for each row in data
-    for row in data:
-        # split the data on spaces to get tags
-        for i in range(len(row)):
-            row[i] = int(row[i])
-
-    return data
+# this file includes imports of random, math, os, and shutil
+from perturb_utilities import *
 
 
-def generate_deltas(clusters, percent_added, random_percent, cluster_index, N):
-    delta = ""
+# a helper function that adds a random tag to every cluster
+# parameters:
+#       - clusters: a list of clusters
+#       - percent_added: the percent of items in the cluster that should be added
+#       - random_percent: a boolean that allows the previous parameter to be ignored in favor of a random percentage
+#       - cluster_index: a list that tracks what item number an item within a cluster is
+#       - N: the N value of the overall problem
+#       - delta: a string that will contain the changed tags and their item numbers
+def add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta):
     # for each cluster
     for i, cluster in enumerate(clusters):
-        # choose a tag to add to the cluster
-        tag = random.choice(range(N))
-        # find the number of items in the cluster
-        cluster_size = len(cluster)
-        # perturb at most percent_added percent of the cluster
-        if cluster_size == 0:
-            num_items_perturbed = 0
-        elif random_percent:
-            num_items_perturbed = random.choice(range(1, cluster_size + 1))
-        else:
-            num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
-        # decide which items will be perturbed
-        items_perturbed = random.sample(range(cluster_size), num_items_perturbed)
-        # iterate through the items to be perturbed
-        for index in items_perturbed:
-            # add the tag
-            cluster[index][tag] = 1
-            print(f"added tag {tag + 1} in item {index} of cluster {i}, item {cluster_index[i][index]}")
-            delta += f"{cluster_index[i][index]}, {tag + 1} \n"
+        # add a single random tag to the cluster
+        delta = add_single_random(N, cluster, random_percent, percent_added, cluster_index, delta, i)
     return delta
 
 
-# perturbs a dataset by adding a tag
+# a helper function that adds a random tag to a single cluster
 # parameters:
-#       - filepath: a path to the perturbed file being converted
-#       - percent_added: the percent of items in each cluster that will be perturbed
-#       - iteration_number: the number of the current iteration (for text file generation purposes)
-#       - random_percent: adds a tag to a random number of items in a cluster if true
-def random_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
+#       - clusters: a list of clusters
+#       - percent_added: the percent of items in the cluster that should be added
+#       - random_percent: a boolean that allows the previous parameter to be ignored in favor of a random percentage
+#       - cluster_index: a list that tracks what item number an item within a cluster is
+#       - N: the N value of the overall problem
+#       - delta: a string that will contain the changed tags and their item numbers
+#       - current_cluster: an int that tracks the cluster that is being perturbed
+def add_single_random(N, cluster, random_percent, percent_added, cluster_index, delta, current_cluster):
+    # choose a tag to add to the cluster
+    tag = random.choice(range(N))
+    # find the number of items in the cluster
+    cluster_size = len(cluster)
+    # perturb at most percent_added percent of the cluster
+    if cluster_size == 0:
+        # if the cluster is empty (which should only happen in the 0 cluster), do not perturb any tags
+        num_items_perturbed = 0
+    elif random_percent:
+        # if random_percent is true, then pick a random number of tags to perturb
+        num_items_perturbed = random.choice(range(1, cluster_size + 1))
+    else:
+        # if random_percent is false, find the percentage of the items in the cluster to be perturbed
+        num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
+    # decide exactly which items will be perturbed
+    items_perturbed = random.sample(range(cluster_size), num_items_perturbed)
+    # iterate through the items to be perturbed
+    for index in items_perturbed:
+        # if the tag is not already in the item
+        if cluster[index][tag] != 1:
+            # add the tag
+            cluster[index][tag] = 1
+            print(f"added tag {tag + 1} in item {index} of cluster {current_cluster}, item "
+                  f"{cluster_index[current_cluster][index]}")
+            # note which data item was given which tag
+            delta += f"{cluster_index[current_cluster][index]}, {tag + 1} \n"
+    return delta
 
-    data = parse_dataset(filepath)
 
-    # assign parameters
-    n = int(data[0][0])
-    K = int(data[0][1])
-    N = int(data[0][2])
-    alpha = data[0][3]
-    beta = data[0][4]
-
-    # create a list of lists containing each item in the cluster at index i
-    clusters = [[] for i in range(K + 1)]
-    # for each cluster
-    cluster_index = [[] for i in range(K+1)]
-    for i in range(1, n + 1):
-        # append the item in the cluster (formatted as such to avoid issues with ordering)
-        #                                (the 2 is to exclude the item number and cluster number)
-        clusters[int(data[i][1])].append(data[i][2:])
-        cluster_index[int(data[i][1])].append(data[i][0])
-
-    # generate the deltas based on the added tags
-    delta = generate_deltas(clusters, percent_added, random_percent, cluster_index, N)
-
-    # generate a deltas file
-    with open(f"perturb_testing/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
-        # write the output file
-        f.write(delta)
-    print("------------------")
-
+# a helper function that generates an output file from a set of data
+# parameters:
+#       - n
+#       - K
+#       - N
+#       - alpha
+#       - beta
+#       - clusters: a list of clusters and the items they contain
+#       - dataset_name: the name of the dataset
+#       - iteration_number: the current iteration number
+def output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
     # generate the first line of the output file
     output_string = f"{n} {K} {N} {alpha} {beta} \n"
     # use a temporary counter
@@ -113,6 +96,45 @@ def random_all_clusters_internal(filepath, percent_added, iteration_number, rand
         f.write(output_string)
 
 
+# a helper function that returns the n, K, N, alpha, and beta values of the set
+# parameters:
+#       - data
+def return_parameters(data):
+    return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]
+
+
+# perturbs a dataset by adding a tag
+# parameters:
+#       - filepath: a path to the perturbed file being converted
+#       - percent_added: the percent of items in each cluster that will be perturbed
+#       - iteration_number: the number of the current iteration (for text file generation purposes)
+#       - random_percent: adds a tag to a random number of items in a cluster if true
+def random_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
+
+    # parse the dataset
+    data = parse_dataset(filepath)
+
+    # use variables to point to parameters in the output file
+    n, K, N, alpha, beta = return_parameters(data)
+
+    # convert data into clustered
+    clusters, cluster_index = convert_clusters(data)
+
+    # create an empty string
+    delta = ""
+    # generate the deltas based on the added tags
+    delta = add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta)
+
+    # generate a deltas file
+    with open(f"perturb_testing/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write to the deltas file
+        f.write(delta)
+    print("------------------")
+
+    # generate the output file for the perturbed dataset
+    output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+
+
 # the main function that generates several perturbed data sets
 # parameters:
 #       - filepath: the path to the file to perturb
@@ -124,23 +146,7 @@ def random_all_clusters(filepath, percent_added, number_generated, random_percen
     # file setup section
     # ------------------------------------
 
-    # split the filepath to get the name of the dataset
-    filepath_split = filepath.split("/")
-    # find the name of the dataset
-    dataset_name = filepath_split[len(filepath_split) - 1].split(".")[0]
-
-    # if the path to the testing folder does not exist, create the necessary directories
-    if not os.path.exists(f"perturb_testing/{dataset_name}/"):
-        # create directory
-        os.makedirs(f"perturb_testing/{dataset_name}/")
-
-    # if the path to the testing folder does not exist, create the necessary directories
-    if not os.path.exists(f"perturb_testing/{dataset_name}_delta/"):
-        # create directory
-        os.makedirs(f"perturb_testing/{dataset_name}_delta/")
-
-    # copy the original file to the perturb testing directory
-    shutil.copy(filepath, f"perturb_testing/{dataset_name}/")
+    dataset_name = setup_directories(filepath)
 
     # ------------------------------------
     # execution section
@@ -151,31 +157,44 @@ def random_all_clusters(filepath, percent_added, number_generated, random_percen
         random_all_clusters_internal(filepath, percent_added, i, random_percent, dataset_name)
 
 
-def random_single_cluster(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
-    # open the dataset
-    with open(filepath) as dataset:
-        file_in = dataset.read()
+# perturb a single cluster with
+def random_single_cluster(filepath, percent_added, number_generated, random_percent, cluster):
+    # ------------------------------------
+    # file setup section
+    # ------------------------------------
 
-    # split the input on new lines
-    rows = file_in.split("\n")
-    # create an empty data array
-    data = []
-    # for each row in the input
-    for row in rows:
-        # split the data on spaces
-        data.append(row.split())
+    dataset_name = setup_directories(filepath)
 
-    # for each row in data
-    for row in data:
-        # split the data on spaces to get tags
-        for i in range(len(row)):
-            row[i] = int(row[i])
-
-    # assign parameters
-    n = int(data[0][0])
-    K = int(data[0][1])
-    N = int(data[0][2])
-    alpha = data[0][3]
-    beta = data[0][4]
+    # ------------------------------------
+    # execution section
+    # ------------------------------------
+    # generate number_generated perturbed datasets
+    for i in range(1, number_generated + 1):
+        # generation function
+        random_single_cluster_internal(filepath, percent_added, i, random_percent, dataset_name, cluster)
 
 
+def random_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
+
+    # parse the dataset
+    data = parse_dataset(filepath)
+
+    # use variables to point to parameters in the output file
+    n, K, N, alpha, beta = return_parameters(data)
+
+    # convert data into clustered
+    clusters, cluster_index = convert_clusters(data)
+
+    # create an empty delta string
+    delta = ""
+    # generate the deltas based on the added tags
+    delta = add_single_random(N, clusters[cluster], random_percent, percent_added, cluster_index, delta, cluster)
+
+    # generate a deltas file
+    with open(f"perturb_testing/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write the output file
+        f.write(delta)
+    print("------------------")
+
+    # generate the final output file of the perturbed data set
+    output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
