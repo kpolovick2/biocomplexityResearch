@@ -199,3 +199,10 @@ def random_single_cluster_internal(filepath, percent_added, iteration_number, ra
 
     # generate the final output file of the perturbed data set
     output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+
+#applying functions to example txt files
+random_all_clusters_internal("test_txt_files/4x14.txt", 50, 1, True, "test_txt_files/4x14.txt")
+print("--------------------------------------------")
+random_all_clusters("test_txt_files/4x14.txt", 80, 2, 50)
+print("--------------------------------------------")
+random_single_cluster_internal("test_txt_files/4x14.txt", 50, 1, 50, 1)
