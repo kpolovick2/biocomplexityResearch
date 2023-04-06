@@ -157,7 +157,7 @@ def random_all_clusters(filepath, percent_added, number_generated, random_percen
         random_all_clusters_internal(filepath, percent_added, i, random_percent, dataset_name)
 
 
-# perturb a single cluster with
+# perturb a single cluster, use a random amount of tags
 def random_single_cluster(filepath, percent_added, number_generated, random_percent, cluster):
     # ------------------------------------
     # file setup section
@@ -174,6 +174,7 @@ def random_single_cluster(filepath, percent_added, number_generated, random_perc
         random_single_cluster_internal(filepath, percent_added, i, random_percent, dataset_name, cluster)
 
 
+# helper function to perturb a single cluster with a random amount of tags
 def random_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
 
     # parse the dataset

@@ -2,7 +2,7 @@
 # wcb8ze
 # contains utilities for perturbing data sets
 
-import random, math, os, shutil
+import random, math, os, shutil, re
 
 
 # a helper function that converts a synthetic data file into list form
@@ -19,15 +19,8 @@ def parse_dataset(filepath):
     data = []
     # for each row in the input
     for row in rows:
-        # split the data on spaces to form columns
-        data.append(row.split())
-
-    # for each row in data
-    for row in data:
-        # for each number in the row
-        for i in range(len(row)):
-            # cast the number to an int (from a string)
-            row[i] = int(row[i])
+        # split the data on spaces to form columns, cast to integer as well
+        data.append([int(tag) for tag in row.split()])
 
     return data
 
@@ -55,10 +48,8 @@ def convert_clusters(data):
 # parameters:
 #       - filepath: the path to the dataset
 def setup_directories(filepath):
-    # split the filepath to get the name of the dataset
-    filepath_split = filepath.split("/")
-    # find the name of the dataset
-    dataset_name = filepath_split[len(filepath_split) - 1].split(".")[0]
+    # find the name of the dataset using a regular expression
+    dataset_name = re.findall(r'(?<=\/).*?(?=\.)', filepath)
 
     # if the path to the testing folder does not exist, create the necessary directories
     if not os.path.exists(f"perturb_testing/{dataset_name}/"):
