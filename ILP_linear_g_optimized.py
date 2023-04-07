@@ -153,3 +153,5 @@ print("----------------------------------")
 print("DELETION OF TAGS: 10 data items, 4 clusters (delete 1 tags from data item 1)")
 print("----------------------------------")
 ILP_linear_g("test_txt_files/4x14_deletion_of_tags.txt")
+
+#all 3 (unchanged, addition, deletion) results in 8 tags being used to describe the 4 clusters
