@@ -31,10 +31,11 @@ def check(solution_string, filename):
     # initialize array to store tags of the solution
     tags_by_cluster = [[] for i in range(K+1)]
 
-    #split the output into a usable format
+    # split the output into a usable format
     y_strings = solution_string.split("\n")
     for y in y_strings:
-        if y != "":
+        # ignore empty strings and reformatted descriptor strings
+        if y != "" and y[0] != "D":
             half = y.split(",")
             tag = half[0].split("[")[1]
             cluster = half[1].split("]")[0]
@@ -59,7 +60,7 @@ def check(solution_string, filename):
             print(f"Tag not found for data item {i+1} in cluster {current_k}, solution not valid.")
             return False
         else:
-            print(f"All tags found for data item {i+1} in cluster {current_k}.")
+            print(f"Tags found for data item {i+1} in cluster {current_k}.")
 
     print("\nAll data items are covered.\n")
 
@@ -107,4 +108,4 @@ def check(solution_string, filename):
     return True
 
 # check(ilp_G.ILP_concise("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")
-check(ilp_L.ILP_linear("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")
+check(ilp_L.ILP_linear("dataset_perturbing/perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt"), "dataset_perturbing/perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt")

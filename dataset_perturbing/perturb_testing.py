@@ -2,7 +2,9 @@
 # wcb8ze
 # central perturb testing file
 
-import add_perturb, descriptor_comparison
+import add_perturb
+import delete_perturb
+import descriptor_comparison
 
 dataset = "10n_1K_20N_4a_1b"
 

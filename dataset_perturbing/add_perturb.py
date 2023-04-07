@@ -1,6 +1,6 @@
 # William Bradford
 # wcb8ze
-# contains methods for perturbing datasets
+# contains methods for perturbing datasets by adding tags
 
 # this file includes imports of random, math, os, and shutil
 from perturb_utilities import *
@@ -59,48 +59,6 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
             # note which data item was given which tag
             delta += f"{cluster_index[current_cluster][index]}, {tag + 1} \n"
     return delta
-
-
-# a helper function that generates an output file from a set of data
-# parameters:
-#       - n
-#       - K
-#       - N
-#       - alpha
-#       - beta
-#       - clusters: a list of clusters and the items they contain
-#       - dataset_name: the name of the dataset
-#       - iteration_number: the current iteration number
-def output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
-    # generate the first line of the output file
-    output_string = f"{n} {K} {N} {alpha} {beta} \n"
-    # use a temporary counter
-    item_number = 1
-    # for each cluster
-    for i in range(0, len(clusters)):
-        # for each item in the cluster
-        for item in clusters[i]:
-            # add the item number and cluster to that line
-            output_string += f"{item_number} {i} "
-            # increment item_number
-            item_number += 1
-            for tag in item:
-                # add each tag
-                output_string += f"{tag} "
-            # add a new line to the output string
-            output_string += "\n"
-
-    # create a new text file to store the perturbed tag set
-    with open(f"perturb_data/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
-        # write the output file
-        f.write(output_string)
-
-
-# a helper function that returns the n, K, N, alpha, and beta values of the set
-# parameters:
-#       - data
-def return_parameters(data):
-    return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]
 
 
 # perturbs a dataset by adding a tag
