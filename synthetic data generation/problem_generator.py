@@ -144,5 +144,5 @@ def parameter_crunch(n):
 
 
 # n, K, N, alpha, beta, max_tags, min_tags, min_max, min_items, max_items, percent_overlap
-generate(n=10000, K=20, N=20, alpha=250, beta=2000 , max_tags=15, min_tags=3, min_max=1, min_items=25, max_items=501,
+generate(n=10, K=1, N=20, alpha=4, beta=1 , max_tags=15, min_tags=3, min_max=1, min_items=20, max_items=20,
          percent_overlap=0)

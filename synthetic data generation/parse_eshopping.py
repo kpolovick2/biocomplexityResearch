@@ -7,7 +7,7 @@ session_ids_by_item = []
 # creat an empty list that will store an item's clothing model at each index
 clothing_models_by_item = []
 # open the csv file
-with open('e-shop clothing 2008.csv', encoding='utf8') as shopping:
+with open('../test_txt_files/e-shop clothing 2008.csv', encoding='utf8') as shopping:
     # read the csv file
     csv_data = csv.reader(shopping, delimiter=';')
     # for each row in the csv file
@@ -56,5 +56,5 @@ for row in body:
         output_string += f"{number} "
     output_string += "\n"
 
-with open(f"test_txt_files/eshop_example.txt", 'w') as f:
+with open(f"../test_txt_files/eshop_example.txt", 'w') as f:
     f.write(output_string)
