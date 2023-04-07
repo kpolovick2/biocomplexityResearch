@@ -49,19 +49,19 @@ def convert_clusters(data):
 #       - filepath: the path to the dataset
 def setup_directories(filepath):
     # find the name of the dataset using a regular expression
-    dataset_name = re.findall(r'(?<=\/).*?(?=\.)', filepath)
+    dataset_name = re.findall(r'(?<=test_txt_files\/).*?(?=\.txt)', filepath)[0]
 
     # if the path to the testing folder does not exist, create the necessary directories
-    if not os.path.exists(f"perturb_testing/{dataset_name}/"):
+    if not os.path.exists(f"perturb_data/{dataset_name}/"):
         # create directory
-        os.makedirs(f"perturb_testing/{dataset_name}/")
+        os.makedirs(f"perturb_data/{dataset_name}/")
 
     # if the path to the testing folder does not exist, create the necessary directories
-    if not os.path.exists(f"perturb_testing/{dataset_name}_delta/"):
+    if not os.path.exists(f"perturb_data/{dataset_name}_delta/"):
         # create directory
-        os.makedirs(f"perturb_testing/{dataset_name}_delta/")
+        os.makedirs(f"perturb_data/{dataset_name}_delta/")
 
     # copy the original file to the perturb testing directory
-    shutil.copy(filepath, f"perturb_testing/{dataset_name}/")
+    shutil.copy(filepath, f"perturb_data/{dataset_name}/")
 
     return dataset_name

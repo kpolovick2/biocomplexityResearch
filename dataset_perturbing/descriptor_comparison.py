@@ -2,8 +2,11 @@
 # wcb8ze
 # contains methods for comparing the minimum descriptors of datasets
 
-import ILP_linear as solver
-import os, re
+import os
+import re
+
+import ILP_linear as ilp_solve
+
 
 # takes in a descriptor set D and converts it into an array of arrays of integers
 def string_descriptor_to_array(D):
@@ -20,31 +23,32 @@ def string_descriptor_to_array(D):
             # split the tags into a list
             descriptor = d_re[0].split(", ")
             # add the list in array form to the array of arrays
-            descriptors.append(descriptor)
+            descriptors.append([
+                int(tag) for tag in descriptor])
 
     return descriptors
 
 
 # find the descriptors of the given data sets
 # parameter:
-#       - directory: the name of a directory in the perturb_testing folder
+#       - directory: the name of a directory in the perturb_data folder
 def find_descriptors(directory):
     # generate a list of the files to test
-    test_files = os.listdir(f"perturb_testing/{directory}/")
-    delta_files = os.listdir(f"perturb_testing/{directory}_delta/")
+    test_files = os.listdir(f"perturb_data/{directory}/")
+    delta_files = os.listdir(f"perturb_data/{directory}_delta/")
     # create an empty list of solutions
     solutions = []
     # for each data set
     for file in test_files:
         # add each solution to the solutions array
-        solutions.append(solver.ILP_linear(f"perturb_testing/{directory}/{file}"))
+        solutions.append(ilp_solve.ILP_linear(f"perturb_data/{directory}/{file}"))
 
-    # create a empty list of deltas
+    # create an empty list of deltas
     deltas_text = ["" for i in range(len(delta_files))]
     # for each delta
     for i, file in enumerate(delta_files):
         # open the file
-        with open(f"perturb_testing/{directory}_delta/{file}") as f:
+        with open(f"perturb_data/{directory}_delta/{file}") as f:
             # read the file
             deltas_text[i] = f.read()
 
@@ -59,7 +63,7 @@ def find_descriptors(directory):
             # if the delta length is greater than 0
             if len(d) != 0:
                 # split the lines on commas
-                deltas_temp[i] = d.split(", ")
+                deltas_temp[i] = [int(number) for number in d.split(", ")]
         # append the list of deltas, remove last index because it is always empty
         deltas.append(deltas_temp[:len(deltas_temp)-1])
 
@@ -70,27 +74,12 @@ def find_descriptors(directory):
         # append the string form of each descriptor set to the list of descriptor sets
         descriptors.append(string_descriptor_to_array(s))
 
-    # for each delta in the set of deltas
-    for i, delta in enumerate(deltas):
-        # for each number tag pair
-        for j, number_tag in enumerate(delta):
-            # for each number in the pair
-            for k, number in enumerate(number_tag):
-                # cast to an integer
-                deltas[i][j][k] = int(number)
-
     # generate a list of the sizes of each descriptor
     descriptor_sizes = [[len(descriptors[i][j]) for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
 
-    # copy descriptor_sizes one list at a time
-    change_size = [descriptor_sizes[i].copy() for i in range(len(descriptor_sizes))]
-    # for each descriptor set
-    for i, descriptor_set in enumerate(descriptor_sizes):
-        # for each size in the descriptor set
-        for j, size in enumerate(descriptor_set):
-            # the change in size is equal to the size minus
-            # its corresponding element in the first row of the list
-            change_size[i][j] = change_size[i][j] - descriptor_sizes[0][j]
+    # copy the elements of descriptor_sizes at i > 0, then take the difference
+    # between those rows and the first row of descriptor_sizes to obtain the change in sizes
+    change_size = [[item - descriptor_sizes[0][j] for j, item in enumerate(size)] for size in descriptor_sizes]
 
     # copy the descriptors list and call it diff
     # this is done in this manner because it copies the memory address of the internal lists we use descriptors.copy()
@@ -102,7 +91,7 @@ def find_descriptors(directory):
             # for each tag in the descriptor
             for k, tag in enumerate(descriptor):
                 # cast to an int
-                descriptors[i][j][k] = int(tag)
+                descriptors[i][j][k] = tag
                 # set the value in the diff array to the difference between the two tags
                 diff[i][j][k] = descriptors[0][j][k] - descriptors[i][j][k]
 
@@ -120,7 +109,4 @@ def find_descriptors(directory):
                 if change > 0:
                     print(f"Some error is causing cluster {j} of dataset {i} to grow larger")
                 elif change < 0:
-                    print(f"Cluster {j} of the dataset {i} shrinks by {size}")
-
-
-find_descriptors("4x14")
+                    print(f"Cluster {j+1} of the dataset {i} shrinks by {abs(change)}")

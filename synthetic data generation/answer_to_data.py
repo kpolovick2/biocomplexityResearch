@@ -195,5 +195,5 @@ def generate_descriptors(K, N, alpha, beta, min_alpha=1):
 
 
 # D, n, K, N, min_tags, max_tags
-generate(n=10000, K=35, N=40, alpha=2, beta=1, min_alpha=2, min_tags=4, max_tags=9, min_items=20,
-         max_items=35, percent_overlap=15)
+generate(n=15, K=1, N=40, alpha=4, beta=1, min_alpha=4, min_tags=4, max_tags=9, min_items=20,
+         max_items=41, percent_overlap=15)

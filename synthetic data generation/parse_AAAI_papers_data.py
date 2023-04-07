@@ -5,7 +5,7 @@ tags_by_item = []
 # create an empty list that will store an item's topics at each index
 topics_by_item = []
 # open the csv file
-with open('[UCI] AAAI-13 Accepted Papers - Papers.csv', encoding='utf8') as aaai:
+with open('../test_txt_files/[UCI] AAAI-13 Accepted Papers - Papers.csv', encoding='utf8') as aaai:
     # read the csv file
     csv_aaai = csv.reader(aaai, delimiter=',')
     # for each row in the csv file

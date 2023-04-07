@@ -91,7 +91,7 @@ def output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
             output_string += "\n"
 
     # create a new text file to store the perturbed tag set
-    with open(f"perturb_testing/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
+    with open(f"perturb_data/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
         # write the output file
         f.write(output_string)
 
@@ -126,7 +126,7 @@ def random_all_clusters_internal(filepath, percent_added, iteration_number, rand
     delta = add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta)
 
     # generate a deltas file
-    with open(f"perturb_testing/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
         # write to the deltas file
         f.write(delta)
     print("------------------")
@@ -192,7 +192,7 @@ def random_single_cluster_internal(filepath, percent_added, iteration_number, ra
     delta = add_single_random(N, clusters[cluster], random_percent, percent_added, cluster_index, delta, cluster)
 
     # generate a deltas file
-    with open(f"perturb_testing/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
         # write the output file
         f.write(delta)
     print("------------------")
