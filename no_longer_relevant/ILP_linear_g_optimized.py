@@ -9,12 +9,14 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 
+
 # helper function that takes the dot product of two arrays
 def dot(arr1, arr2):
     answer = 0
     for i in range(len(arr1)):
         answer += (arr1[i] * arr2[i])
     return answer
+
 
 # helper function that adds the ith elements of two arrays,
 # then stores the resulting value in another array's ith index
@@ -24,9 +26,9 @@ def add(arr1, arr2):
         answer.append(arr1[i] + arr2[i])
     return answer
 
+
 # takes a file as an argument and finds the minimum descriptor of the file using integer quadratic programming
 def ILP_linear_g(filename):
-
     with open(filename) as f:
         input = f.read()
 
@@ -46,32 +48,32 @@ def ILP_linear_g(filename):
         B.append([])
         clusters.append(int(input_array[i * (N + 2) + 6]))
         for j in range(N):
-            B[i].append(int(input_array[i*(N+2)+7+j]))
+            B[i].append(int(input_array[i * (N + 2) + 7 + j]))
 
     m = gp.Model()
 
-    #create y[j,k] variables
-    y= {}
-    for j in range(1, N+1):
-        for k in range(1, K+1):
-            y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
+    # create y[j,k] variables
+    y = {}
+    for j in range(1, N + 1):
+        for k in range(1, K + 1):
+            y[j, k] = m.addVar(vtype='B', name="k=%s y[%s,%s]" % (k, j, k))
     m.update()
 
     # Objective function is to minimize the sum of the variables in A
-    coef = [1 for j in range(1, N+1) for k in range(1,K+1)]
-    var = [y[j, k] for j in range(1, N+1) for k in range(1,K+1)]
+    coef = [1 for j in range(1, N + 1) for k in range(1, K + 1)]
+    var = [y[j, k] for j in range(1, N + 1) for k in range(1, K + 1)]
     objective = m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
 
     # CONSTRAINTS
 
     # print("Constraint A: ")
-    #(a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
-    A = [0 for c in range(n+1)]
+    # (a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
+    A = [0 for c in range(n + 1)]
     constraint1 = []
-    for i in range(1,n+1):
-        for j in range(1,N+1):
-            k = clusters[i-1]
+    for i in range(1, n + 1):
+        for j in range(1, N + 1):
+            k = clusters[i - 1]
             if B[i - 1][j - 1] == 1:
                 A[i] += y[j, k]
         constraint1.append(m.addConstr(A[i], ">=", 1))
@@ -81,11 +83,11 @@ def ILP_linear_g(filename):
     # print("------------------------")
 
     # print("Constraint B: ")
-    #(b) size of each descriptor must be at most alpha --ALL GOOD
-    columns = []                                # set up the columns array for later use in part C
+    # (b) size of each descriptor must be at most alpha --ALL GOOD
+    columns = []  # set up the columns array for later use in part C
     coef = [1 for j in range(1, N + 1)]
-    for k in range(1, K+1):
-        var = [y[j, k] for j in range(1, N+1)]
+    for k in range(1, K + 1):
+        var = [y[j, k] for j in range(1, N + 1)]
         columns.append(var)
         constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
@@ -100,10 +102,10 @@ def ILP_linear_g(filename):
     # to build constraint c asymptotically faster than the alternative
 
     z_sum_2 = 0
-    internal_sum = columns[K-1]
-    for k in range(K-1, 0, -1):
-        z_sum_2 += dot(columns[k-1], internal_sum)
-        internal_sum = add(columns[k-1], internal_sum)
+    internal_sum = columns[K - 1]
+    for k in range(K - 1, 0, -1):
+        z_sum_2 += dot(columns[k - 1], internal_sum)
+        internal_sum = add(columns[k - 1], internal_sum)
 
     constraint3 = m.addConstr(z_sum_2, gp.GRB.LESS_EQUAL, beta)
     # use gurpbo presolve to linearize the c constraint
@@ -111,7 +113,6 @@ def ILP_linear_g(filename):
     m.update()
     # print(f"{m.getQCRow(constraint3)} {constraint3.QCSense} {constraint3.QCRHS}")
     # print("------------------------")
-
 
     m.optimize()
 
@@ -141,8 +142,6 @@ def ILP_linear_g(filename):
     return output_string
 
 
-
-
 ILP_linear_g("test_txt_files/4x14.txt")
 print("----------------------------------")
 print("ADDITION OF TAGS: 10 data items, 4 clusters (pertubed so that all tags describe data item 1)")
@@ -154,4 +153,4 @@ print("DELETION OF TAGS: 10 data items, 4 clusters (delete 1 tags from data item
 print("----------------------------------")
 ILP_linear_g("test_txt_files/4x14_deletion_of_tags.txt")
 
-#all 3 (unchanged, addition, deletion) results in 8 tags being used to describe the 4 clusters
+# all 3 (unchanged, addition, deletion) results in 8 tags being used to describe the 4 clusters

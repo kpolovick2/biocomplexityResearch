@@ -127,4 +127,15 @@ def ILP_concise(filename):
     print(output_string)
     return output_string
 
-ILP_concise("test_txt_files/[UCI] AAAI-14 Accepted Papers - Papers.csv");
+#ILP_concise("test_txt_files/[UCI] AAAI-14 Accepted Papers - Papers.csv");
+
+ILP_concise("test_txt_files/4x14.txt")
+print("----------------------------------")
+print("ADDITION OF TAGS: 10 data items, 4 clusters (pertubed so that all tags describe data item 1)")
+print("----------------------------------")
+ILP_concise("test_txt_files/4x14_pertubed.txt")
+
+print("----------------------------------")
+print("DELETION OF TAGS: 10 data items, 4 clusters (delete 1 tags from data item 1)")
+print("----------------------------------")
+ILP_concise("test_txt_files/4x14_deletion_of_tags.txt")
