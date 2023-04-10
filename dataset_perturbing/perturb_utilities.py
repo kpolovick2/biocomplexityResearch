@@ -5,10 +5,12 @@
 import random, math, os, shutil, re
 
 
-# a helper function that converts a synthetic data file into list form
-# paramters:
-#       - filepath: the path to the file being parsed
 def parse_dataset(filepath):
+    """
+    a helper function that converts a synthetic data file into list form
+    :param filepath: the path to the file being parsed
+    :return:
+    """
     # open the dataset
     with open(filepath) as dataset:
         file_in = dataset.read()
@@ -25,10 +27,15 @@ def parse_dataset(filepath):
     return data
 
 
-# a helper function that converts input data into clustered form
+#
 # parameters:
 #       - data: the parsed input of a data set
 def convert_clusters(data):
+    """
+    a helper function that converts input data into clustered form
+    :param data: the list form of a dataset
+    :return: a list of lists of items in clusters within the dataset
+    """
     # create an empty list of lists containing each item in the cluster at index i
     clusters = [[] for i in range(data[0][1] + 1)]
     # create an empty list of lists of the same size as the previous list
@@ -43,11 +50,13 @@ def convert_clusters(data):
     return clusters, cluster_index
 
 
-# a helper function that sets up the required directories for a given perturbing test,
-# then returns the name of the dataset based on what the file is called
-# parameters:
-#       - filepath: the path to the dataset
 def setup_directories(filepath):
+    """
+    a helper function that sets up the required directories for a given perturbing test,
+    then returns the name of the dataset based on what the file is called
+    :param filepath: the path to the dataset
+    :return: void, creates directories in the perturb_data folder
+    """
     # find the name of the dataset using a regular expression
     dataset_name = re.findall(r'(?<=test_txt_files\/).*?(?=\.txt)', filepath)[0]
 
@@ -60,6 +69,11 @@ def setup_directories(filepath):
     if not os.path.exists(f"perturb_data/{dataset_name}_delta/"):
         # create directory
         os.makedirs(f"perturb_data/{dataset_name}_delta/")
+
+    # if the path to the testing folder does not exist, create the necessary directories
+    if not os.path.exists(f"perturb_data/{dataset_name}_images/"):
+        # create directory
+        os.makedirs(f"perturb_data/{dataset_name}_images/")
 
     # copy the original file to the perturb testing directory
     shutil.copy(filepath, f"perturb_data/{dataset_name}/")
@@ -84,7 +98,7 @@ def return_parameters(data):
 #       - clusters: a list of clusters and the items they contain
 #       - dataset_name: the name of the dataset
 #       - iteration_number: the current iteration number
-def output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
+def output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
     # generate the first line of the output file
     output_string = f"{n} {K} {N} {alpha} {beta} \n"
     # use a temporary counter
@@ -102,6 +116,19 @@ def output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
                 output_string += f"{tag} "
             # add a new line to the output string
             output_string += "\n"
+
+    # create a new text file to store the perturbed tag set
+    with open(f"perturb_data/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
+        # write the output file
+        f.write(output_string)
+
+
+def output_file_from_data(data, dataset_name, iteration_number):
+    output_string = ""
+    for row in data:
+        for column in row:
+            output_string += f"{column} "
+        output_string += "\n"
 
     # create a new text file to store the perturbed tag set
     with open(f"perturb_data/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:

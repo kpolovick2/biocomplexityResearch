@@ -34,9 +34,18 @@ def remove_single_random(N, cluster, random_percent, percent_added, cluster_inde
             delta += f"{cluster_index[current_cluster][index]}, {tag + 1} \n"
     return delta
 
-# helper function to perturb a single cluster with a random amount of tags
-def random_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
 
+def random_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
+    """
+    helper function to perturb a single cluster with a random amount of tags
+    :param filepath:
+    :param percent_added:
+    :param iteration_number:
+    :param random_percent:
+    :param dataset_name:
+    :param cluster:
+    :return:
+    """
     # parse the dataset
     data = parse_dataset(filepath)
 
@@ -56,7 +65,7 @@ def random_single_cluster_internal(filepath, percent_added, iteration_number, ra
     print("------------------")
 
     # generate the final output file of the perturbed data set
-    output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
 
 
 # perturb a single cluster, use a random amount of tags

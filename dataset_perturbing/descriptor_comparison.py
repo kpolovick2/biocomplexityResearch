@@ -4,12 +4,18 @@
 
 import os
 import re
+from matplotlib import pyplot as plt
+import numpy as np
 
 import ILP_linear as ilp_solve
 
 
-# takes in a descriptor set D and converts it into an array of arrays of integers
 def string_descriptor_to_array(D):
+    """
+    takes in a descriptor set D and converts it into an array of arrays of integers
+    :param D: a list of descriptors (a descriptor set)
+    :return: void
+    """
     # create an empty list of descriptors
     descriptors = []
     # split the descriptors
@@ -29,10 +35,12 @@ def string_descriptor_to_array(D):
     return descriptors
 
 
-# find the descriptors of the given data sets
-# parameter:
-#       - directory: the name of a directory in the perturb_data folder
 def find_descriptors(directory):
+    """
+    find the descriptors of the datasets in the given directory
+    :param directory: the name of the directory within perturb_data
+    :return: void
+    """
     # generate a list of the files to test
     test_files = os.listdir(f"perturb_data/{directory}/")
     delta_files = os.listdir(f"perturb_data/{directory}_delta/")
@@ -95,6 +103,9 @@ def find_descriptors(directory):
                 # set the value in the diff array to the difference between the two tags
                 diff[i][j][k] = descriptors[0][j][k] - descriptors[i][j][k]
 
+    tags_added_count = []
+    changes_count = []
+
     # for each descriptor set
     for i, descriptor_set in enumerate(change_size):
         # skip the first descriptor set because it will not be different from itself
@@ -103,10 +114,31 @@ def find_descriptors(directory):
             # print which tags were added to the dataset
             for j, pair in enumerate(deltas[i-1]):
                 print(f"Tag {pair[1]} added to item {pair[0]}")
+            tags_added = len(deltas[i-1])
             print("Cluster changes:")
+            sum_changes = 0
             # print the changes in the cluster
             for j, change in enumerate(descriptor_set):
+                sum_changes += abs(change)
                 if change > 0:
                     print(f"Some error is causing cluster {j} of dataset {i} to grow larger")
                 elif change < 0:
                     print(f"Cluster {j+1} of the dataset {i} shrinks by {abs(change)}")
+            tags_added_count.append(tags_added)
+            changes_count.append(sum_changes)
+
+    # plot the points of each run of the graph as a
+    # function of reduction in overall solution size over number of tags added
+    plt.plot(tags_added_count, changes_count, 'o', color='#EA9E8D')
+
+    # calculate the slope and y-intercept of the line of best fit
+    m, b = np.polyfit(tags_added_count, changes_count, deg=1)
+    # generate an array of 120 evenly spaced samples of horizontal values
+    x = np.linspace(min(tags_added_count), max(tags_added_count), num=120)
+    # plot the line of best fit
+    plt.plot(x, m*x + b, color="#D64550", lw=2.5)
+    # save a new image in the dataset's images folder
+    plt.savefig(f"perturb_data/{directory}_images/"
+                f"{directory}_{len(os.listdir(f'perturb_data/{directory}_images/'))}.png")
+    # show the plot
+    plt.show()

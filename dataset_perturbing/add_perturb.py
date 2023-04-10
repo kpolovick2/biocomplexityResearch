@@ -6,15 +6,17 @@
 from perturb_utilities import *
 
 
-# a helper function that adds a random tag to every cluster
-# parameters:
-#       - clusters: a list of clusters
-#       - percent_added: the percent of items in the cluster that should be added
-#       - random_percent: a boolean that allows the previous parameter to be ignored in favor of a random percentage
-#       - cluster_index: a list that tracks what item number an item within a cluster is
-#       - N: the N value of the overall problem
-#       - delta: a string that will contain the changed tags and their item numbers
 def add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta):
+    """
+    a helper function that adds a random tag to every cluster
+    :param clusters: a list of clusters
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :param cluster_index: a list that tracks the item numbers of items in the cluster list
+    :param N: the parameter N of the problem
+    :param delta: a string that will contain the changed tags and their strings
+    :return: void
+    """
     # for each cluster
     for i, cluster in enumerate(clusters):
         # add a single random tag to the cluster
@@ -22,16 +24,18 @@ def add_all_random(clusters, percent_added, random_percent, cluster_index, N, de
     return delta
 
 
-# a helper function that adds a random tag to a single cluster
-# parameters:
-#       - clusters: a list of clusters
-#       - percent_added: the percent of items in the cluster that should be added
-#       - random_percent: a boolean that allows the previous parameter to be ignored in favor of a random percentage
-#       - cluster_index: a list that tracks what item number an item within a cluster is
-#       - N: the N value of the overall problem
-#       - delta: a string that will contain the changed tags and their item numbers
-#       - current_cluster: an int that tracks the cluster that is being perturbed
 def add_single_random(N, cluster, random_percent, percent_added, cluster_index, delta, current_cluster):
+    """
+    a helper function that adds a random tag to a single cluster
+    :param N: the parameter N of the problem
+    :param cluster: a list containing data from each item of a cluster
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param cluster_index: a list that tracks the item numbers of items in the cluster list
+    :param delta: a string that will contain the changed tags and their strings
+    :param current_cluster: an int that tracks the cluster that is being perturbed
+    :return:
+    """
     # choose a tag to add to the cluster
     tag = random.choice(range(N))
     # find the number of items in the cluster
@@ -61,14 +65,22 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
     return delta
 
 
-# perturbs a dataset by adding a tag
+#
 # parameters:
 #       - filepath: a path to the perturbed file being converted
 #       - percent_added: the percent of items in each cluster that will be perturbed
 #       - iteration_number: the number of the current iteration (for text file generation purposes)
 #       - random_percent: adds a tag to a random number of items in a cluster if true
 def random_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
-
+    """
+    perturbs a dataset by adding a tag
+    :param filepath: the file path of the dataset
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param iteration_number: the number that should be added to the end of the file's name when generated
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :param dataset_name: the name of the dataset
+    :return: void
+    """
     # parse the dataset
     data = parse_dataset(filepath)
 
@@ -90,16 +102,18 @@ def random_all_clusters_internal(filepath, percent_added, iteration_number, rand
     print("------------------")
 
     # generate the output file for the perturbed dataset
-    output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
 
 
-# the main function that generates several perturbed data sets
-# parameters:
-#       - filepath: the path to the file to perturb
-#       - percent_added: the percentage of each cluster that is to be perturbed
-#       - number_generated: the number perturbed datasets to be generated
-#       - random_percent: adds a tag to a random number of items within each cluster
 def random_all_clusters(filepath, percent_added, number_generated, random_percent):
+    """
+    the main function that generates several perturbed data sets
+    :param filepath: the file path of the dataset
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param number_generated: the number of perturbed datasets to generate
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :return: void
+    """
     # ------------------------------------
     # file setup section
     # ------------------------------------
@@ -115,8 +129,16 @@ def random_all_clusters(filepath, percent_added, number_generated, random_percen
         random_all_clusters_internal(filepath, percent_added, i, random_percent, dataset_name)
 
 
-# perturb a single cluster, use a random amount of tags
 def random_single_cluster(filepath, percent_added, number_generated, random_percent, cluster):
+    """
+    perturbs a single cluster, use a random amount of tags
+    :param filepath: the file path of the dataset
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param number_generated: the number of perturbed datasets to generate
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :param cluster: the cluster to be perturbed
+    :return: void
+    """
     # ------------------------------------
     # file setup section
     # ------------------------------------
@@ -132,9 +154,17 @@ def random_single_cluster(filepath, percent_added, number_generated, random_perc
         random_single_cluster_internal(filepath, percent_added, i, random_percent, dataset_name, cluster)
 
 
-# helper function to perturb a single cluster with a random amount of tags
 def random_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
-
+    """
+    helper function to perturb a single cluster with a random amount of tags
+    :param filepath: the file path of the dataset
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param iteration_number: the number that should be added to the end of the file's name when generated
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :param dataset_name: the name of the dataset
+    :param cluster: the cluster to be perturbed
+    :return: void
+    """
     # parse the dataset
     data = parse_dataset(filepath)
 
@@ -156,4 +186,22 @@ def random_single_cluster_internal(filepath, percent_added, iteration_number, ra
     print("------------------")
 
     # generate the final output file of the perturbed data set
-    output_file(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+
+
+def add_tag_to_item(filepath, item, tag):
+    """
+    Adds one tag to one item in a dataset
+    :param filepath: the file path of the dataset
+    :param item: the item to be perturbed
+    :param tag: the tag to be added
+    :return void
+    """
+    # set up the output directories if they are not already set up
+    dataset_name = setup_directories(filepath)
+    # parse the input dataset
+    data = parse_dataset(filepath)
+    # add the tag to the specified item
+    data[item][tag + 1] = 1
+    # output the file
+    output_file_from_data(data, dataset_name, 0)
