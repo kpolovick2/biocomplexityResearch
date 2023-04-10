@@ -1,6 +1,7 @@
-# William Bradford
-# wcb8ze
-# contains utilities for perturbing data sets
+"""perturb_utilities.py: A set of helper functions for perturbing datasets"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
+
 
 import random, math, os, shutil, re
 
@@ -81,24 +82,28 @@ def setup_directories(filepath):
     return dataset_name
 
 
-# a helper function that returns the n, K, N, alpha, and beta values of the set
-# parameters:
-#       - data
 def return_parameters(data):
+    """
+    a helper function that returns the n, K, N, alpha, and beta values of the set
+    :param data: a dataset in list format
+    :return: the parameters n, K, N, alpha, and beta
+    """
     return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]
 
 
-# a helper function that generates an output file from a set of data
-# parameters:
-#       - n
-#       - K
-#       - N
-#       - alpha
-#       - beta
-#       - clusters: a list of clusters and the items they contain
-#       - dataset_name: the name of the dataset
-#       - iteration_number: the current iteration number
 def output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number):
+    """
+    a helper function that generates an output file from a set of data
+    :param n: n
+    :param K: K
+    :param N: N
+    :param alpha: alpha
+    :param beta: beta
+    :param clusters: a list of clusters and the items they contain
+    :param dataset_name: the name of the dataset
+    :param iteration_number: the current iteration number
+    :return:
+    """
     # generate the first line of the output file
     output_string = f"{n} {K} {N} {alpha} {beta} \n"
     # use a temporary counter
@@ -124,6 +129,13 @@ def output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iter
 
 
 def output_file_from_data(data, dataset_name, iteration_number):
+    """
+    uses a dataset in list format to generate an output file
+    :param data: a dataset in list format
+    :param dataset_name: the name of the dataset
+    :param iteration_number: the number that should be appended to the end of the filename
+    :return: void
+    """
     output_string = ""
     for row in data:
         for column in row:

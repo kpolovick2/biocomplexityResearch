@@ -1,6 +1,6 @@
-# William Bradford
-# wcb8ze
-# contains methods for perturbing datasets by adding tags
+"""add_perturb.py: a set of functions for perturbing a dataset by adding tags"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
 
 # this file includes imports of random, math, os, and shutil
 from perturb_utilities import *

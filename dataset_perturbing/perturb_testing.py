@@ -1,6 +1,6 @@
-# William Bradford
-# wcb8ze
-# central perturb testing file
+"""perturb_testing.py: the main file for executing perturbations of datasets"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
 
 import add_perturb
 import delete_perturb

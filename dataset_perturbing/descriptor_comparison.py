@@ -1,6 +1,6 @@
-# William Bradford
-# wcb8ze
-# contains methods for comparing the minimum descriptors of datasets
+"""descriptor_comparison.py: contains methods for comparing the minimum descriptors of datasets"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
 
 import os
 import re
@@ -91,17 +91,17 @@ def find_descriptors(directory):
 
     # copy the descriptors list and call it diff
     # this is done in this manner because it copies the memory address of the internal lists we use descriptors.copy()
-    diff = [[descriptors[i][j].copy() for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
-    # for each descriptor set in the set of descriptor sets
-    for i, descriptor_set in enumerate(descriptors):
-        # for descriptor in the descriptor set
-        for j, descriptor in enumerate(descriptor_set):
-            # for each tag in the descriptor
-            for k, tag in enumerate(descriptor):
-                # cast to an int
-                descriptors[i][j][k] = tag
-                # set the value in the diff array to the difference between the two tags
-                diff[i][j][k] = descriptors[0][j][k] - descriptors[i][j][k]
+    # diff = [[descriptors[i][j].copy() for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
+    # # for each descriptor set in the set of descriptor sets
+    # for i, descriptor_set in enumerate(descriptors):
+    #     # for descriptor in the descriptor set
+    #     for j, descriptor in enumerate(descriptor_set):
+    #         # for each tag in the descriptor
+    #         for k, tag in enumerate(descriptor):
+    #             # cast to an int
+    #             descriptors[i][j][k] = tag
+    #             # set the value in the diff array to the difference between the two tags
+    #             diff[i][j][k] = descriptors[0][j][k] - descriptors[i][j][k]
 
     tags_added_count = []
     changes_count = []
@@ -126,7 +126,19 @@ def find_descriptors(directory):
                     print(f"Cluster {j+1} of the dataset {i} shrinks by {abs(change)}")
             tags_added_count.append(tags_added)
             changes_count.append(sum_changes)
+    plot_tag_additions(tags_added_count, changes_count, directory)
 
+
+def plot_tag_additions(tags_added_count, changes_count, directory):
+    """
+    a helper function that plots the graph of descriptor changes over tag additions
+    :param tags_added_count: a list that contains the tags added and
+    corresponds to the indexes to changes_count
+    :param changes_count: a list that contains the change in descriptor size
+    and corresponds to the indexes of tags_added-count
+    :param directory: the name of the directory
+    :return: void
+    """
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
     plt.plot(tags_added_count, changes_count, 'o', color='#EA9E8D')
@@ -136,9 +148,10 @@ def find_descriptors(directory):
     # generate an array of 120 evenly spaced samples of horizontal values
     x = np.linspace(min(tags_added_count), max(tags_added_count), num=120)
     # plot the line of best fit
-    plt.plot(x, m*x + b, color="#D64550", lw=2.5)
+    plt.plot(x, m * x + b, color="#D64550", lw=2.5)
     # save a new image in the dataset's images folder
     plt.savefig(f"perturb_data/{directory}_images/"
                 f"{directory}_{len(os.listdir(f'perturb_data/{directory}_images/'))}.png")
+    plt.xlim([3, 16])
     # show the plot
     plt.show()
