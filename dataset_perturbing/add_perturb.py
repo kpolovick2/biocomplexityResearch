@@ -40,18 +40,8 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
     tag = random.choice(range(N))
     # find the number of items in the cluster
     cluster_size = len(cluster)
-    # perturb at most percent_added percent of the cluster
-    if cluster_size == 0:
-        # if the cluster is empty (which should only happen in the 0 cluster), do not perturb any tags
-        num_items_perturbed = 0
-    elif random_percent:
-        # if random_percent is true, then pick a random number of tags to perturb
-        num_items_perturbed = random.choice(range(1, cluster_size + 1))
-    else:
-        # if random_percent is false, find the percentage of the items in the cluster to be perturbed
-        num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
     # decide exactly which items will be perturbed
-    items_perturbed = random.sample(range(cluster_size), num_items_perturbed)
+    items_perturbed = get_items_to_perturb(cluster, random_percent, percent_added)
     # iterate through the items to be perturbed
     for index in items_perturbed:
         # if the tag is not already in the item

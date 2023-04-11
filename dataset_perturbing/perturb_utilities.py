@@ -146,3 +146,41 @@ def output_file_from_data(data, dataset_name, iteration_number):
     with open(f"perturb_data/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
         # write the output file
         f.write(output_string)
+
+
+def get_cluster_tags(cluster):
+    """
+    a helper function to get all tags used within a cluster
+    :param cluster: a cluster in list form
+    :return: a list of tags that are used within the dataset (indexing at 0)
+    """
+    tags = []
+    for item in cluster:
+        for i, tag in enumerate(item):
+            if tag == 1 and i not in tags:
+                tags.append(i)
+    return tags
+
+
+def get_items_to_perturb(cluster, random_percent, percent_added):
+    """
+    a helper function that returns a list of items to perturb
+    :param cluster: a cluster in list form
+    :param random_percent: a boolean determining whether the percent of items perturbed is random
+    :param percent_added: a percent (0-100) of the items in the cluster that should be perturbed
+    :return: a list of items to be perturbed
+    """
+    cluster_size = len(cluster)
+    # perturb at most percent_added percent of the cluster
+    if cluster_size == 0:
+        # if the cluster is empty (which should only happen in the 0 cluster), do not perturb any tags
+        num_items_perturbed = 0
+    elif random_percent:
+        # if random_percent is true, then pick a random number of tags to perturb
+        num_items_perturbed = random.choice(range(1, cluster_size + 1))
+    else:
+        # if random_percent is false, find the percentage of the items in the cluster to be perturbed
+        num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
+    # decide exactly which items will be perturbed
+    items_perturbed = random.sample(range(cluster_size), num_items_perturbed)
+    return items_perturbed

@@ -35,7 +35,7 @@ def string_descriptor_to_array(D):
     return descriptors
 
 
-def find_descriptors(directory):
+def find_descriptors_added(directory):
     """
     find the descriptors of the datasets in the given directory
     :param directory: the name of the directory within perturb_data
