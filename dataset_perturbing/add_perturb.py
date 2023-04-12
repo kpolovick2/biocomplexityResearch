@@ -1,5 +1,5 @@
 """add_perturb.py: a set of functions for perturbing a dataset by adding tags"""
-__author__ = "William Bradford"
+__author__ = "William Bradford, Keara Polovick"
 __email__ = "wcb8ze@virginia.edu"
 
 # this file includes imports of random, math, os, and shutil
@@ -55,12 +55,6 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
     return delta
 
 
-#
-# parameters:
-#       - filepath: a path to the perturbed file being converted
-#       - percent_added: the percent of items in each cluster that will be perturbed
-#       - iteration_number: the number of the current iteration (for text file generation purposes)
-#       - random_percent: adds a tag to a random number of items in a cluster if true
 def random_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
     """
     perturbs a dataset by adding a tag

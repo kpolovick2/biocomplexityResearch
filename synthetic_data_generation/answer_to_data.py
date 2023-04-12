@@ -1,6 +1,6 @@
-# William Bradford
-# wcb8ze
-# generation script for minimum descriptor problems
+"""answer_to_data.py: generates synthetic data sets that always have solutions"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
 
 import random
 import math
