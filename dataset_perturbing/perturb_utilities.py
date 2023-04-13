@@ -6,6 +6,34 @@ __email__ = "wcb8ze@virginia.edu"
 import random, math, os, shutil, re
 
 
+def mat2_row_sum(matrix):
+    """
+    a helper function that sums the rows of a 2D list, do not use with lists of differing lengths
+    :param matrix: a 2d matrix (list of lists with uniform length)
+    :return: a list containing the sum of all rows in the input matrix
+    """
+    if len(matrix) != 0:
+        row_sum = [0 for i in range(len(matrix[0]))]
+
+        for row in matrix:
+            for i, number in enumerate(row):
+                row_sum[i] += number
+        return row_sum
+    else:
+        return [0]
+
+
+def find_most_used_tag(cluster):
+    """
+    a helper function to find the most used tag in a cluster
+    :param cluster: a cluster in list of lists form
+    :return: the tag that is used most frequently in the cluster
+    """
+    row_sum = mat2_row_sum(cluster)
+    print(row_sum.index(max(row_sum)))
+    return row_sum.index(max(row_sum))
+
+
 def parse_dataset(filepath):
     """
     a helper function that converts a synthetic data file into list form

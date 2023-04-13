@@ -4,8 +4,11 @@ __email__ = "wcb8ze@virginia.edu"
 
 import os
 import re
+
+import scipy as scipy
 from matplotlib import pyplot as plt
 import numpy as np
+import scipy
 
 import ILP_linear as ilp_solve
 
@@ -114,8 +117,10 @@ def find_descriptors_added(directory):
             # print which tags were added to the dataset
             for j, pair in enumerate(deltas[i-1]):
                 print(f"Tag {pair[1]} added to item {pair[0]}")
+            # store the number of tags added
             tags_added = len(deltas[i-1])
             print("Cluster changes:")
+            # create a variable to store the total number of changes relative to the original dataset
             sum_changes = 0
             # print the changes in the cluster
             for j, change in enumerate(descriptor_set):
@@ -139,12 +144,13 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     :param directory: the name of the directory
     :return: void
     """
+
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
     plt.plot(tags_added_count, changes_count, 'o', color='#EA9E8D')
 
     # calculate the slope and y-intercept of the line of best fit
-    m, b = np.polyfit(tags_added_count, changes_count, deg=1)
+    m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
     # generate an array of 120 evenly spaced samples of horizontal values
     x = np.linspace(min(tags_added_count), max(tags_added_count), num=120)
     # plot the line of best fit
@@ -152,6 +158,16 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     # save a new image in the dataset's images folder
     plt.savefig(f"perturb_data/{directory}_images/"
                 f"{directory}_{len(os.listdir(f'perturb_data/{directory}_images/'))}.png")
-    plt.xlim([3, 16])
+
+    # use the following calculations to calculate the bounds of the graph
+    upper_x = max(tags_added_count) + 1
+    lower_x = min(tags_added_count) - 1
+    upper_y = max(changes_count) + 1
+    lower_y = min(changes_count) - 1
+
+    print(r_value)
+
+    plt.xlim([lower_x, upper_x])
+    plt.ylim([lower_y, upper_y])
     # show the plot
     plt.show()
