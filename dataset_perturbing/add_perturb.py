@@ -2,8 +2,8 @@
 __author__ = "William Bradford, Keara Polovick"
 __email__ = "wcb8ze@virginia.edu"
 
-# this file includes imports of random, math, os, and shutil
-from perturb_utilities import *
+# includes imports of random, math, os, and shutil
+from add_multitag import *
 
 
 def add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta):
@@ -20,7 +20,8 @@ def add_all_random(clusters, percent_added, random_percent, cluster_index, N, de
     # for each cluster
     for i, cluster in enumerate(clusters):
         # add a single random tag to the cluster
-        delta = add_single_random(N, cluster, random_percent, percent_added, cluster_index, delta, i)
+        delta = add_single_random(
+            N, cluster, random_percent, percent_added, cluster_index, delta, i)
     return delta
 
 
@@ -41,7 +42,8 @@ def add_single_most_common(N, cluster, random_percent, percent_added, cluster_in
     # find the number of items in the cluster
     cluster_size = len(cluster)
     # decide exactly which items will be perturbed
-    items_perturbed = get_items_to_perturb(cluster, random_percent, percent_added)
+    items_perturbed = get_items_to_perturb(
+        cluster, random_percent, percent_added)
     # iterate through the items to be perturbed
     for index in items_perturbed:
         # if the tag is not already in the item
@@ -72,7 +74,8 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
     # find the number of items in the cluster
     cluster_size = len(cluster)
     # decide exactly which items will be perturbed
-    items_perturbed = get_items_to_perturb(cluster, random_percent, percent_added)
+    items_perturbed = get_items_to_perturb(
+        cluster, random_percent, percent_added)
     # iterate through the items to be perturbed
     for index in items_perturbed:
         # if the tag is not already in the item
@@ -108,7 +111,8 @@ def __random_all_clusters_internal(filepath, percent_added, iteration_number, ra
     # create an empty string
     delta = ""
     # generate the deltas based on the added tags
-    delta = add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta)
+    delta = add_all_random(clusters, percent_added,
+                           random_percent, cluster_index, N, delta)
 
     # generate a deltas file
     with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
@@ -117,7 +121,8 @@ def __random_all_clusters_internal(filepath, percent_added, iteration_number, ra
     print("------------------")
 
     # generate the output file for the perturbed dataset
-    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta,
+                              clusters, dataset_name, iteration_number)
 
 
 def random_all_clusters(filepath, percent_added, number_generated, random_percent):
@@ -141,7 +146,8 @@ def random_all_clusters(filepath, percent_added, number_generated, random_percen
     # generate number_generated perturbed datasets
     for i in range(1, number_generated + 1):
         # generation function
-        __random_all_clusters_internal(filepath, percent_added, i, random_percent, dataset_name)
+        __random_all_clusters_internal(
+            filepath, percent_added, i, random_percent, dataset_name)
 
 
 def most_common_all_clusters(filepath, percent_added, number_generated, random_percent):
@@ -165,7 +171,8 @@ def most_common_all_clusters(filepath, percent_added, number_generated, random_p
     # generate number_generated perturbed datasets
     for i in range(1, number_generated + 1):
         # generation function
-        __most_common_all_clusters_internal(filepath, percent_added, i, random_percent, dataset_name)
+        __most_common_all_clusters_internal(
+            filepath, percent_added, i, random_percent, dataset_name)
 
 
 def random_single_cluster(filepath, percent_added, number_generated, random_percent, cluster):
@@ -190,7 +197,8 @@ def random_single_cluster(filepath, percent_added, number_generated, random_perc
     # generate number_generated perturbed datasets
     for i in range(1, number_generated + 1):
         # generation function
-        __random_single_cluster_internal(filepath, percent_added, i, random_percent, dataset_name, cluster)
+        __random_single_cluster_internal(
+            filepath, percent_added, i, random_percent, dataset_name, cluster)
 
 
 def most_common_single_cluster(filepath, percent_added, number_generated, random_percent, cluster):
@@ -215,7 +223,8 @@ def most_common_single_cluster(filepath, percent_added, number_generated, random
     # generate number_generated perturbed datasets
     for i in range(1, number_generated + 1):
         # generation function
-        __most_common_single_cluster_internal(filepath, percent_added, i, random_percent, dataset_name, cluster)
+        __most_common_single_cluster_internal(
+            filepath, percent_added, i, random_percent, dataset_name, cluster)
 
 
 def __most_common_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
@@ -241,7 +250,8 @@ def __most_common_single_cluster_internal(filepath, percent_added, iteration_num
     # create an empty delta string
     delta = ""
     # generate the deltas based on the added tags
-    delta = add_single_most_common(N, clusters[cluster], random_percent, percent_added, cluster_index, delta, cluster)
+    delta = add_single_most_common(
+        N, clusters[cluster], random_percent, percent_added, cluster_index, delta, cluster)
 
     # generate a deltas file
     with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
@@ -250,7 +260,8 @@ def __most_common_single_cluster_internal(filepath, percent_added, iteration_num
     print("------------------")
 
     # generate the final output file of the perturbed data set
-    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta,
+                              clusters, dataset_name, iteration_number)
 
 
 def __random_single_cluster_internal(filepath, percent_added, iteration_number, random_percent, dataset_name, cluster):
@@ -276,7 +287,8 @@ def __random_single_cluster_internal(filepath, percent_added, iteration_number, 
     # create an empty delta string
     delta = ""
     # generate the deltas based on the added tags
-    delta = add_single_random(N, clusters[cluster], random_percent, percent_added, cluster_index, delta, cluster)
+    delta = add_single_random(
+        N, clusters[cluster], random_percent, percent_added, cluster_index, delta, cluster)
 
     # generate a deltas file
     with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
@@ -285,7 +297,8 @@ def __random_single_cluster_internal(filepath, percent_added, iteration_number, 
     print("------------------")
 
     # generate the final output file of the perturbed data set
-    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta,
+                              clusters, dataset_name, iteration_number)
 
 
 def __most_common_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
@@ -310,7 +323,8 @@ def __most_common_all_clusters_internal(filepath, percent_added, iteration_numbe
     # create an empty string
     delta = ""
     # generate the deltas based on the added tags
-    delta = add_all_most_common(clusters, percent_added, random_percent, cluster_index, N, delta)
+    delta = add_all_most_common(
+        clusters, percent_added, random_percent, cluster_index, N, delta)
 
     # generate a deltas file
     with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
@@ -319,7 +333,8 @@ def __most_common_all_clusters_internal(filepath, percent_added, iteration_numbe
     print("------------------")
 
     # generate the output file for the perturbed dataset
-    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
+    output_file_from_clusters(n, K, N, alpha, beta,
+                              clusters, dataset_name, iteration_number)
 
 
 def add_all_most_common(clusters, percent_added, random_percent, cluster_index, N, delta):
@@ -336,7 +351,8 @@ def add_all_most_common(clusters, percent_added, random_percent, cluster_index, 
     # for each cluster
     for i, cluster in enumerate(clusters):
         # add a single random tag to the cluster
-        delta = add_single_most_common(N, cluster, random_percent, percent_added, cluster_index, delta, i)
+        delta = add_single_most_common(
+            N, cluster, random_percent, percent_added, cluster_index, delta, i)
     return delta
 
 
