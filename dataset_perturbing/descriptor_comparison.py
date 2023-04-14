@@ -1,4 +1,4 @@
-"""descriptor_comparison.py: contains methods for comparing the minimum descriptors of datasets"""
+"""descriptor_comparison.py: contains methods for comparing the minimum descriptors of datasets and plotting"""
 __author__ = "William Bradford"
 __email__ = "wcb8ze@virginia.edu"
 
