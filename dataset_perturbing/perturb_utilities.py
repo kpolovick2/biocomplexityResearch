@@ -34,6 +34,17 @@ def find_most_used_tag(cluster):
     return row_sum.index(max(row_sum))
 
 
+def find_least_used_tag(cluster):
+    """
+    a helper function to find the most used tag in a cluster
+    :param cluster: a cluster in list of lists form
+    :return: the tag that is used most frequently in the cluster
+    """
+    row_sum = mat2_row_sum(cluster)
+    print(row_sum.index(min(row_sum)))
+    return row_sum.index(min(row_sum))
+
+
 def parse_dataset(filepath):
     """
     a helper function that converts a synthetic data file into list form
