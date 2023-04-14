@@ -6,7 +6,7 @@ import add_perturb
 import remove_perturb
 import descriptor_comparison
 
-dataset = "1000n_6K_40N_4a_1b"
+dataset = "300n_6K_40N_4a_1b"
 
 # on the dataset "9x28," the test statistic of the test for absence of correlation is -1.2525
 #               this means that the p-value is 0.23, meaning we do not have enough evidence to reject

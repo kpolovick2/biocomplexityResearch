@@ -50,6 +50,7 @@ def ILP_linear(filename):
         # append tags to the new line in the B array
         for j in range(N):
             B[i].append(int(input_array[i*(N+2)+7+j]))
+        print(B[i])
 
     m = gp.Model()
 

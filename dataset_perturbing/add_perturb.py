@@ -3,7 +3,7 @@ __author__ = "William Bradford, Keara Polovick"
 __email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 # includes imports of random, math, os, and shutil
-from add_multitag_conflict import *
+from add_multitag import *
 
 
 def add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta):

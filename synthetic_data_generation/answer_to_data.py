@@ -102,7 +102,6 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
             # update the unusable tags within this cluster if the random number is above the percent_overlap
             if random.choice(range(100)) > percent_overlap:
                 unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]).union(set(tags_to_add)))
-                print(unusable_tags_within_k[k-1])
 
             # set the tags values to 1
             for tag in tags_to_add:
