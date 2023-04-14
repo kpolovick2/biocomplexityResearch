@@ -8,7 +8,8 @@ from perturb_utilities import *
 
 
 def multitag_random_single_cluster(
-    filepath, percent_added, number_generated, random_percent, cluster, num_tags
+    filepath, percent_added, number_generated, random_percent,
+        bottom_cluster, top_cluster, lowest_tagcount, highest_tagcount
 ):
     """
     perturb a random amount of items in a cluster by adding num_tags tags
@@ -17,7 +18,7 @@ def multitag_random_single_cluster(
     :param number_generated: the number of perturbed datasets to generate
     :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
     :param cluster: the cluster to be perturbed
-    :param num_tags:
+    :param num_tags: the number of tags that should be added to each item
     :return: void
     """
     # ------------------------------------
@@ -30,10 +31,11 @@ def multitag_random_single_cluster(
     # execution section
     # ------------------------------------
     # generate number_generated perturbed datasets
-    for i in range(1, number_generated + 1):
-        # generation function
-        __multitag_random_single_cluster_internal(
-            filepath, percent_added, i, random_percent, dataset_name, cluster, num_tags
+    for i in range(bottom_cluster, top_cluster + 1):
+        for j in range(lowest_tagcount, highest_tagcount + 1):
+            # generation function
+            __multitag_random_single_cluster_internal(
+                filepath, percent_added, i * (highest_tagcount - lowest_tagcount) + j, random_percent, dataset_name, i, j
         )
 
 
@@ -114,8 +116,13 @@ def add_multiple_random(
     :param num_tags: an int that specifies the number of tags to be added
     :return: delta: a list representing which tags were added to which items
     """
+<<<<<<< HEAD
+    # choose a tag to add to the cluster
+    tags = random.sample(range(N), num_tags)
+=======
     # choose a random tag to add to the cluster
     tags = [random.choice(range(N)) for i in range(num_tags)]
+>>>>>>> origin/perturbing
     # find the number of items in the cluster
     cluster_size = len(cluster)
     # decide exactly which items will be perturbed

@@ -165,7 +165,7 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     upper_y = max(changes_count) + 1
     lower_y = min(changes_count) - 1
 
-    print(r_value)
+    print(f"R value: {r_value}")
 
     plt.xlim([lower_x, upper_x])
     plt.ylim([lower_y, upper_y])
