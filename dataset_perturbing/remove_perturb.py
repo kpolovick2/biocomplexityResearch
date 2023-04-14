@@ -38,7 +38,7 @@ def remove_single_random(N, cluster, random_percent, percent_removed, cluster_in
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param delta: a string that will contain the changed tags and their strings
     :param current_cluster: an int that tracks the cluster that is being perturbed
-    :return: void
+    :return: delta
     """
     # exit if cluster is empty to avoid errors
     if len(cluster) == 0:
@@ -176,7 +176,7 @@ def random_all_clusters(filepath, percent_removed, number_generated, random_perc
 
 def random_all_clusters_internal(filepath, percent_removed, iteration_number, random_percent, dataset_name):
     """
-    perturbs a dataset by adding a tag
+    perturbs a dataset by removing a tag
     :param filepath: the file path of the dataset
     :param percent_removed: the percent of items that should be perturbed (0-100)
     :param iteration_number: the number that should be added to the end of the file's name when generated
@@ -195,7 +195,7 @@ def random_all_clusters_internal(filepath, percent_removed, iteration_number, ra
 
     # create an empty string
     delta = ""
-    # generate the deltas based on the added tags
+    # generate the deltas based on the removed tags
     delta = remove_all_random(clusters, percent_removed, random_percent, cluster_index, N, delta)
 
     # generate a deltas file
@@ -210,17 +210,17 @@ def random_all_clusters_internal(filepath, percent_removed, iteration_number, ra
 
 def remove_all_random(clusters, percent_removed, random_percent, cluster_index, N, delta):
     """
-    a helper function that adds a random tag to every cluster
+    a helper function that removes a random tag from every cluster
     :param clusters: a list of clusters
     :param percent_removed: the percent of items that should be perturbed (0-100)
     :param random_percent: a boolean that causes the percent_removed to be ignored if true and instead uses a random percent
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param N: the parameter N of the problem
     :param delta: a string that will contain the changed tags and their strings
-    :return: void
+    :return: delta
     """
     # for each cluster
     for i, cluster in enumerate(clusters):
-        # add a single random tag to the cluster
+        # remove a single random tag to the cluster
         delta = remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, i)
     return delta
