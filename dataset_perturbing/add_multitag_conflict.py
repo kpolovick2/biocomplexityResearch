@@ -116,8 +116,13 @@ def add_multiple_random(
     :param num_tags: an int that specifies the number of tags to be added
     :return: delta: a list representing which tags were added to which items
     """
+<<<<<<< HEAD
     # choose a tag to add to the cluster
     tags = random.sample(range(N), num_tags)
+=======
+    # choose a random tag to add to the cluster
+    tags = [random.choice(range(N)) for i in range(num_tags)]
+>>>>>>> origin/perturbing
     # find the number of items in the cluster
     cluster_size = len(cluster)
     # decide exactly which items will be perturbed

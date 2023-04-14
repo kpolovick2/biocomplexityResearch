@@ -1,9 +1,9 @@
 """add_perturb.py: a set of functions for perturbing a dataset by adding tags"""
 __author__ = "William Bradford, Keara Polovick"
-__email__ = "wcb8ze@virginia.edu"
+__email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 # includes imports of random, math, os, and shutil
-from add_multitag import *
+from add_multitag_conflict import *
 
 
 def add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta):
@@ -27,7 +27,7 @@ def add_all_random(clusters, percent_added, random_percent, cluster_index, N, de
 
 def add_single_most_common(N, cluster, random_percent, percent_added, cluster_index, delta, current_cluster):
     """
-    a helper function that adds the most common tag to a single cluster
+    a helper function that adds the most common (most used) tag to a single cluster
     :param N: the parameter N of the problem
     :param cluster: a list containing data from each item of a cluster
     :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
@@ -35,7 +35,7 @@ def add_single_most_common(N, cluster, random_percent, percent_added, cluster_in
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param delta: a string that will contain the changed tags and their strings
     :param current_cluster: an int that tracks the cluster that is being perturbed
-    :return:
+    :return: void
     """
     # choose a tag to add to the cluster
     tag = find_most_used_tag(cluster)
@@ -67,7 +67,7 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param delta: a string that will contain the changed tags and their strings
     :param current_cluster: an int that tracks the cluster that is being perturbed
-    :return:
+    :return: delta: a list representing which tags were added to which items
     """
     # choose a tag to add to the cluster
     tag = random.choice(range(N))
@@ -303,7 +303,7 @@ def __random_single_cluster_internal(filepath, percent_added, iteration_number, 
 
 def __most_common_all_clusters_internal(filepath, percent_added, iteration_number, random_percent, dataset_name):
     """
-    perturbs a dataset by adding a tag
+    helper function to perturb a dataset by adding a tag
     :param filepath: the file path of the dataset
     :param percent_added: the percent of items that should be perturbed (0-100)
     :param iteration_number: the number that should be added to the end of the file's name when generated
@@ -354,7 +354,6 @@ def add_all_most_common(clusters, percent_added, random_percent, cluster_index, 
         delta = add_single_most_common(
             N, cluster, random_percent, percent_added, cluster_index, delta, i)
     return delta
-
 
 def add_tag_to_item(filepath, item, tag):
     """

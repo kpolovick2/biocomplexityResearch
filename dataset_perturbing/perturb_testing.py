@@ -1,6 +1,6 @@
 """perturb_testing.py: the main file for executing perturbations of datasets"""
 __author__ = "William Bradford, Keara Polovick"
-__email__ = "wcb8ze@virginia.edu"
+__email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 import add_perturb
 import remove_perturb

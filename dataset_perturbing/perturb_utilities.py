@@ -8,7 +8,7 @@ import random, math, os, shutil, re
 
 def mat2_row_sum(matrix):
     """
-    a helper function that sums the rows of a 2D list, do not use with lists of differing lengths
+    a helper function that sums the rows of a 2-dimensional list; do not use with lists of differing lengths
     :param matrix: a 2d matrix (list of lists with uniform length)
     :return: a list containing the sum of all rows in the input matrix
     """
@@ -38,7 +38,7 @@ def parse_dataset(filepath):
     """
     a helper function that converts a synthetic data file into list form
     :param filepath: the path to the file being parsed
-    :return:
+    :return: void
     """
     # open the dataset
     with open(filepath) as dataset:
@@ -56,9 +56,6 @@ def parse_dataset(filepath):
     return data
 
 
-#
-# parameters:
-#       - data: the parsed input of a data set
 def convert_clusters(data):
     """
     a helper function that converts input data into clustered form
@@ -130,7 +127,7 @@ def output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iter
     :param clusters: a list of clusters and the items they contain
     :param dataset_name: the name of the dataset
     :param iteration_number: the current iteration number
-    :return:
+    :return: void
     """
     # generate the first line of the output file
     output_string = f"{n} {K} {N} {alpha} {beta} \n"

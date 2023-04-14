@@ -1,6 +1,6 @@
 """remove_perturb.py: contains methods for perturbing datasets by deleting tags"""
 __author__ = "William Bradford, Keara Polovick"
-__email__ = "wcb8ze@virginia.edu"
+__email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 # this file includes imports of random, math, os, and shutil
 from perturb_utilities import *

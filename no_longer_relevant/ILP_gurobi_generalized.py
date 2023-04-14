@@ -6,7 +6,6 @@ from gurobipy import LinExpr, QuadExpr
 
 import gurobipy as gp
 
-
 def ILP(filename):
 
     with open(filename) as f:

@@ -3,8 +3,6 @@
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 # has a faster runtime complexity than the standard generalized version
 
-# changes: make gurobi output in order of k value instead of j
-
 from gurobipy import LinExpr
 
 import gurobipy as gp
@@ -24,9 +22,8 @@ def add(arr1, arr2):
         answer.append(arr1[i] + arr2[i])
     return answer
 
-
+# takes a file as an argument and finds the minimum descriptor of the file using linear method
 def ILP_linear(filename):
-
     # open the data set file
     with open(filename) as f:
         input = f.read()
@@ -54,14 +51,13 @@ def ILP_linear(filename):
         for j in range(N):
             B[i].append(int(input_array[i*(N+2)+7+j]))
 
-
     m = gp.Model()
 
     #create y[j,k] variables
     y= {}
     for j in range(1, N+1):
         for k in range(1, K+1):
-            y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
+            y[j,k] = m.addVar('B', "k=%s y[%s,%s]"%(k,j,k))
     m.update()
 
     # Objective function is to minimize the sum of the variables in A
@@ -70,10 +66,8 @@ def ILP_linear(filename):
     objective = m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
 
-    # CONSTRAINTS
-
-    # print("Constraint A: ")
-    # (a) must contain at least one tag from each of the data items in that cluster --ALL GOOD
+    # CONSTRAINTSs
+    # (a) must contain at least one tag from each of the data items in that cluster
     A = [0 for c in range(n+1)]
     constraint1 = []
     for i in range(1,n+1):
@@ -85,32 +79,22 @@ def ILP_linear(filename):
                 A[i] += y[j, k]
         constraint1.append(m.addConstr(A[i], ">=", 1))
         m.update()
-    #     print(f"{m.getRow(constraint1[i - 1])} {constraint1[i - 1].Sense} {constraint1[i - 1].RHS}")
-    #
-    # print("------------------------")
 
-    # print("Constraint B: ")
-    # (b) size of each descriptor must be at most alpha --ALL GOOD
+    # (b) size of each descriptor must be at most alpha
     coef = [1 for j in range(1, N + 1)]
     for k in range(1, K+1):
         var = [y[j, k] for j in range(1, N+1)]
         constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
-        # print(f"{m.getRow(constraint2)} {constraint2.Sense} {constraint2.RHS}")
 
-    # print("------------------------")
-    #
-    # print("Constraint C: ")
-
-    # (c) overlap between any pair of descriptors must be at most beta --ALL GOOD
-
+    # (c) overlap between any pair of descriptors must be at most beta
     z = {}
     z_sum = 0
     for k in range(1, K):
         for l in range(k + 1, K + 1):
             for j in range(1, N + 1):
                 if B[k-1][j-1] * B[l-1][j-1] == 1:
-                    z[j, k, l] = m.addVar(vtype='B', name=f"z[%s,%s,%s]" % (j, k, l))
+                    z[j, k, l] = m.addVar('B', f"z[%s,%s,%s]" % (j, k, l))
                     m.addConstr(z[j,k,l], "<=", y[j, k])
                     m.addConstr(z[j,k,l], "<=", y[j, l])
                     m.addConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
@@ -157,7 +141,6 @@ def ILP_linear(filename):
         temp = var.split()
         # append the variable to the output string
         output_string += f"{temp[1]} = 1\n"
-    # return m.getAttr("X")
 
     print(output_string)
 
@@ -174,5 +157,3 @@ def ILP_linear(filename):
         print(descriptor)
 
     return output_string
-
-# ILP_linear("test_txt_files/example_2.txt")
