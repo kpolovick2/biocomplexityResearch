@@ -1,32 +1,42 @@
-# William Bradford
-# wcb8ze
-# generation script for minimum descriptor problems
+"""answer_to_data.py: generates synthetic data sets that always have solutions"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
 
 import random
 import math
 
 
-# generate a random number from a set of numbers while excluding a set of numbers
 def sample_with_exclusion(lower, upper, exclude, n):
+    """
+    generate a random number from a set of numbers while excluding a set of numbers
+    :param lower: the lower bound of the range
+    :param upper: the upper bound of the range
+    :param exclude: a list of numbers to be excluded from the sampling
+    :param n: the number of numbers to be returned (sampled)
+    :return: a list of n numbers within the specified range that are not contained within the exclude list
+    """
     # generate a random sample, but exclude the excluded values
     s = set(range(lower, upper)) - set(exclude)
     # cast back to a list and return
     return random.sample(list(s), n)
 
 
-# a function that generates a minimum descriptor data set from:
-# n
-# K
-# N
-# alpha
-# beta
-# min_alpha - the minimum number of tags that can be in a descriptor
-# min_tags - the minimum number of tags that a data item can have
-# max_tags - the maximum number of tags that a data item can have
-# min_items - the minimum number of items that a cluster can have
-# max_items - the maximum number of items that a cluster can have
-# percent_overlap - the expected value of the percentage of items that are permitted to have overlap with other items
 def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max_items, percent_overlap):
+    """
+    a function that generates a minimum descriptor
+    :param n: n
+    :param K: K
+    :param N: N
+    :param alpha: alpha
+    :param beta: beta
+    :param min_alpha: the smallest size of any descriptor in the dataset (size permitting)
+    :param min_tags: the minimum number of tags an item can have
+    :param max_tags: the maximum number of tags an item can have
+    :param min_items: the minimum number of items a cluster can have
+    :param max_items: the maximum number of items a cluster can have
+    :param percent_overlap: the percentage of items outside the descriptor that overlap within a cluster
+    :return: void, outputs a synthetic dataset
+    """
     # generate a synthetic descriptor set
     D = generate_descriptors(K, N, alpha, beta, min_alpha)
 
@@ -120,22 +130,35 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         output_text += "\n"
 
     # generate the output file
-    with open(f"test_txt_files/{file_name}.txt", 'w') as f:
+    with open(f"../test_txt_files/{file_name}.txt", 'w') as f:
         f.write(output_text)
 
     return output_text
 
 
-# removes tags from a set of usable tags
 def remove_tags(usable_tags, used_tags):
+    """
+    removes tags from a set of usable tags
+    :param usable_tags: a list of tags
+    :param used_tags: a list of unwanted tags
+    :return: the list of tags with the list of unwanted tags removed
+    """
     # cast the lists to sets, then subtract them
     s = set(usable_tags) - set(used_tags)
     # return the list of the resulting set
     return list(s)
 
 
-# a function that generates a set of descriptors given K, N, alpha, and beta
 def generate_descriptors(K, N, alpha, beta, min_alpha=1):
+    """
+    a function that generates a set of descriptors given K, N, alpha, and beta
+    :param K: K
+    :param N: N
+    :param alpha: alpha
+    :param beta: beta
+    :param min_alpha: the smallest size of any descriptor (size permitting)
+    :return: list D (a set of descriptors)
+    """
     # create an empty set of descriptors
     D = [[] for i in range(K)]
 
@@ -194,6 +217,5 @@ def generate_descriptors(K, N, alpha, beta, min_alpha=1):
     return D
 
 
-# D, n, K, N, min_tags, max_tags
-generate(n=15, K=1, N=40, alpha=4, beta=1, min_alpha=4, min_tags=4, max_tags=9, min_items=20,
-         max_items=41, percent_overlap=15)
+generate(n=1000, K=6, N=40, alpha=4, beta=1, min_alpha=4, min_tags=4, max_tags=9, min_items=120,
+         max_items=180, percent_overlap=15)
