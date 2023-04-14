@@ -15,7 +15,7 @@ def add_all_random(clusters, percent_added, random_percent, cluster_index, N, de
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param N: the parameter N of the problem
     :param delta: a string that will contain the changed tags and their strings
-    :return: void
+    :return: delta
     """
     # for each cluster
     for i, cluster in enumerate(clusters):
@@ -35,7 +35,7 @@ def add_single_most_common(N, cluster, random_percent, percent_added, cluster_in
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param delta: a string that will contain the changed tags and their strings
     :param current_cluster: an int that tracks the cluster that is being perturbed
-    :return: void
+    :return: delta
     """
     # choose a tag to add to the cluster
     tag = find_most_used_tag(cluster)
@@ -67,7 +67,7 @@ def add_single_random(N, cluster, random_percent, percent_added, cluster_index, 
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param delta: a string that will contain the changed tags and their strings
     :param current_cluster: an int that tracks the cluster that is being perturbed
-    :return: delta: a list representing which tags were added to which items
+    :return: delta
     """
     # choose a tag to add to the cluster
     tag = random.choice(range(N))
@@ -346,7 +346,7 @@ def add_all_most_common(clusters, percent_added, random_percent, cluster_index, 
     :param cluster_index: a list that tracks the item numbers of items in the cluster list
     :param N: the parameter N of the problem
     :param delta: a string that will contain the changed tags and their strings
-    :return: void
+    :return: delta
     """
     # for each cluster
     for i, cluster in enumerate(clusters):
@@ -371,3 +371,46 @@ def add_tag_to_item(filepath, item, tag):
     data[item][tag + 1] = 1
     # output the file
     output_file_from_data(data, dataset_name, 0)
+
+def add_tag_to_data(data, item, tag):
+    """
+        adds a specified tag from an item in data
+        :param data: the problem in list format
+        :param item: the item number of the desired addition
+        :param tag: the tag that should be added
+        :return: the perturbed dataset
+        """
+    # adds the tag to the specified item
+    data[item][tag + 1] = 1
+    return data
+
+def add_single_least_common(N, cluster, random_percent, percent_added, cluster_index, delta, current_cluster):
+    """
+    a helper function that adds the least common tag to a single cluster
+    :param N: the parameter N of the problem
+    :param cluster: a list containing data from each item of a cluster
+    :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
+    :param percent_added: the percent of items that should be perturbed (0-100)
+    :param cluster_index: a list that tracks the item numbers of items in the cluster list
+    :param delta: a string that will contain the changed tags and their strings
+    :param current_cluster: an int that tracks the cluster that is being perturbed
+    :return: delta
+    """
+    # choose a tag to add to the cluster
+    tag = find_least_used_tag(cluster)
+    # find the number of items in the cluster
+    cluster_size = len(cluster)
+    # decide exactly which items will be perturbed
+    items_perturbed = get_items_to_perturb(
+        cluster, random_percent, percent_added)
+    # iterate through the items to be perturbed
+    for index in items_perturbed:
+        # if the tag is not already in the item
+        if cluster[index][tag] != 1:
+            # add the tag
+            cluster[index][tag] = 1
+            print(f"added tag {tag + 1} in item {index} of cluster {current_cluster}, item "
+                  f"{cluster_index[current_cluster][index]}")
+            # note which data item was given which tag
+            delta += f"{cluster_index[current_cluster][index]}, {tag + 1} \n"
+    return delta

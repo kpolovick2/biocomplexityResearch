@@ -224,3 +224,4 @@ def remove_all_random(clusters, percent_removed, random_percent, cluster_index, 
         # remove a single random tag to the cluster
         delta = remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, i)
     return delta
+
