@@ -44,26 +44,19 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
     B = [[0 for i in range(N)] for j in range(n)]
     clusters = []
 
-    # calculate K / n to ensure roughly even assignment of cluster values
-    n_over_k = math.floor(n / K)
-    # make a variance value that affects the number of items that are assigned to each cluster
-    variance = 0
-    # if n >= 10, make variance the floor of n/10
-    if n >= 10:
-        variance = math.floor(n / 10)
-
     # for each cluster, assign a number of items between
     # n/K - variance and n/K + variance (inclusive)
     # with the designated k value
+    total_items = 0
     for i in range(K):
         # generate a number of items to add to the cluster. ensure that this value is between the max_tags value
-        items_in_cluster = random.choice(range(max(n_over_k - variance, min_items),
-                                               min(n_over_k + variance + 1, max_items)))
-
+        items_in_cluster = random.choice(range(min_items,
+                                               max_items))
+        total_items += items_in_cluster
         # if adding this number of items to the cluster would prevent every
         # cluster from having an item, set items_in_cluster to 1
-        if (K - len(clusters) - items_in_cluster) / (K - i) < 1:
-            items_in_cluster = 1
+        # if (n - total_items) / (K - i) < 1:
+        #     items_in_cluster = 1
         # fill the clusters array
         for j in range(items_in_cluster):
             clusters.append(i + 1)
@@ -85,9 +78,12 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
 
         # assign a random tag from the corresponding descriptor equal to 1
         B[i][random.choice(D[k - 1]) - 1] = 1
+        # print(f"{i} : {B[i]}")
+
+    print(unusable_tags)
 
     # create a list of unusable tags within a given cluster
-    unusable_tags_within_k = [unusable_tags for i in range(K)]
+    unusable_tags_within_k = [unusable_tags.copy() for i in range(K)]
     # previous_tags = []
     # iterate over the set of data items and assign tags
     for i in range(len(B)):
@@ -100,17 +96,19 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         # and excluding the tags that are used in the descriptor
         num_tags = min(num_tags, N - len(unusable_tags))
         # check bounds
-        if num_tags > 0:
+        if num_tags > 0 and len(unusable_tags_within_k) >= N:
             # take a random sample of tags to include
             tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k-1], num_tags)
             # update the unusable tags within this cluster if the random number is above the percent_overlap
             if random.choice(range(100)) > percent_overlap:
-                unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]) - set(tags_to_add))
+                unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]).union(set(tags_to_add)))
+                print(unusable_tags_within_k[k-1])
+
             # set the tags values to 1
             for tag in tags_to_add:
                 row[tag] = 1
             # previous_tags = tags_to_add
-
+        print(B[i])
     # commented print statements
     # for i in range(n):
     #     print(f"k={clusters[i]} : {B[i]}")
@@ -213,9 +211,4 @@ def generate_descriptors(K, N, alpha, beta, min_alpha=1):
                 already_overlapping[xx][yy] = True
                 # change temp variable to exit the loop
                 change_made = True
-    print(D)
     return D
-
-
-generate(n=1000, K=6, N=40, alpha=4, beta=1, min_alpha=4, min_tags=4, max_tags=9, min_items=120,
-         max_items=180, percent_overlap=15)
