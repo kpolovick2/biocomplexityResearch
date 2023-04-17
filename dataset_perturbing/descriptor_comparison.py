@@ -122,13 +122,18 @@ def find_descriptors_added(directory):
             print("Cluster changes:")
             # create a variable to store the total number of changes relative to the original dataset
             sum_changes = 0
+            signed_changes = 0
             # print the changes in the cluster
             for j, change in enumerate(descriptor_set):
                 sum_changes += abs(change)
+                signed_changes += change
                 if change > 0:
-                    print(f"Some error is causing cluster {j} of dataset {i} to grow larger")
+                    print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
                 elif change < 0:
-                    print(f"Cluster {j+1} of the dataset {i} shrinks by {abs(change)}")
+                    print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
+            if signed_changes >= 0:
+                raise Exception(f"Some error caused this solution to grow larger. This occurred in data set {i}.")
+
             tags_added_count.append(tags_added)
             changes_count.append(sum_changes)
     plot_tag_additions(tags_added_count, changes_count, directory)
@@ -166,6 +171,9 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     lower_y = min(changes_count) - 1
 
     print(f"R value: {r_value}")
+    n = len(changes_count)
+    test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2)**0.5))
+    print(f"Test statistic: {test_stat}")
 
     plt.xlim([lower_x, upper_x])
     plt.ylim([lower_y, upper_y])

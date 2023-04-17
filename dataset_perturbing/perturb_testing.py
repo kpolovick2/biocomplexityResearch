@@ -14,5 +14,5 @@ dataset = "300n_6K_40N_4a_1b"
 #               1 tag added and the size decrease in the descriptor
 
 # add_perturb.add_tag_to_item(f"../test_txt_files/{dataset}.txt", 1, 1)
-add_perturb.multitag_random_single_cluster(f"../test_txt_files/{dataset}.txt", 50, 1, True, 1, 6, 1, 40)
+add_perturb.multitag_random_single_cluster(f"../test_txt_files/{dataset}.txt", 2, 1, True, 1, 1, 1, 1)
 descriptor_comparison.find_descriptors_added(dataset)
