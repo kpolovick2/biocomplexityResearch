@@ -131,7 +131,7 @@ def find_descriptors_added(directory):
                     print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
                 elif change < 0:
                     print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
-            if signed_changes >= 0:
+            if signed_changes > 0:
                 raise Exception(f"Some error caused this solution to grow larger. This occurred in data set {i}.")
 
             tags_added_count.append(tags_added)
