@@ -37,19 +37,18 @@ def get_items_to_remove(cluster, random_percent, percent_added):
     """
     cluster_size = len(cluster)
     items_with_one_tag = [i for i, item in enumerate(cluster) if has_only_one_tag(item)]
-    print(items_with_one_tag)
     # perturb at most percent_added percent of the cluster
     if cluster_size == 0:
         # if the cluster is empty (which should only happen in the 0 cluster), do not perturb any tags
         num_items_perturbed = 0
     elif random_percent:
         # if random_percent is true, then pick a random number of tags to perturb
-        num_items_perturbed = random.choice(range(1, cluster_size + 1))
+        num_items_perturbed = random.choice(range(1, cluster_size + 1 - len(items_with_one_tag)))
     else:
         # if random_percent is false, find the percentage of the items in the cluster to be perturbed
         num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
     # decide exactly which items will be perturbed
-    items_perturbed = random.sample(range(cluster_size), num_items_perturbed)
+    items_perturbed = sample_with_exclusion(0, cluster_size, items_with_one_tag, num_items_perturbed)
     return items_perturbed
 
 

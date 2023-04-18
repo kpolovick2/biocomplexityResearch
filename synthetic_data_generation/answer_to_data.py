@@ -62,10 +62,9 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
             clusters.append(i + 1)
 
     # make a list of tags that cannot be used to ensure that there is a solution
-    unusable_tags = []
+    unusable_tags_within_k = []
     for desc in D:
-        for i in desc:
-            unusable_tags.append(i - 1)
+        unusable_tags_within_k.append(desc)
 
     # fill the unfilled clusters indices with the largest cluster value
     while len(clusters) < n:
@@ -80,25 +79,23 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         B[i][random.choice(D[k - 1]) - 1] = 1
         # print(f"{i} : {B[i]}")
 
-    print(unusable_tags)
-
     # create a list of unusable tags within a given cluster
-    unusable_tags_within_k = [unusable_tags.copy() for i in range(K)]
+    # unusable_tags_within_k = [unusable_tags.copy() for i in range(K)]
     # previous_tags = []
     # iterate over the set of data items and assign tags
     for i in range(len(B)):
         row = B[i]
         k = clusters[i]
-
         # generate a number of tags for the data item to have
         num_tags = random.choice(range(min_tags - 1, max_tags))
         # generate the tags to add by selecting from a range of tag values
         # and excluding the tags that are used in the descriptor
-        num_tags = min(num_tags, N - len(unusable_tags))
+        num_tags = min(num_tags, N - len(unusable_tags_within_k[k-1]))
         # check bounds
-        if num_tags > 0 and len(unusable_tags_within_k) >= N:
+        if num_tags > 0 and len(unusable_tags_within_k[k-1]) < N:
             # take a random sample of tags to include
             tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k-1], num_tags)
+            print(f"tags to add: {tags_to_add}")
             # update the unusable tags within this cluster if the random number is above the percent_overlap
             if random.choice(range(100)) > percent_overlap:
                 unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]).union(set(tags_to_add)))
@@ -107,7 +104,6 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
             for tag in tags_to_add:
                 row[tag] = 1
             # previous_tags = tags_to_add
-        print(B[i])
     # commented print statements
     # for i in range(n):
     #     print(f"k={clusters[i]} : {B[i]}")

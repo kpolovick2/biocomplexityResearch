@@ -198,6 +198,21 @@ def get_cluster_tags(cluster):
     return tags
 
 
+def sample_with_exclusion(lower, upper, exclude, n):
+    """
+    generate a random number from a set of numbers while excluding a set of numbers
+    :param lower: the lower bound of the range
+    :param upper: the upper bound of the range
+    :param exclude: a list of numbers to be excluded from the sampling
+    :param n: the number of numbers to be returned (sampled)
+    :return: a list of n numbers within the specified range that are not contained within the exclude list
+    """
+    # generate a random sample, but exclude the excluded values
+    s = set(range(lower, upper)) - set(exclude)
+    # cast back to a list and return
+    return random.sample(list(s), n)
+
+
 def get_items_to_perturb(cluster, random_percent, percent_added):
     """
     a helper function that returns a list of items to perturb
