@@ -23,9 +23,17 @@ def has_only_one_tag(item):
         # if the tag count is greater than one
         if tag_count > 1:
             # early exit
-            return False
+            return tag_count == 1
     # return true if tag_count == 1
     return tag_count == 1
+
+
+def items_with_multiple_tags(cluster):
+    multiple_tags = []
+    for item in cluster:
+        if not has_only_one_tag(item):
+            multiple_tags.append(item)
+
 
 
 def remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, current_cluster):
