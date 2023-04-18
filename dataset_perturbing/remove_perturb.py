@@ -27,13 +27,30 @@ def has_only_one_tag(item):
     # return true if tag_count == 1
     return tag_count == 1
 
-
-def items_with_multiple_tags(cluster):
-    multiple_tags = []
-    for item in cluster:
-        if not has_only_one_tag(item):
-            multiple_tags.append(item)
-
+def get_items_to_remove(cluster, random_percent, percent_added):
+    """
+    a helper function that returns a list of items to perturb
+    :param cluster: a cluster in list form
+    :param random_percent: a boolean determining whether the percent of items perturbed is random
+    :param percent_added: a percent (0-100) of the items in the cluster that should be perturbed
+    :return: a list of items to be perturbed
+    """
+    cluster_size = len(cluster)
+    items_with_one_tag = [i for i, item in enumerate(cluster) if has_only_one_tag(item)]
+    print(items_with_one_tag)
+    # perturb at most percent_added percent of the cluster
+    if cluster_size == 0:
+        # if the cluster is empty (which should only happen in the 0 cluster), do not perturb any tags
+        num_items_perturbed = 0
+    elif random_percent:
+        # if random_percent is true, then pick a random number of tags to perturb
+        num_items_perturbed = random.choice(range(1, cluster_size + 1))
+    else:
+        # if random_percent is false, find the percentage of the items in the cluster to be perturbed
+        num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
+    # decide exactly which items will be perturbed
+    items_perturbed = random.sample(range(cluster_size), num_items_perturbed)
+    return items_perturbed
 
 
 def remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, current_cluster):
@@ -54,7 +71,7 @@ def remove_single_random(N, cluster, random_percent, percent_removed, cluster_in
     # choose a tag to remove from the cluster
     tag = random.choice(get_cluster_tags(cluster))
     # decide exactly which items will be perturbed
-    items_perturbed = get_items_to_perturb(cluster, random_percent, percent_removed)
+    items_perturbed = get_items_to_remove(cluster, random_percent, percent_removed)
     # iterate through the items to be perturbed
     for index in items_perturbed:
         # if the tag is in fact in the item
