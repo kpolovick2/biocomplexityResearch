@@ -21,7 +21,7 @@ def sample_with_exclusion(lower, upper, exclude, n):
     return random.sample(list(s), n)
 
 
-def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max_items, percent_overlap):
+def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max_items):
     """
     a function that generates a minimum descriptor
     :param n: n
@@ -70,68 +70,79 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
     while len(clusters) < n:
         clusters.append(K)
 
+    # a list that will store the number of appearances of each descriptor tag within the set
     tag_appearances = [[0 for j in range(len(D[i]))] for i in range(len(D))]
+    # an list that will store the indices of the tag that describes item i at position (re-indexing at 0)
     describing_tag = [0 for i in range(n)]
 
     # for every item
     for i in range(n):
         # get the k value of the item
         k = clusters[i]
-
+        # find the tag that will describe item i
         tag = random.choice(D[k - 1]) - 1
+        # store the index within the descriptors array at position k-1
         descriptor_index = D[k-1].index(tag+1)
         # assign a random tag from the corresponding descriptor equal to 1
         B[i][tag] = 1
+        # store the tag that describes item i in position i (re-indexing at 0)
         describing_tag[i] = descriptor_index
+        # increment the number corresponding to the amount of appearances of each tag within the descriptor
         tag_appearances[k-1][descriptor_index] += 1
         # print(f"{i} : {B[i]}")
 
-    # generate a list of the minimum tag counts for each cluster's descriptor
-    min_tag_size = [min(tag_appearances[k]) for k, cluster in enumerate(tag_appearances)]
-
-    # generate a list of the tags used by cluster
+    # generate a list of the tags used by all of the items that correspond to each describing tag in each cluster
     tag_usage_by_cluster = [[[0 for n in range(N)] for j in range(len(D[k]))] for k in range(len(D))]
 
-    # create a list of unusable tags within a given cluster
-    # unusable_tags_within_k = [unusable_tags.copy() for i in range(K)]
-    # previous_tags = []
     # iterate over the set of data items and assign tags
     for i in range(len(B)):
+        # row is the row of tags corresponding to item i (re-indexing at 0)
         row = B[i]
+        # k is the cluster of item i (re-indexing at 0)
         k = clusters[i]
+        # d_tag is the tag within the descriptor of cluster k that describes item i (re-indexing at 0)
         d_tag = describing_tag[i]
 
         # generate a number of tags for the data item to have
-        num_tags = random.choice(range(min_tags - 1, max_tags))
+        num_tags = random.choice(range(min_tags - 1, max_tags - 1))
         # generate the tags to add by selecting from a range of tag values
-        # and excluding the tags that are used in the descriptor
+        # and excluding the tags that are used in the descriptor,
+        # along with the tags that are no longer usable because they would change the solution of the problem
         num_tags = min(num_tags, N - len(unusable_tags_within_k[k - 1]))
         # check bounds
         if num_tags > 0 and len(unusable_tags_within_k[k - 1]) < N:
-            # take a random sample of tags to include
+            # take a random sample of tags to include, exclude all tags that are descriptor tags for the cluster
+            # of the current item, and exclude all tags that would change the descriptor if added
             tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k - 1], num_tags)
-            # update the unusable tags within this cluster if the random number is above the percent_overlap
+            # add one to the value corresponding to each tag added in the
+            # list of tags used by items within the cluster that are described
+            # by d_tag
             for t in tags_to_add:
                 tag_usage_by_cluster[k - 1][d_tag][t] += 1
 
             # make a list to store unusable tags
             becoming_unusable = []
-            # each item will be called a d_tag item, meaning the tag that
+            # each item will be referred to as a d_tag item, meaning the tag that
             # describes it is d_tag within its corresponding descriptor
             # we want each d_tag item to have at most num_appearances(d_tag) - 1
             # appearances within the set of items described by d_tag
+            # this ensures that adding it to the descriptor can only increase the size
+            # of the descriptor, making it no longer a minimum descriptor
+            # to begin, we iterate over the list that contains usage counts for each tag
+            # in the set of d_tag items
             for i, use_count in enumerate(tag_usage_by_cluster[k - 1][d_tag]):
+                # if the number of appearances of d_tag is less than or equal to
+                # the number of usages of the tag i,...
                 if tag_appearances[k-1][d_tag] <= use_count:
+                    # append the tag to the list of unusable tags
                     becoming_unusable.append(i)
-            if random.choice(range(100)) > percent_overlap:
-                unusable_tags_within_k[k - 1] = list(set(unusable_tags_within_k[k - 1]).union(set(becoming_unusable)))
-            # set the tags values to 1
+            # update the list of unusable tags within the cluster
+            # TODO: evaluate whether this can be further specified to d_tag items within the set without
+            #  changing the desired description
+            unusable_tags_within_k[k - 1] = list(set(unusable_tags_within_k[k - 1]).union(set(becoming_unusable)))
+            # add the tags to the items
             for tag in tags_to_add:
                 row[tag] = 1
-            # previous_tags = tags_to_add
-    # commented print statements
-    # for i in range(n):
-    #     print(f"k={clusters[i]} : {B[i]}")
 
     # set the first line of the output file to the following
     output_text = f"{n} {K} {N} {alpha} {beta} \n"
