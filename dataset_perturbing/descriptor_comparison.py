@@ -242,7 +242,7 @@ def find_descriptors_removed(directory):
     for i, descriptor_set in enumerate(change_size):
         # skip the first descriptor set because it will not be different from itself
         if i != 0:
-            print("-------------------\nAddition(s) to the dataset:")
+            print("-------------------\nRemoval(s) from the dataset:")
             # print which tags were removed from the dataset
             for j, pair in enumerate(deltas[i-1]):
                 print(f"Tag {pair[1]} removed from item {pair[0]}")

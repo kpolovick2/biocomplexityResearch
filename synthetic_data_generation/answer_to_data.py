@@ -64,7 +64,8 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
     # make a list of tags that cannot be used to ensure that there is a solution
     unusable_tags_within_k = []
     for desc in D:
-        unusable_tags_within_k.append(desc)
+        # this list will be empty for each cluster to begin with
+        unusable_tags_within_k.append([])
 
     # fill the unfilled clusters indices with the largest cluster value
     while len(clusters) < n:
@@ -91,7 +92,7 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         tag_appearances[k-1][descriptor_index] += 1
         # print(f"{i} : {B[i]}")
 
-    # generate a list of the tags used by all of the items that correspond to each describing tag in each cluster
+    # generate a list of the tags used by all the items that correspond to each describing tag in each cluster
     tag_usage_by_cluster = [[[0 for n in range(N)] for j in range(len(D[k]))] for k in range(len(D))]
 
     # iterate over the set of data items and assign tags
@@ -100,7 +101,8 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         row = B[i]
         # k is the cluster of item i (re-indexing at 0)
         k = clusters[i]
-        # d_tag is the tag within the descriptor of cluster k that describes item i (re-indexing at 0)
+        # d_tag is the tag within the descriptor of cluster k
+        # that describes item i (re-indexing at 0)
         d_tag = describing_tag[i]
 
         # generate a number of tags for the data item to have
@@ -136,9 +138,9 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
                 if tag_appearances[k-1][d_tag] <= use_count:
                     # append the tag to the list of unusable tags
                     becoming_unusable.append(i)
-            # update the list of unusable tags within the cluster
             # TODO: evaluate whether this can be further specified to d_tag items within the set without
             #  changing the desired description
+            # update the list of unusable tags within the cluster
             unusable_tags_within_k[k - 1] = list(set(unusable_tags_within_k[k - 1]).union(set(becoming_unusable)))
             # add the tags to the items
             for tag in tags_to_add:

@@ -250,3 +250,5 @@ def remove_all_random(clusters, percent_removed, random_percent, cluster_index, 
         delta = remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, i)
     return delta
 
+# TODO: add a method that perturbs by selecting one of the tags from the
+#  descriptor and removing it from a few tags within the set
