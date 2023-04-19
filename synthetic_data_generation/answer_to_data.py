@@ -70,14 +70,27 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
     while len(clusters) < n:
         clusters.append(K)
 
+    tag_appearances = [[0 for j in range(len(D[i]))] for i in range(len(D))]
+    describing_tag = [0 for i in range(n)]
+
     # for every item
     for i in range(n):
         # get the k value of the item
         k = clusters[i]
 
+        tag = random.choice(D[k - 1]) - 1
+        descriptor_index = D[k-1].index(tag+1)
         # assign a random tag from the corresponding descriptor equal to 1
-        B[i][random.choice(D[k - 1]) - 1] = 1
+        B[i][tag] = 1
+        describing_tag[i] = descriptor_index
+        tag_appearances[k-1][descriptor_index] += 1
         # print(f"{i} : {B[i]}")
+
+    # generate a list of the minimum tag counts for each cluster's descriptor
+    min_tag_size = [min(tag_appearances[k]) for k, cluster in enumerate(tag_appearances)]
+
+    # generate a list of the tags used by cluster
+    tag_usage_by_cluster = [[[0 for n in range(N)] for j in range(len(D[k]))] for k in range(len(D))]
 
     # create a list of unusable tags within a given cluster
     # unusable_tags_within_k = [unusable_tags.copy() for i in range(K)]
@@ -86,20 +99,32 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
     for i in range(len(B)):
         row = B[i]
         k = clusters[i]
+        d_tag = describing_tag[i]
+
         # generate a number of tags for the data item to have
         num_tags = random.choice(range(min_tags - 1, max_tags))
         # generate the tags to add by selecting from a range of tag values
         # and excluding the tags that are used in the descriptor
-        num_tags = min(num_tags, N - len(unusable_tags_within_k[k-1]))
+        num_tags = min(num_tags, N - len(unusable_tags_within_k[k - 1]))
         # check bounds
-        if num_tags > 0 and len(unusable_tags_within_k[k-1]) < N:
+        if num_tags > 0 and len(unusable_tags_within_k[k - 1]) < N:
             # take a random sample of tags to include
-            tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k-1], num_tags)
-            print(f"tags to add: {tags_to_add}")
+            tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k - 1], num_tags)
             # update the unusable tags within this cluster if the random number is above the percent_overlap
-            if random.choice(range(100)) > percent_overlap:
-                unusable_tags_within_k[k-1] = list(set(unusable_tags_within_k[k-1]).union(set(tags_to_add)))
+            for t in tags_to_add:
+                tag_usage_by_cluster[k - 1][d_tag][t] += 1
 
+            # make a list to store unusable tags
+            becoming_unusable = []
+            # each item will be called a d_tag item, meaning the tag that
+            # describes it is d_tag within its corresponding descriptor
+            # we want each d_tag item to have at most num_appearances(d_tag) - 1
+            # appearances within the set of items described by d_tag
+            for i, use_count in enumerate(tag_usage_by_cluster[k - 1][d_tag]):
+                if tag_appearances[k-1][d_tag] <= use_count:
+                    becoming_unusable.append(i)
+            if random.choice(range(100)) > percent_overlap:
+                unusable_tags_within_k[k - 1] = list(set(unusable_tags_within_k[k - 1]).union(set(becoming_unusable)))
             # set the tags values to 1
             for tag in tags_to_add:
                 row[tag] = 1

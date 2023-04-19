@@ -27,6 +27,7 @@ def has_only_one_tag(item):
     # return true if tag_count == 1
     return tag_count == 1
 
+
 def get_items_to_remove(cluster, random_percent, percent_added):
     """
     a helper function that returns a list of items to perturb
