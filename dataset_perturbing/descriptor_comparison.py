@@ -170,6 +170,7 @@ def find_descriptors_removed(directory):
     solutions = []
     # for each data set
     for file in test_files:
+        print(file)
         # add each solution to the solutions array
         solutions.append(ilp_solve.ILP_linear(f"perturb_data/{directory}/{file}"))
 
@@ -220,7 +221,6 @@ def find_descriptors_removed(directory):
         if i != 0:
             print("-------------------\nRemoval(s) from the dataset:")
             # print which tags were removed from the dataset
-            # TODO: figure out why there is something strange happening (out of bounds)
             for j, pair in enumerate(deltas[i-1]):
                 print(f"Tag {pair[1]} removed from item {pair[0]}")
                 # store the number of tags removed
