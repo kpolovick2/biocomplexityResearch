@@ -253,16 +253,38 @@ def remove_all_random(clusters, percent_removed, random_percent, cluster_index, 
 
 
 def descriptor_tag_remove(filepath, iteration_number, dataset_name, item_number):
+    """
+    removes one of the tags that describes the specified item from that item
+    :param filepath: a path to the file to be perturbed
+    :param iteration_number: a number to append to the end of the filename
+    :param dataset_name: the name of the dataset
+    :param item_number: the number of the item to be perturbed
+    :return: void
+    """
+    # set up the directories needed to store the test data
     setup_directories(filepath)
+    # parse the dataset into a list of lists
     data = parse_dataset(filepath)
+    # get the index of the cluster of the item
     cluster_index = data[item_number][1] - 1
+    # find the solution to the ILP
     solution = string_descriptor_to_array(ilp.ILP_linear(filepath))
+    # find the descriptor of the cluster containing the item to be perturbed
     descriptor = solution[cluster_index]
 
+    # find the tags in the descriptor that match tags within the item
     tags_used_from_descriptor = [d for d in descriptor if data[item_number][d]]
+    # randomly choose a tag from the descriptor to remove
     tag_to_remove = random.choice(tags_used_from_descriptor)
+    # TODO: determine why something sus is happening here
     print(f"{data[item_number][27]}, {data[item_number][32]}")
+    # remove the tag
     data[item_number][tag_to_remove] = 0
     print(f"{data[item_number][27]}, {data[item_number][32]}")
-    n, K, N, alpha, beta = return_parameters(data)
+
+    # generate an output file
     output_file_from_data(data, dataset_name, iteration_number)
+    # TODO: add delta file generation
+
+# TODO: add a function that removes all tags from the descriptor that describe an item,
+#  ex: if the descriptor is [1, 2] and the item has tags 1 and 2, remove both of them
