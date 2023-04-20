@@ -291,9 +291,8 @@ def descriptor_tag_remove_internal(filepath, iteration_number, dataset_name, ite
         f.write(delta)
 
 
-# TODO: add a function that removes all tags from the descriptor that describe an item,
-#  ex: if the descriptor is [1, 2] and the item has tags 1 and 2, remove both of them
-def remove_all_descriptor_tags_internal(filepath, iteration_number, dataset_name, item_number):
+
+def remove_all_descriptor_tags_internal(filepath, dataset_name, item_number):
     """
     removes one of the tags that describes the specified item from that item
     :param filepath: a path to the file to be perturbed
@@ -302,8 +301,6 @@ def remove_all_descriptor_tags_internal(filepath, iteration_number, dataset_name
     :param item_number: the number of the item to be perturbed
     :return: void
     """
-    # set up the directories needed to store the test data
-    setup_directories(filepath)
     # parse the dataset into a list of lists
     data = parse_dataset(filepath)
     # get the index of the cluster of the item
@@ -323,10 +320,15 @@ def remove_all_descriptor_tags_internal(filepath, iteration_number, dataset_name
         delta += f"{item_number}, {tag}\n"
 
     # generate an output file
-    output_file_from_data(data, dataset_name, iteration_number)
+    output_file_from_data(data, dataset_name, item_number)
     # generate the contents of the delta file,
-    generate_delta_file(delta, dataset_name, iteration_number)
+    generate_delta_file(delta, dataset_name, item_number)
 
 
 # TODO: make a method that runs n number of perturbations with the
 #  remove_all_descriptor_tags method, one run per item
+def remove_all_descriptor_tags_for_each_item(filepath, dataset_name, n):
+    # set up the directories needed to store the test data
+    setup_directories(filepath)
+    for i in range(1, n + 1):
+        remove_all_descriptor_tags_internal(filepath, dataset_name, n)

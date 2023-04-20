@@ -14,5 +14,6 @@ dataset = "300n_6K_40N_4a_1b"
 #               1 tag added and the size decrease in the descriptor
 
 # add_perturb.add_tag_to_item(f"../test_txt_files/{dataset}.txt", 1, 1)
-remove_perturb.remove_all_descriptor_tags_internal(f"../test_txt_files/{dataset}.txt", 1, dataset, 1)
+# remove_perturb.remove_all_descriptor_tags_internal(f"../test_txt_files/{dataset}.txt", dataset, 1)
+remove_perturb.remove_all_descriptor_tags_for_each_item(f"../test_txt_files/{dataset}.txt", dataset, 300)
 descriptor_comparison.find_descriptors_removed(dataset)

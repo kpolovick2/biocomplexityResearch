@@ -220,10 +220,11 @@ def find_descriptors_removed(directory):
         if i != 0:
             print("-------------------\nRemoval(s) from the dataset:")
             # print which tags were removed from the dataset
-            for j, pair in enumerate(deltas[i-1]):
-                print(f"Tag {pair[1]} removed from item {pair[0]}")
-            # store the number of tags removed
-            tags_removed = len(deltas[i-1])
+            if len(deltas) > i - 1:
+                for j, pair in enumerate(deltas[i-1]):
+                    print(f"Tag {pair[1]} removed from item {pair[0]}")
+                # store the number of tags removed
+                tags_removed = len(deltas[i-1])
             print("Cluster changes:")
             # create a variable to store the total number of changes relative to the original dataset
             sum_changes = 0
@@ -241,4 +242,4 @@ def find_descriptors_removed(directory):
 
             tags_removed_count.append(tags_removed)
             changes_count.append(sum_changes)
-    # plot_tag_additions(tags_removed_count, changes_count, directory)
+            # TODO: add data plotting method
