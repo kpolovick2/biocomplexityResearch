@@ -5,6 +5,18 @@ __email__ = "wcb8ze@virginia.edu"
 
 import random, math, os, shutil, re
 
+def generate_delta_file(delta, dataset_name, iteration_number):
+    """
+    generate a file that corresponds to the changes made to the dataset with iteration number iteration_number
+    :param delta: a string representing the changes made to the dataset
+    :param dataset_name: the name of the dataset
+    :param iteration_number: the iteration number
+    :return: void
+    """
+    # generate a deltas file
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write to the deltas file
+        f.write(delta)
 
 def string_descriptor_to_array(D):
     """

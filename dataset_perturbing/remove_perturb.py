@@ -325,9 +325,8 @@ def remove_all_descriptor_tags_internal(filepath, iteration_number, dataset_name
     # generate an output file
     output_file_from_data(data, dataset_name, iteration_number)
     # generate the contents of the delta file,
+    generate_delta_file(delta, dataset_name, iteration_number)
 
-    # generate a deltas file
-    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
-        # write to the deltas file
-        f.write(delta)
 
+# TODO: make a method that runs n number of perturbations with the
+#  remove_all_descriptor_tags method, one run per item
