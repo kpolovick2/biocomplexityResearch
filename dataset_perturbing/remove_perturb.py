@@ -291,7 +291,6 @@ def descriptor_tag_remove_internal(filepath, iteration_number, dataset_name, ite
         f.write(delta)
 
 
-
 def remove_all_descriptor_tags_internal(filepath, dataset_name, item_number):
     """
     removes one of the tags that describes the specified item from that item
@@ -314,6 +313,9 @@ def remove_all_descriptor_tags_internal(filepath, dataset_name, item_number):
 
     # find the tags in the descriptor that match tags within the item
     tags_used_from_descriptor = [d for d in descriptor if data[item_number][d+1] == 1]
+    if len(tags_used_from_descriptor) == data[3]:
+        data[3] += 1
+        data[4] += 1
     for tag in tags_used_from_descriptor:
         # remove each tag in the descriptor from the item
         data[item_number][tag+1] = 0
@@ -331,4 +333,4 @@ def remove_all_descriptor_tags_for_each_item(filepath, dataset_name, n):
     # set up the directories needed to store the test data
     setup_directories(filepath)
     for i in range(1, n + 1):
-        remove_all_descriptor_tags_internal(filepath, dataset_name, n)
+        remove_all_descriptor_tags_internal(filepath, dataset_name, i)
