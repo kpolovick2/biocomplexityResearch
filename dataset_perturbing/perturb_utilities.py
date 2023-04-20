@@ -126,11 +126,21 @@ def setup_directories(filepath):
     if not os.path.exists(f"perturb_data/{dataset_name}/"):
         # create directory
         os.makedirs(f"perturb_data/{dataset_name}/")
+    else:
+        # empty directory
+        files = os.listdir(f"perturb_data/{dataset_name}_delta/")
+        for file in files:
+            os.remove(f"perturb_data/{dataset_name}_delta/{file}")
 
     # if the path to the testing folder does not exist, create the necessary directories
     if not os.path.exists(f"perturb_data/{dataset_name}_delta/"):
         # create directory
         os.makedirs(f"perturb_data/{dataset_name}_delta/")
+    else:
+        # empty directory
+        files = os.listdir(f"perturb_data/{dataset_name}_delta/")
+        for file in files:
+            os.remove(f"perturb_data/{dataset_name}_delta/{file}")
 
     # if the path to the testing folder does not exist, create the necessary directories
     if not os.path.exists(f"perturb_data/{dataset_name}_images/"):

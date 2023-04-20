@@ -233,11 +233,11 @@ def find_descriptors_removed(directory):
                 sum_changes += abs(change)
                 signed_changes += change
                 if change > 0:
-                    print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
-                elif change < 0:
                     print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
+                elif change < 0:
+                    print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
             if signed_changes < 0:
-                raise Exception(f"Some error caused this solution to shrink. This occurred in data set {i}.")
+                print(f"The overall explanation size changes by {-signed_changes}")
 
             tags_removed_count.append(tags_removed)
             changes_count.append(sum_changes)
