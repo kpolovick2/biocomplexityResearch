@@ -6,6 +6,31 @@ __email__ = "wcb8ze@virginia.edu"
 import random, math, os, shutil, re
 
 
+def string_descriptor_to_array(D):
+    """
+    takes in a descriptor set D and converts it into an array of arrays of integers
+    :param D: a list of descriptors (a descriptor set)
+    :return: void
+    """
+    # create an empty list of descriptors
+    descriptors = []
+    # split the descriptors
+    y_values = D.split("\n")
+    # for each descriptor in the set
+    for y in y_values:
+        # ensure that the line being interpreted is actually a descriptor
+        if len(y) != 0 and y[0] == "D":
+            # use a regular expression to find all the tags
+            d_re = re.findall(r'(?<=\[).*?(?=\])', y)
+            # split the tags into a list
+            descriptor = d_re[0].split(", ")
+            # add the list in array form to the array of arrays
+            descriptors.append([
+                int(tag) for tag in descriptor])
+
+    return descriptors
+
+
 def mat2_row_sum(matrix):
     """
     a helper function that sums the rows of a 2-dimensional list; do not use with lists of differing lengths

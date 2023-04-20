@@ -4,6 +4,7 @@ __email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 # this file includes imports of random, math, os, and shutil
 from perturb_utilities import *
+import ILP_linear as ilp
 
 
 def has_only_one_tag(item):
@@ -250,5 +251,18 @@ def remove_all_random(clusters, percent_removed, random_percent, cluster_index, 
         delta = remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, i)
     return delta
 
-# TODO: add a method that perturbs by selecting one of the tags from the
-#  descriptor and removing it from a few tags within the set
+
+def descriptor_tag_remove(filepath, iteration_number, dataset_name, item_number):
+    setup_directories(filepath)
+    data = parse_dataset(filepath)
+    cluster_index = data[item_number][1] - 1
+    solution = string_descriptor_to_array(ilp.ILP_linear(filepath))
+    descriptor = solution[cluster_index]
+
+    tags_used_from_descriptor = [d for d in descriptor if data[item_number][d]]
+    tag_to_remove = random.choice(tags_used_from_descriptor)
+    print(f"{data[item_number][27]}, {data[item_number][32]}")
+    data[item_number][tag_to_remove] = 0
+    print(f"{data[item_number][27]}, {data[item_number][32]}")
+    n, K, N, alpha, beta = return_parameters(data)
+    output_file_from_data(data, dataset_name, iteration_number)
