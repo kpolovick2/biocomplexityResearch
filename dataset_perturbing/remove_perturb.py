@@ -285,6 +285,15 @@ def descriptor_tag_remove(filepath, iteration_number, dataset_name, item_number)
     # generate an output file
     output_file_from_data(data, dataset_name, iteration_number)
     # TODO: add delta file generation
+    delta = f"{item_number}, {tag_to_remove}"
+
+    # generate a deltas file
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write to the deltas file
+        f.write(delta)
+
+    # TODO: determine why removals is zero but the data is removed
+
 
 # TODO: add a function that removes all tags from the descriptor that describe an item,
 #  ex: if the descriptor is [1, 2] and the item has tags 1 and 2, remove both of them
