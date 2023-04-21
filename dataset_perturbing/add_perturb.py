@@ -3,7 +3,7 @@ __author__ = "William Bradford, Keara Polovick"
 __email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 # includes imports of random, math, os, and shutil
-from add_multitag_conflict import *
+from add_multitag import *
 
 
 def add_all_random(clusters, percent_added, random_percent, cluster_index, N, delta):
@@ -414,3 +414,6 @@ def add_single_least_common(N, cluster, random_percent, percent_added, cluster_i
             # note which data item was given which tag
             delta += f"{cluster_index[current_cluster][index]}, {tag + 1} \n"
     return delta
+
+# TODO: add method that identifies the minimum number of tags required to
+#  change a description and adds them

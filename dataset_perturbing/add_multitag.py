@@ -1,8 +1,6 @@
-"""add_perturb.py: a set of functions for perturbing a dataset by adding tags"""
+"""add_multitag.py: a set of functions for perturbing a dataset by adding multiple tags"""
 __author__ = "William Bradford, Keara Polovick"
 __email__ = "wcb8ze@virginia.edu"
-
-# TODO: fix header
 
 from perturb_utilities import *
 
@@ -13,12 +11,15 @@ def multitag_random_single_cluster(
 ):
     """
     perturb a random amount of items in a cluster by adding num_tags tags
+
     :param filepath: the file path of the dataset
     :param percent_added: the percent of items that should be perturbed (0-100)
     :param number_generated: the number of perturbed datasets to generate
     :param random_percent: a boolean that causes the percent_added to be ignored if true and instead uses a random percent
-    :param cluster: the cluster to be perturbed
-    :param num_tags: the number of tags that should be added to each item
+    :param bottom_cluster:
+    :param top_cluster:
+    :param lowest_tagcount:
+    :param highest_tagcount:
     :return: void
     """
     # ------------------------------------
@@ -116,13 +117,8 @@ def add_multiple_random(
     :param num_tags: an int that specifies the number of tags to be added
     :return: delta: a list representing which tags were added to which items
     """
-<<<<<<< HEAD
     # choose a tag to add to the cluster
     tags = random.sample(range(N), num_tags)
-=======
-    # choose a random tag to add to the cluster
-    tags = [random.choice(range(N)) for i in range(num_tags)]
->>>>>>> origin/perturbing
     # find the number of items in the cluster
     cluster_size = len(cluster)
     # decide exactly which items will be perturbed

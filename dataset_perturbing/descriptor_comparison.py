@@ -11,31 +11,7 @@ import numpy as np
 import scipy
 
 import ILP_linear as ilp_solve
-
-
-def string_descriptor_to_array(D):
-    """
-    takes in a descriptor set D and converts it into an array of arrays of integers
-    :param D: a list of descriptors (a descriptor set)
-    :return: void
-    """
-    # create an empty list of descriptors
-    descriptors = []
-    # split the descriptors
-    y_values = D.split("\n")
-    # for each descriptor in the set
-    for y in y_values:
-        # ensure that the line being interpreted is actually a descriptor
-        if len(y) != 0 and y[0] == "D":
-            # use a regular expression to find all the tags
-            d_re = re.findall(r'(?<=\[).*?(?=\])', y)
-            # split the tags into a list
-            descriptor = d_re[0].split(", ")
-            # add the list in array form to the array of arrays
-            descriptors.append([
-                int(tag) for tag in descriptor])
-
-    return descriptors
+from perturb_utilities import *
 
 
 def find_descriptors_added(directory):
@@ -122,13 +98,18 @@ def find_descriptors_added(directory):
             print("Cluster changes:")
             # create a variable to store the total number of changes relative to the original dataset
             sum_changes = 0
+            signed_changes = 0
             # print the changes in the cluster
             for j, change in enumerate(descriptor_set):
                 sum_changes += abs(change)
+                signed_changes += change
                 if change > 0:
-                    print(f"Some error is causing cluster {j} of dataset {i} to grow larger")
+                    print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
                 elif change < 0:
-                    print(f"Cluster {j+1} of the dataset {i} shrinks by {abs(change)}")
+                    print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
+            if signed_changes > 0:
+                raise Exception(f"Some error caused this solution to grow larger. This occurred in data set {i}.")
+
             tags_added_count.append(tags_added)
             changes_count.append(sum_changes)
     plot_tag_additions(tags_added_count, changes_count, directory)
@@ -166,8 +147,99 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     lower_y = min(changes_count) - 1
 
     print(f"R value: {r_value}")
+    n = len(changes_count)
+    test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2)**0.5))
+    print(f"Test statistic: {test_stat}")
 
     plt.xlim([lower_x, upper_x])
     plt.ylim([lower_y, upper_y])
     # show the plot
     plt.show()
+
+
+def find_descriptors_removed(directory):
+    """
+    find the descriptors of the datasets in the given directory, use when tags are removed
+    :param directory: the name of the directory within perturb_data
+    :return: void
+    """
+    # generate a list of the files to test
+    test_files = os.listdir(f"perturb_data/{directory}/")
+    delta_files = os.listdir(f"perturb_data/{directory}_delta/")
+    # create an empty list of solutions
+    solutions = []
+    # for each data set
+    for file in test_files:
+        print(file)
+        # add each solution to the solutions array
+        solutions.append(ilp_solve.ILP_linear(f"perturb_data/{directory}/{file}"))
+
+    # create an empty list of deltas
+    deltas_text = ["" for i in range(len(delta_files))]
+    # for each delta
+    for i, file in enumerate(delta_files):
+        # open the file
+        with open(f"perturb_data/{directory}_delta/{file}") as f:
+            # read the file
+            deltas_text[i] = f.read()
+
+    # create an empty list of deltas
+    deltas = []
+    # for each delta set
+    for delta in deltas_text:
+        # split on new line
+        deltas_temp = delta.split("\n")
+        # for each delta
+        for i, d in enumerate(deltas_temp):
+            # if the delta length is greater than 0
+            if len(d) != 0:
+                # split the lines on commas
+                deltas_temp[i] = [int(number) for number in d.split(", ")]
+        # append the list of deltas, remove last index because it is always empty
+        deltas.append(deltas_temp[:len(deltas_temp)-1])
+
+    # create an empty list of sets of descriptors
+    descriptors = []
+    # for each descriptor set
+    for s in solutions:
+        # append the string form of each descriptor set to the list of descriptor sets
+        descriptors.append(string_descriptor_to_array(s))
+
+    # generate a list of the sizes of each descriptor
+    descriptor_sizes = [[len(descriptors[i][j]) for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
+
+    # copy the elements of descriptor_sizes at i > 0, then take the difference
+    # between those rows and the first row of descriptor_sizes to obtain the change in sizes
+    change_size = [[item - descriptor_sizes[0][j] for j, item in enumerate(size)] for size in descriptor_sizes]
+
+    tags_removed_count = []
+    changes_count = []
+
+    # for each descriptor set
+    for i, descriptor_set in enumerate(change_size):
+        # skip the first descriptor set because it will not be different from itself
+        if i != 0:
+            print("-------------------\nRemoval(s) from the dataset:")
+            # print which tags were removed from the dataset
+            for j, pair in enumerate(deltas[i-1]):
+                print(f"Tag {pair[1]} removed from item {pair[0]}")
+                # store the number of tags removed
+                tags_removed = len(deltas[i-1])
+            print("Cluster changes:")
+            # create a variable to store the total number of changes relative to the original dataset
+            sum_changes = 0
+            signed_changes = 0
+            # print the changes in the cluster
+            for j, change in enumerate(descriptor_set):
+                sum_changes += abs(change)
+                signed_changes += change
+                if change > 0:
+                    print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
+                elif change < 0:
+                    print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
+            if signed_changes < 0:
+                print(f"The overall explanation size changes by {-signed_changes}")
+
+            tags_removed_count.append(tags_removed)
+            changes_count.append(sum_changes)
+    # plot_tag_additions(tags_removed_count, changes_count, directory)

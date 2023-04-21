@@ -5,6 +5,43 @@ __email__ = "wcb8ze@virginia.edu"
 
 import random, math, os, shutil, re
 
+def generate_delta_file(delta, dataset_name, iteration_number):
+    """
+    generate a file that corresponds to the changes made to the dataset with iteration number iteration_number
+    :param delta: a string representing the changes made to the dataset
+    :param dataset_name: the name of the dataset
+    :param iteration_number: the iteration number
+    :return: void
+    """
+    # generate a deltas file
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write to the deltas file
+        f.write(delta)
+
+def string_descriptor_to_array(D):
+    """
+    takes in a descriptor set D and converts it into an array of arrays of integers
+    :param D: a list of descriptors (a descriptor set)
+    :return: void
+    """
+    # create an empty list of descriptors
+    descriptors = []
+    # split the descriptors
+    y_values = D.split("\n")
+    # for each descriptor in the set
+    for y in y_values:
+        # ensure that the line being interpreted is actually a descriptor
+        if len(y) != 0 and y[0] == "D":
+            # use a regular expression to find all the tags
+            d_re = re.findall(r'(?<=\[).*?(?=\])', y)
+            # split the tags into a list
+            descriptor = d_re[0].split(", ")
+            # add the list in array form to the array of arrays
+            descriptors.append([
+                int(tag) for tag in descriptor])
+
+    return descriptors
+
 
 def mat2_row_sum(matrix):
     """
@@ -101,11 +138,21 @@ def setup_directories(filepath):
     if not os.path.exists(f"perturb_data/{dataset_name}/"):
         # create directory
         os.makedirs(f"perturb_data/{dataset_name}/")
+    else:
+        # empty directory
+        files = os.listdir(f"perturb_data/{dataset_name}_delta/")
+        for file in files:
+            os.remove(f"perturb_data/{dataset_name}_delta/{file}")
 
     # if the path to the testing folder does not exist, create the necessary directories
     if not os.path.exists(f"perturb_data/{dataset_name}_delta/"):
         # create directory
         os.makedirs(f"perturb_data/{dataset_name}_delta/")
+    else:
+        # empty directory
+        files = os.listdir(f"perturb_data/{dataset_name}_delta/")
+        for file in files:
+            os.remove(f"perturb_data/{dataset_name}_delta/{file}")
 
     # if the path to the testing folder does not exist, create the necessary directories
     if not os.path.exists(f"perturb_data/{dataset_name}_images/"):
@@ -196,6 +243,21 @@ def get_cluster_tags(cluster):
             if tag == 1 and i not in tags:
                 tags.append(i)
     return tags
+
+
+def sample_with_exclusion(lower, upper, exclude, n):
+    """
+    generate a random number from a set of numbers while excluding a set of numbers
+    :param lower: the lower bound of the range
+    :param upper: the upper bound of the range
+    :param exclude: a list of numbers to be excluded from the sampling
+    :param n: the number of numbers to be returned (sampled)
+    :return: a list of n numbers within the specified range that are not contained within the exclude list
+    """
+    # generate a random sample, but exclude the excluded values
+    s = set(range(lower, upper)) - set(exclude)
+    # cast back to a list and return
+    return random.sample(list(s), n)
 
 
 def get_items_to_perturb(cluster, random_percent, percent_added):

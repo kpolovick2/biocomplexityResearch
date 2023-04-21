@@ -4,6 +4,7 @@ __email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 # this file includes imports of random, math, os, and shutil
 from perturb_utilities import *
+import ILP_linear as ilp
 
 
 def has_only_one_tag(item):
@@ -23,9 +24,34 @@ def has_only_one_tag(item):
         # if the tag count is greater than one
         if tag_count > 1:
             # early exit
-            return False
+            return tag_count == 1
     # return true if tag_count == 1
     return tag_count == 1
+
+
+def get_items_to_remove(cluster, random_percent, percent_added):
+    """
+    a helper function that returns a list of items to perturb
+    :param cluster: a cluster in list form
+    :param random_percent: a boolean determining whether the percent of items perturbed is random
+    :param percent_added: a percent (0-100) of the items in the cluster that should be perturbed
+    :return: a list of items to be perturbed
+    """
+    cluster_size = len(cluster)
+    items_with_one_tag = [i for i, item in enumerate(cluster) if has_only_one_tag(item)]
+    # perturb at most percent_added percent of the cluster
+    if cluster_size == 0:
+        # if the cluster is empty (which should only happen in the 0 cluster), do not perturb any tags
+        num_items_perturbed = 0
+    elif random_percent:
+        # if random_percent is true, then pick a random number of tags to perturb
+        num_items_perturbed = random.choice(range(1, cluster_size + 1 - len(items_with_one_tag)))
+    else:
+        # if random_percent is false, find the percentage of the items in the cluster to be perturbed
+        num_items_perturbed = math.floor(percent_added / 100 * cluster_size)
+    # decide exactly which items will be perturbed
+    items_perturbed = sample_with_exclusion(0, cluster_size, items_with_one_tag, num_items_perturbed)
+    return items_perturbed
 
 
 def remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, current_cluster):
@@ -46,7 +72,7 @@ def remove_single_random(N, cluster, random_percent, percent_removed, cluster_in
     # choose a tag to remove from the cluster
     tag = random.choice(get_cluster_tags(cluster))
     # decide exactly which items will be perturbed
-    items_perturbed = get_items_to_perturb(cluster, random_percent, percent_removed)
+    items_perturbed = get_items_to_remove(cluster, random_percent, percent_removed)
     # iterate through the items to be perturbed
     for index in items_perturbed:
         # if the tag is in fact in the item
@@ -225,3 +251,86 @@ def remove_all_random(clusters, percent_removed, random_percent, cluster_index, 
         delta = remove_single_random(N, cluster, random_percent, percent_removed, cluster_index, delta, i)
     return delta
 
+
+def descriptor_tag_remove_internal(filepath, iteration_number, dataset_name, item_number):
+    """
+    removes one of the tags that describes the specified item from that item
+    :param filepath: a path to the file to be perturbed
+    :param iteration_number: a number to append to the end of the filename
+    :param dataset_name: the name of the dataset
+    :param item_number: the number of the item to be perturbed
+    :return: void
+    """
+    # set up the directories needed to store the test data
+    setup_directories(filepath)
+    # parse the dataset into a list of lists
+    data = parse_dataset(filepath)
+    # get the index of the cluster of the item
+    cluster_index = data[item_number][1] - 1
+    # find the solution to the ILP
+    solution = string_descriptor_to_array(ilp.ILP_linear(filepath))
+    # find the descriptor of the cluster containing the item to be perturbed
+    descriptor = solution[cluster_index]
+
+    # find the tags in the descriptor that match tags within the item
+    tags_used_from_descriptor = [d for d in descriptor if data[item_number][d+1]]
+    # randomly choose a tag from the descriptor to remove
+    tag_to_remove = random.choice(tags_used_from_descriptor)
+    # TODO: determine why something sus is happening here
+    # remove the tag
+    data[item_number][tag_to_remove + 1] = 0
+
+    # generate an output file
+    output_file_from_data(data, dataset_name, iteration_number)
+    # generate the contents of the delta file,
+    delta = f"{item_number}, {tag_to_remove}\n"
+
+    # generate a deltas file
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write to the deltas file
+        f.write(delta)
+
+
+def remove_all_descriptor_tags_internal(filepath, dataset_name, item_number):
+    """
+    removes one of the tags that describes the specified item from that item
+    :param filepath: a path to the file to be perturbed
+    :param iteration_number: a number to append to the end of the filename
+    :param dataset_name: the name of the dataset
+    :param item_number: the number of the item to be perturbed
+    :return: void
+    """
+    # parse the dataset into a list of lists
+    data = parse_dataset(filepath)
+    # get the index of the cluster of the item
+    cluster_index = data[item_number][1] - 1
+    # find the solution to the ILP
+    solution = string_descriptor_to_array(ilp.ILP_linear(filepath))
+    # find the descriptor of the cluster containing the item to be perturbed
+    descriptor = solution[cluster_index]
+
+    delta = ""
+
+    # find the tags in the descriptor that match tags within the item
+    tags_used_from_descriptor = [d for d in descriptor if data[item_number][d+1] == 1]
+    # if len(tags_used_from_descriptor) == data[3]:
+    data[0][3] += 1
+    data[0][4] += 0
+    for tag in tags_used_from_descriptor:
+        # remove each tag in the descriptor from the item
+        data[item_number][tag+1] = 0
+        delta += f"{item_number}, {tag}\n"
+
+    # generate an output file
+    output_file_from_data(data, dataset_name, item_number)
+    # generate the contents of the delta file,
+    generate_delta_file(delta, dataset_name, item_number)
+
+
+# TODO: make a method that runs n number of perturbations with the
+#  remove_all_descriptor_tags method, one run per item
+def remove_all_descriptor_tags_for_each_item(filepath, dataset_name, n):
+    # set up the directories needed to store the test data
+    setup_directories(filepath)
+    for i in range(1, n + 1):
+        remove_all_descriptor_tags_internal(filepath, dataset_name, i)
