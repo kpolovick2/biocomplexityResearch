@@ -128,14 +128,14 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
 
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.plot(tags_added_count, changes_count, 'o', color='#EA9E8D')
+    plt.plot(tags_added_count, changes_count, 'o', '#EA9E8D')
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
     # generate an array of 120 evenly spaced samples of horizontal values
-    x = np.linspace(min(tags_added_count), max(tags_added_count), num=120)
+    x = np.linspace(min(tags_added_count), max(tags_added_count), 120)
     # plot the line of best fit
-    plt.plot(x, m * x + b, color="#D64550", lw=2.5)
+    plt.plot(x, m * x + b, "#D64550", 2.5)
     # save a new image in the dataset's images folder
     plt.savefig(f"perturb_data/{directory}_images/"
                 f"{directory}_{len(os.listdir(f'perturb_data/{directory}_images/'))}.png")

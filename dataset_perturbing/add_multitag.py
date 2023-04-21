@@ -1,6 +1,6 @@
 """add_multitag.py: a set of functions for perturbing a dataset by adding multiple tags"""
 __author__ = "William Bradford, Keara Polovick"
-__email__ = "wcb8ze@virginia.edu"
+__email__ = "wcb8ze@virginia.edu, uzy2ws@virginia.edu"
 
 from perturb_utilities import *
 
