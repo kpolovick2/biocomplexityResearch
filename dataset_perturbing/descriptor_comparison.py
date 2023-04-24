@@ -9,6 +9,7 @@ import scipy as scipy
 from matplotlib import pyplot as plt
 import numpy as np
 import scipy
+import csv
 
 import ILP_linear as ilp_solve
 from perturb_utilities import *
@@ -150,6 +151,7 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     n = len(changes_count)
     test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2)**0.5))
     print(f"Test statistic: {test_stat}")
+    print(f"P-value: {scipy.stats.norm.sf(abs(test_stat)) * 2}")
 
     plt.xlim([lower_x, upper_x])
     plt.ylim([lower_y, upper_y])
@@ -237,9 +239,16 @@ def find_descriptors_removed(directory):
                     print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
                 elif change < 0:
                     print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
-            if signed_changes < 0:
-                print(f"The overall explanation size changes by {-signed_changes}")
+            print(f"The overall explanation size changes by {-signed_changes}")
 
             tags_removed_count.append(tags_removed)
-            changes_count.append(sum_changes)
-    # plot_tag_additions(tags_removed_count, changes_count, directory)
+            changes_count.append(signed_changes)
+    write_data(directory, tags_removed_count, changes_count)
+
+def write_data(directory, tag_count, change_count):
+    with open(f"perturb_data/{directory}.csv", "a") as f:
+        datawriter = csv.writer(f, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        tag_count.insert(0, f"Tags added/removed for {directory}")
+        datawriter.writerow(tag_count)
+        change_count.insert(0, f"Cluster Changes for {directory}")
+        datawriter.writerow(change_count)

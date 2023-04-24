@@ -6,6 +6,8 @@ import add_perturb
 import remove_perturb
 import descriptor_comparison
 
+# TODO: incremental computation of descriptors
+
 dataset = "300n_6K_40N_4a_1b"
 
 # on the dataset "9x28," the test statistic of the test for absence of correlation is -1.2525

@@ -105,6 +105,9 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         # that describes item i (re-indexing at 0)
         d_tag = describing_tag[i]
 
+        # TODO: modify generation to add tags to items which have very few tags,
+        #  delete from items which are described by a large number of tags
+
         # generate a number of tags for the data item to have
         num_tags = random.choice(range(min_tags - 1, max_tags - 1))
         # generate the tags to add by selecting from a range of tag values
