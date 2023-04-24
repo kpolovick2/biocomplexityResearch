@@ -53,7 +53,7 @@ def find_descriptors_added(directory):
                 # split the lines on commas
                 deltas_temp[i] = [int(number) for number in d.split(", ")]
         # append the list of deltas, remove last index because it is always empty
-        deltas.append(deltas_temp[:len(deltas_temp)-1])
+        deltas.append(deltas_temp[:len(deltas_temp)])
 
     # create an empty list of sets of descriptors
     descriptors = []
@@ -67,7 +67,7 @@ def find_descriptors_added(directory):
 
     # copy the elements of descriptor_sizes at i > 0, then take the difference
     # between those rows and the first row of descriptor_sizes to obtain the change in sizes
-    change_size = [[item - descriptor_sizes[0][j] for j, item in enumerate(size)] for size in descriptor_sizes]
+    change_size = [sum([item - descriptor_sizes[0][j] for j, item in enumerate(size)]) for size in descriptor_sizes]
 
     # copy the descriptors list and call it diff
     # this is done in this manner because it copies the memory address of the internal lists we use descriptors.copy()
@@ -87,32 +87,36 @@ def find_descriptors_added(directory):
     changes_count = []
 
     # for each descriptor set
-    for i, descriptor_set in enumerate(change_size):
+    for i, signed_changes in enumerate(change_size[1:]):
         # skip the first descriptor set because it will not be different from itself
         if i != 0:
-            print("-------------------\nAddition(s) to the dataset:")
+            # print("-------------------\nAddition(s) to the dataset:")
             # print which tags were added to the dataset
-            for j, pair in enumerate(deltas[i-1]):
-                print(f"Tag {pair[1]} added to item {pair[0]}")
+
             # store the number of tags added
-            tags_added = len(deltas[i-1])
-            print("Cluster changes:")
+            tags_added = len(deltas[i - 1])
+
+            # for j, pair in enumerate(deltas[i-1]):
+            #     if tags_added != 0:
+            #         print(f"Tag {pair[1]} added to item {pair[0]}")
+            # print("Cluster changes:")
             # create a variable to store the total number of changes relative to the original dataset
-            sum_changes = 0
-            signed_changes = 0
+
             # print the changes in the cluster
-            for j, change in enumerate(descriptor_set):
-                sum_changes += abs(change)
-                signed_changes += change
-                if change > 0:
-                    print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
-                elif change < 0:
-                    print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
-            if signed_changes > 0:
-                raise Exception(f"Some error caused this solution to grow larger. This occurred in data set {i}.")
+            # for j, change in enumerate(descriptor_set):
+            #     sum_changes += abs(change)
+            #     signed_changes += change
+            #     if change > 0:
+            #         print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
+            #     elif change < 0:
+            #         print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
+            #     if tags_added == 0 and signed_changes != 0:
+            #         raise Exception(f"WHAT {i} : {deltas[i-1]}")
+            # if signed_changes < 0:
+            #     raise Exception(f"Some error caused this solution to grow larger. This occurred in data set {i}. {change_size[i-1]}")
 
             tags_added_count.append(tags_added)
-            changes_count.append(sum_changes)
+            changes_count.append(signed_changes)
     plot_tag_additions(tags_added_count, changes_count, directory)
 
 
@@ -129,7 +133,7 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
 
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.plot(tags_added_count, changes_count, 'o', '#EA9E8D')
+    plt.plot(tags_added_count, changes_count, 'o', color='#EA9E8D')
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
@@ -242,7 +246,7 @@ def find_descriptors_removed(directory):
             print(f"The overall explanation size changes by {-signed_changes}")
 
             tags_removed_count.append(tags_removed)
-            changes_count.append(signed_changes)
+            changes_count.append(-signed_changes)
     write_data(directory, tags_removed_count, changes_count)
 
 def write_data(directory, tag_count, change_count):

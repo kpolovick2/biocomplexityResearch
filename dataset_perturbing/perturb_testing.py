@@ -8,7 +8,7 @@ import descriptor_comparison
 
 # TODO: incremental computation of descriptors
 
-dataset = "300n_6K_40N_4a_1b"
+dataset = "add_perturb_test"
 
 # on the dataset "9x28," the test statistic of the test for absence of correlation is -1.2525
 #               this means that the p-value is 0.23, meaning we do not have enough evidence to reject
@@ -17,5 +17,8 @@ dataset = "300n_6K_40N_4a_1b"
 
 # add_perturb.add_tag_to_item(f"../test_txt_files/{dataset}.txt", 1, 1)
 # remove_perturb.remove_all_descriptor_tags_internal(f"../test_txt_files/{dataset}.txt", dataset, 1)
-remove_perturb.remove_all_descriptor_tags_for_each_item(f"../test_txt_files/{dataset}.txt", dataset, 300)
-descriptor_comparison.find_descriptors_removed(dataset)
+# remove_perturb.remove_all_descriptor_tags_for_each_item(f"../test_txt_files/{dataset}.txt", dataset, 300)
+# descriptor_comparison.find_descriptors_removed(dataset)
+
+add_perturb.random_all_clusters(f"../test_txt_files/{dataset}.txt", 50, 12000, False)
+descriptor_comparison.find_descriptors_added(dataset)
