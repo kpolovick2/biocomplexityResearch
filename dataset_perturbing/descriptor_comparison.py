@@ -92,11 +92,20 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     :param directory: the name of the directory
     :return: void
     """
-    point_frequency = [[0 for i in range(max(tags_added_count))]
-                       for j in range(max(changes_count))]
-    for tags in tags_added_count:
-        for changes in changes_count:
-            point_frequency[changes-1][tags-1] += 1
+    # generate a list of lists to store point frequencies
+    point_frequency = [[0 for i in range(max(changes_count) + 1)]
+                       for j in range(max(tags_added_count) + 1)]
+
+    # store the number of occurrences of each point
+    for (i, tags) in enumerate(tags_added_count):
+        # increment the value of the index in the array corresponding to each point
+        point_frequency[tags][changes_count[i]] += 1
+
+    # create an array to store the color values of points in the scatter plot
+    # this works by looking up the frequencies of each point (stored in point_frequency)
+    # and storing it in the index that corresponds to the point that has been looked up
+    colors = [point_frequency[tags][changes_count[i]] for (i, tags) in enumerate(tags_added_count)]
+
 
     plt.ylabel("Cluster size", rotation=90)
     plt.xlabel("Tags added", rotation=0)
@@ -104,14 +113,14 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     #     point_frequency[(t - min_t) * (1 + changes_count[i] - min_c)] += 1
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.scatter(tags_added_count, changes_count, c=tags_added_count, cmap='cool')
+    plt.scatter(tags_added_count, changes_count, c=colors, cmap='cool')
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
     # generate an array of 120 evenly spaced samples of horizontal values
     x = np.linspace(min(tags_added_count), max(tags_added_count), 120)
     # plot the line of best fit
-    plt.plot(x, m * x + b, "#D64550", 2.5)
+    plt.plot(x, m * x + b, "#521471", 2.5)
     # save a new image in the dataset's images folder
     plt.savefig(f"perturb_data/{directory}_images/"
                 f"{directory}_{len(os.listdir(f'perturb_data/{directory}_images/'))}.png")
