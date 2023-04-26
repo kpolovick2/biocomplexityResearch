@@ -48,7 +48,7 @@ def find_descriptors_added(directory):
     # for each delta set
     for delta in deltas_text:
         # split on new line
-        deltas_temp = delta.split("\n")
+        deltas_temp = delta.split("\n")[:-1]
         # for each delta
         for i, d in enumerate(deltas_temp):
             # if the delta length is greater than 0
@@ -64,19 +64,18 @@ def find_descriptors_added(directory):
     for s in solutions:
         # append the string form of each descriptor set to the list of descriptor sets
         descriptors.append(string_descriptor_to_array(s))
-        print(string_descriptor_to_array(s))
 
-    # generate a list of the sizes of each descriptor
-    descriptor_sizes = [[len(descriptors[i][j]) for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
+    # generate a list of the sizes of each explanation
     explanation_sizes = [sum([len(descriptors[i][j]) for j in range(len(descriptors[i]))])
                          for i in range(len(descriptors))][1:]
+
     tags_added_count = []
     changes_count = []
 
     # for each descriptor set
     for i, signed_changes in enumerate(explanation_sizes):
         # skip the first descriptor set because it will not be different from itself
-        tags_added = len(deltas[i]) - 1
+        tags_added = len(deltas[i])
 
         tags_added_count.append(tags_added)
         changes_count.append(signed_changes)
