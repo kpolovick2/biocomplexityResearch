@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import scipy
 import csv
+from colour import Color
 
 import ILP_linear as ilp_solve
 from perturb_utilities import *
@@ -24,6 +25,8 @@ def find_descriptors_added(directory):
     # generate a list of the files to test
     test_files = os.listdir(f"perturb_data/{directory}/")
     delta_files = os.listdir(f"perturb_data/{directory}_delta/")
+    test_files.sort()
+    delta_files.sort()
     # create an empty list of solutions
     solutions = []
     # for each data set
@@ -61,62 +64,22 @@ def find_descriptors_added(directory):
     for s in solutions:
         # append the string form of each descriptor set to the list of descriptor sets
         descriptors.append(string_descriptor_to_array(s))
+        print(string_descriptor_to_array(s))
 
     # generate a list of the sizes of each descriptor
     descriptor_sizes = [[len(descriptors[i][j]) for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
-
-    # copy the elements of descriptor_sizes at i > 0, then take the difference
-    # between those rows and the first row of descriptor_sizes to obtain the change in sizes
-    change_size = [sum([item - descriptor_sizes[0][j] for j, item in enumerate(size)]) for size in descriptor_sizes]
-
-    # copy the descriptors list and call it diff
-    # this is done in this manner because it copies the memory address of the internal lists we use descriptors.copy()
-    # diff = [[descriptors[i][j].copy() for j in range(len(descriptors[i]))] for i in range(len(descriptors))]
-    # # for each descriptor set in the set of descriptor sets
-    # for i, descriptor_set in enumerate(descriptors):
-    #     # for descriptor in the descriptor set
-    #     for j, descriptor in enumerate(descriptor_set):
-    #         # for each tag in the descriptor
-    #         for k, tag in enumerate(descriptor):
-    #             # cast to an int
-    #             descriptors[i][j][k] = tag
-    #             # set the value in the diff array to the difference between the two tags
-    #             diff[i][j][k] = descriptors[0][j][k] - descriptors[i][j][k]
-
+    explanation_sizes = [sum([len(descriptors[i][j]) for j in range(len(descriptors[i]))])
+                         for i in range(len(descriptors))][1:]
     tags_added_count = []
     changes_count = []
 
     # for each descriptor set
-    for i, signed_changes in enumerate(change_size[1:]):
+    for i, signed_changes in enumerate(explanation_sizes):
         # skip the first descriptor set because it will not be different from itself
-        if i != 0:
-            # print("-------------------\nAddition(s) to the dataset:")
-            # print which tags were added to the dataset
+        tags_added = len(deltas[i]) - 1
 
-            # store the number of tags added
-            tags_added = len(deltas[i - 1])
-
-            # for j, pair in enumerate(deltas[i-1]):
-            #     if tags_added != 0:
-            #         print(f"Tag {pair[1]} added to item {pair[0]}")
-            # print("Cluster changes:")
-            # create a variable to store the total number of changes relative to the original dataset
-
-            # print the changes in the cluster
-            # for j, change in enumerate(descriptor_set):
-            #     sum_changes += abs(change)
-            #     signed_changes += change
-            #     if change > 0:
-            #         print(f"Cluster {j+1} of dataset {i} grows by {abs(change)}")
-            #     elif change < 0:
-            #         print(f"Cluster {j+1} of dataset {i} shrinks by {abs(change)}")
-            #     if tags_added == 0 and signed_changes != 0:
-            #         raise Exception(f"WHAT {i} : {deltas[i-1]}")
-            # if signed_changes < 0:
-            #     raise Exception(f"Some error caused this solution to grow larger. This occurred in data set {i}. {change_size[i-1]}")
-
-            tags_added_count.append(tags_added)
-            changes_count.append(signed_changes)
+        tags_added_count.append(tags_added)
+        changes_count.append(signed_changes)
     plot_tag_additions(tags_added_count, changes_count, directory)
 
 
@@ -130,10 +93,19 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     :param directory: the name of the directory
     :return: void
     """
+    min_t = min(tags_added_count)
+    min_c = min(changes_count)
+    point_frequency = [0 for i in range((max(tags_added_count) - min(tags_added_count))
+                                        * (max(changes_count) - min(changes_count)))]
 
+    plt.ylabel("Cluster size", rotation=90)
+    plt.xlabel("Tags added", rotation=0)
+    # for (i, t) in enumerate(tags_added_count):
+    #     point_frequency[(t - min_t) * (1 + changes_count[i] - min_c)] += 1
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.plot(tags_added_count, changes_count, 'o', color='#EA9E8D')
+    # TODO: determine why a cluster can be size 3 when tags_added is 1
+    plt.plot(tags_added_count, changes_count, 'o')
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
@@ -153,7 +125,8 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
 
     print(f"R value: {r_value}")
     n = len(changes_count)
-    test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2)**0.5))
+    # calculate the test statistic, or set it to a very high number if the r value is 1 or -1 to avoid division by zero
+    test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2))**0.5) if abs(r_value) != 1.0 else 10000.0
     print(f"Test statistic: {test_stat}")
     print(f"P-value: {scipy.stats.norm.sf(abs(test_stat)) * 2}")
 
