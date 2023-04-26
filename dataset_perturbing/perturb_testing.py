@@ -21,4 +21,4 @@ dataset = "add_perturb_test"
 # descriptor_comparison.find_descriptors_removed(dataset)
 
 add_perturb.random_all_clusters(f"../test_txt_files/{dataset}.txt", 50, 1200, False)
-descriptor_comparison.find_descriptors_added(dataset)
+descriptor_comparison.find_descriptors(dataset)

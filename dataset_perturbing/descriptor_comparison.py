@@ -16,7 +16,7 @@ import ILP_linear as ilp_solve
 from perturb_utilities import *
 
 
-def find_descriptors_added(directory):
+def find_descriptors(directory):
     """
     find the descriptors of the datasets in the given directory
     :param directory: the name of the directory within perturb_data
@@ -92,10 +92,11 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     :param directory: the name of the directory
     :return: void
     """
-    min_t = min(tags_added_count)
-    min_c = min(changes_count)
-    point_frequency = [0 for i in range((max(tags_added_count) - min(tags_added_count))
-                                        * (max(changes_count) - min(changes_count)))]
+    point_frequency = [[0 for i in range(max(tags_added_count))]
+                       for j in range(max(changes_count))]
+    for tags in tags_added_count:
+        for changes in changes_count:
+            point_frequency[changes-1][tags-1] += 1
 
     plt.ylabel("Cluster size", rotation=90)
     plt.xlabel("Tags added", rotation=0)
@@ -103,8 +104,7 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     #     point_frequency[(t - min_t) * (1 + changes_count[i] - min_c)] += 1
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    # TODO: determine why a cluster can be size 3 when tags_added is 1
-    plt.plot(tags_added_count, changes_count, 'o')
+    plt.scatter(tags_added_count, changes_count, c=tags_added_count, cmap='cool')
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
