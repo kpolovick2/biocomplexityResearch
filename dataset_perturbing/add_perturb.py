@@ -369,6 +369,8 @@ def add_tag_to_item(filepath, item, tag):
     data = parse_dataset(filepath)
     # add the tag to the specified item
     data[item][tag + 1] = 1
+    delta = f"{item}, {tag}\n"
+    generate_delta_file(delta, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
@@ -429,10 +431,13 @@ def add_tags_to_item(filepath, item, tags):
     dataset_name = setup_directories(filepath)
     # parse the input dataset
     data = parse_dataset(filepath)
+    deltas = ""
     # for each tag in the list of tags
     for tag in tags:
         # add the tag to the specified item
         data = add_tag_to_data(data, item, tag)
+        deltas += f"{item}, {tag}\n"
+    generate_delta_file(deltas, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
@@ -449,12 +454,14 @@ def add_tags_to_items(filepath, items, tags):
     dataset_name = setup_directories(filepath)
     # parse the input dataset
     data = parse_dataset(filepath)
+    deltas = ""
     # for each item
     for (i, item) in enumerate(items):
         # for each list of tags corresponding to that item
         for tag in tags[i]:
             # add the tag to the specified item
             data = add_tag_to_data(data, item, tag)
+            deltas += f"{item}, {tag}\n"
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
