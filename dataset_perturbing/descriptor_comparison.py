@@ -101,6 +101,7 @@ def plot_tag_vs_explanation(tag_change_count, changes_count, directory):
                        for j in range(max(tag_change_count) + 1)]
 
     max_freq = 0
+    min_freq = math.inf
     # store the number of occurrences of each point
     for (i, tags) in enumerate(tag_change_count):
         # increment the value of the index in the array corresponding to each point
@@ -109,6 +110,11 @@ def plot_tag_vs_explanation(tag_change_count, changes_count, directory):
         max_freq = point_frequency[tags][changes_count[i]] \
             if point_frequency[tags][changes_count[i]] > max_freq \
             else max_freq
+
+    for (i, tags) in enumerate(tag_change_count):
+        min_freq = point_frequency[tags][changes_count[i]] \
+            if point_frequency[tags][changes_count[i]] < min_freq \
+            else min_freq
 
     # create an array to store the color values of points in the scatter plot
     # this works by looking up the frequencies of each point (stored in point_frequency)
@@ -137,7 +143,7 @@ def plot_tag_vs_explanation(tag_change_count, changes_count, directory):
     # set the padding of the color legend
     colorbar.ax.get_yaxis().labelpad = 15
     # set the number of y ticks to be at 3, positioned at the bottom, middle, and top
-    colorbar.ax.set_yticks([0.0, max_freq / 2, max_freq])
+    colorbar.ax.set_yticks([min_freq, ((max_freq - min_freq) / 2) + min_freq, max_freq])
     # label the ticks low, medium, and high
     colorbar.ax.set_yticklabels(['Low', 'Medium', 'High'])
     # set the label of the color legend
