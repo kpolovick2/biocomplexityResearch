@@ -26,6 +26,7 @@ def find_descriptors(directory):
     # generate a list of the files to test
     test_files = os.listdir(f"perturb_data/{directory}/")
     delta_files = os.listdir(f"perturb_data/{directory}_delta/")
+    # sort the lists to ensure they are properly matched
     test_files.sort()
     delta_files.sort()
     # create an empty list of solutions
@@ -48,7 +49,7 @@ def find_descriptors(directory):
     deltas = []
     # for each delta set
     for delta in deltas_text:
-        # split on new line
+        # split on new line, remove the empty character at the end of the list
         deltas_temp = delta.split("\n")[:-1]
         # for each delta
         for i, d in enumerate(deltas_temp):
@@ -57,7 +58,7 @@ def find_descriptors(directory):
                 # split the lines on commas
                 deltas_temp[i] = [int(number) for number in d.split(", ")]
         # append the list of deltas, remove last index because it is always empty
-        deltas.append(deltas_temp[:len(deltas_temp)])
+        deltas.append(deltas_temp)
 
     # create an empty list of sets of descriptors
     descriptors = []
@@ -70,23 +71,25 @@ def find_descriptors(directory):
     explanation_sizes = [sum([len(descriptors[i][j]) for j in range(len(descriptors[i]))])
                          for i in range(len(descriptors))][1:]
 
-    tags_added_count = []
+    tag_changes_count = []
     changes_count = []
 
     # for each descriptor set
-    for i, signed_changes in enumerate(explanation_sizes):
+    for i, exp_size in enumerate(explanation_sizes):
         # skip the first descriptor set because it will not be different from itself
         tags_added = len(deltas[i])
+        # add the added tags to the list of tags added
+        tag_changes_count.append(tags_added)
+        # add the explanation size to the list of changes
+        changes_count.append(exp_size)
 
-        tags_added_count.append(tags_added)
-        changes_count.append(signed_changes)
-    plot_tag_additions(tags_added_count, changes_count, directory)
+    plot_tag_vs_explanation(tag_changes_count, changes_count, directory)
 
 
-def plot_tag_additions(tags_added_count, changes_count, directory):
+def plot_tag_vs_explanation(tag_change_count, changes_count, directory):
     """
     a helper function that plots the graph of descriptor changes over tag additions
-    :param tags_added_count: a list that contains the tags added and
+    :param tag_change_count: a list that contains the tags added and
     corresponds to the indexes to changes_count
     :param changes_count: a list that contains the change in descriptor size
     and corresponds to the indexes of tags_added-count
@@ -95,11 +98,11 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     """
     # generate a list of lists to store point frequencies
     point_frequency = [[0 for i in range(max(changes_count) + 1)]
-                       for j in range(max(tags_added_count) + 1)]
+                       for j in range(max(tag_change_count) + 1)]
 
     max_freq = 0
     # store the number of occurrences of each point
-    for (i, tags) in enumerate(tags_added_count):
+    for (i, tags) in enumerate(tag_change_count):
         # increment the value of the index in the array corresponding to each point
         point_frequency[tags][changes_count[i]] += 1
         # assign max_freq to the value of point_frequency if it is higher than the current max_freq
@@ -110,7 +113,7 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     # create an array to store the color values of points in the scatter plot
     # this works by looking up the frequencies of each point (stored in point_frequency)
     # and storing it in the index that corresponds to the point that has been looked up
-    colors = [point_frequency[tags][changes_count[i]] for (i, tags) in enumerate(tags_added_count)]
+    colors = [point_frequency[tags][changes_count[i]] for (i, tags) in enumerate(tag_change_count)]
 
     # generate a custom color map
     color_map = matplotlib.colors.LinearSegmentedColormap.from_list("", ["#91e2f6", "#f527ed"])
@@ -121,12 +124,12 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
 
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.scatter(tags_added_count, changes_count, c=colors, cmap=color_map, zorder=2)
+    plt.scatter(tag_change_count, changes_count, c=colors, cmap=color_map, zorder=2)
 
     # calculate the slope and y-intercept of the line of best fit
-    m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
+    m, b, r_value, p_value, std_err = scipy.stats.linregress(tag_change_count, changes_count)
     # generate an array of 120 evenly spaced samples of horizontal values
-    x = np.linspace(min(tags_added_count), max(tags_added_count), 120)
+    x = np.linspace(min(tag_change_count), max(tag_change_count), 120)
     # plot the line of best fit
     plt.plot(x, m * x + b, "#8853a6", 2.5, zorder=1)
     # create and plot the color legend
@@ -137,12 +140,12 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     colorbar.ax.set_yticks([0.0, max_freq / 2, max_freq])
     # label the ticks low, medium, and high
     colorbar.ax.set_yticklabels(['Low', 'Medium', 'High'])
-    # colorbar.ax.tick_params(size=0, labelsize=0)
-    colorbar.set_label("frequency of change", rotation=270)
+    # set the label of the color legend
+    colorbar.set_label("Frequency of Change", rotation=270)
 
     # use the following calculations to calculate the bounds of the graph
-    upper_x = max(tags_added_count) + 0.25
-    lower_x = min(tags_added_count) - 0.25
+    upper_x = max(tag_change_count) + 0.25
+    lower_x = min(tag_change_count) - 0.25
     upper_y = max(changes_count) + 0.25
     lower_y = min(changes_count) - 0.25
 
