@@ -7,6 +7,7 @@ import re
 
 import scipy as scipy
 from matplotlib import pyplot as plt
+import matplotlib.colors
 import numpy as np
 import scipy
 import csv
@@ -96,50 +97,74 @@ def plot_tag_additions(tags_added_count, changes_count, directory):
     point_frequency = [[0 for i in range(max(changes_count) + 1)]
                        for j in range(max(tags_added_count) + 1)]
 
+    max_freq = 0
     # store the number of occurrences of each point
     for (i, tags) in enumerate(tags_added_count):
         # increment the value of the index in the array corresponding to each point
         point_frequency[tags][changes_count[i]] += 1
+        # assign max_freq to the value of point_frequency if it is higher than the current max_freq
+        max_freq = point_frequency[tags][changes_count[i]] \
+            if point_frequency[tags][changes_count[i]] > max_freq \
+            else max_freq
 
     # create an array to store the color values of points in the scatter plot
     # this works by looking up the frequencies of each point (stored in point_frequency)
     # and storing it in the index that corresponds to the point that has been looked up
     colors = [point_frequency[tags][changes_count[i]] for (i, tags) in enumerate(tags_added_count)]
 
+    # generate a custom color map
+    color_map = matplotlib.colors.LinearSegmentedColormap.from_list("", ["#91e2f6", "#f527ed"])
 
-    plt.ylabel("Cluster size", rotation=90)
-    plt.xlabel("Tags added", rotation=0)
-    # for (i, t) in enumerate(tags_added_count):
-    #     point_frequency[(t - min_t) * (1 + changes_count[i] - min_c)] += 1
+    # label the two axes
+    plt.ylabel("Cluster Size", rotation=90)
+    plt.xlabel("Tags Added", rotation=0)
+
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.scatter(tags_added_count, changes_count, c=colors, cmap='cool')
+    plt.scatter(tags_added_count, changes_count, c=colors, cmap=color_map, zorder=2)
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tags_added_count, changes_count)
     # generate an array of 120 evenly spaced samples of horizontal values
     x = np.linspace(min(tags_added_count), max(tags_added_count), 120)
     # plot the line of best fit
-    plt.plot(x, m * x + b, "#521471", 2.5)
+    plt.plot(x, m * x + b, "#8853a6", 2.5, zorder=1)
+    # create and plot the color legend
+    colorbar = plt.colorbar()
+    # set the padding of the color legend
+    colorbar.ax.get_yaxis().labelpad = 15
+    # set the number of y ticks to be at 3, positioned at the bottom, middle, and top
+    colorbar.ax.set_yticks([0.0, max_freq / 2, max_freq])
+    # label the ticks low, medium, and high
+    colorbar.ax.set_yticklabels(['Low', 'Medium', 'High'])
+    # colorbar.ax.tick_params(size=0, labelsize=0)
+    colorbar.set_label("frequency of change", rotation=270)
+
+    # use the following calculations to calculate the bounds of the graph
+    upper_x = max(tags_added_count) + 0.25
+    lower_x = min(tags_added_count) - 0.25
+    upper_y = max(changes_count) + 0.25
+    lower_y = min(changes_count) - 0.25
+
+    # print the r value of the line of best fit
+    print(f"R value: {r_value}")
+    # store the length of changes_count for use as shorthand in the calculation for the test statistic
+    n = len(changes_count)
+    # calculate the test statistic, or set it to a very high number if the r value is 1 or -1 to avoid division by zero
+    test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2))**0.5) if abs(r_value) != 1.0 else 10000.0
+    # print the value of the test statistic
+    print(f"Test statistic: {test_stat}")
+    # print the
+    print(f"P-value: {scipy.stats.norm.sf(abs(test_stat)) * 2}")
+
+    # set the bounds of the graph
+    plt.xlim([lower_x, upper_x])
+    plt.ylim([lower_y, upper_y])
+
     # save a new image in the dataset's images folder
     plt.savefig(f"perturb_data/{directory}_images/"
                 f"{directory}_{len(os.listdir(f'perturb_data/{directory}_images/'))}.png")
 
-    # use the following calculations to calculate the bounds of the graph
-    upper_x = max(tags_added_count) + 1
-    lower_x = min(tags_added_count) - 1
-    upper_y = max(changes_count) + 1
-    lower_y = min(changes_count) - 1
-
-    print(f"R value: {r_value}")
-    n = len(changes_count)
-    # calculate the test statistic, or set it to a very high number if the r value is 1 or -1 to avoid division by zero
-    test_stat = (r_value * ((n-2)**0.5)) / ((1 - (r_value ** 2))**0.5) if abs(r_value) != 1.0 else 10000.0
-    print(f"Test statistic: {test_stat}")
-    print(f"P-value: {scipy.stats.norm.sf(abs(test_stat)) * 2}")
-
-    plt.xlim([lower_x, upper_x])
-    plt.ylim([lower_y, upper_y])
     # show the plot
     plt.show()
 
