@@ -160,7 +160,7 @@ def remove_tag_from_data(data, item, tag):
 
 def remove_tag_from_item(filepath, item, tag):
     """
-    Removes one tag to one item in a dataset
+    Removes one tag from one item in a dataset
     :param filepath: the file path of the dataset
     :param item: the item to be perturbed
     :param tag: the tag to be removed
@@ -172,6 +172,25 @@ def remove_tag_from_item(filepath, item, tag):
     data = parse_dataset(filepath)
     # remove the tag from the specified item
     data = remove_tag_from_data(data, item, tag)
+    # output the file
+    output_file_from_data(data, dataset_name, 0)
+
+
+def remove_tags_from_item(filepath, item, tags):
+    """
+        Removes a list of tags from one item in a dataset
+        :param filepath: the file path of the dataset
+        :param item: the item to be perturbed
+        :param tags: a list of tags to remove
+        :return void
+        """
+    # set up the output directories if they are not already set up
+    dataset_name = setup_directories(filepath)
+    # parse the input dataset
+    data = parse_dataset(filepath)
+    # remove the tags from the specified item
+    for tag in tags:
+        data = remove_tag_from_data(data, item, tag)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 

@@ -120,7 +120,7 @@ def plot_tag_vs_explanation(tag_change_count, changes_count, directory):
 
     # label the two axes
     plt.ylabel("Cluster Size", rotation=90)
-    plt.xlabel("Tags Added", rotation=0)
+    plt.xlabel("Tags Added/Removed", rotation=0)
 
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
