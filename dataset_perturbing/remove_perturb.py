@@ -197,6 +197,7 @@ def remove_tags_from_items(filepath, items, tags):
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
+
 def remove_tags_from_item(filepath, item, tags):
     """
     Removes a list of tags from one item in a dataset
