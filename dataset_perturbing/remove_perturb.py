@@ -172,6 +172,8 @@ def remove_tag_from_item(filepath, item, tag):
     data = parse_dataset(filepath)
     # remove the tag from the specified item
     data = remove_tag_from_data(data, item, tag)
+    delta = f"{item}, {tag}\n"
+    generate_delta_file(delta, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
@@ -188,12 +190,16 @@ def remove_tags_from_items(filepath, items, tags):
     dataset_name = setup_directories(filepath)
     # parse the input dataset
     data = parse_dataset(filepath)
+    deltas = ""
     # for each item in the list of items
     for (i, item) in enumerate(items):
         # for each tag in the corresponding list of tags
         for tag in tags[i]:
             # remove the tag from the item
             data = remove_tag_from_data(data, item, tag)
+            deltas += f"{item}, tag\n"
+
+    generate_delta_file(deltas, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
@@ -210,9 +216,13 @@ def remove_tags_from_item(filepath, item, tags):
     dataset_name = setup_directories(filepath)
     # parse the input dataset
     data = parse_dataset(filepath)
+    deltas = ""
     # remove the tags from the specified item
     for tag in tags:
         data = remove_tag_from_data(data, item, tag)
+        deltas += f"{item}, {tag}"
+
+    generate_delta_file(deltas, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
