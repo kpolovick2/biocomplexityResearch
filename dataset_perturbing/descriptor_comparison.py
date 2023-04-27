@@ -68,14 +68,14 @@ def find_descriptors(directory):
         descriptors.append(string_descriptor_to_array(s))
 
     # generate a list of the sizes of each explanation
-    explanation_sizes = [sum([len(descriptors[i][j]) for j in range(len(descriptors[i]))])
+    exp_sizes = [sum([len(descriptors[i][j]) for j in range(len(descriptors[i]))])
                          for i in range(len(descriptors))][1:]
 
     tag_changes_count = []
     changes_count = []
 
     # for each descriptor set
-    for i, exp_size in enumerate(explanation_sizes):
+    for i, exp_size in enumerate(exp_sizes):
         # skip the first descriptor set because it will not be different from itself
         tags_added = len(deltas[i])
         # add the added tags to the list of tags added
