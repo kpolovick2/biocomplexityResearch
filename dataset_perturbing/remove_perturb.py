@@ -394,7 +394,7 @@ def remove_least_common(filepath, iteration_number, dataset_name):
     # convert data into clustered
     clusters, cluster_index = convert_clusters(data)
 
-    #find least common tage
+    #find least common tag
     tag = find_least_used_tag(clusters)
 
     # create an empty string
