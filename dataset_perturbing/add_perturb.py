@@ -355,6 +355,7 @@ def add_all_most_common(clusters, percent_added, random_percent, cluster_index, 
             N, cluster, random_percent, percent_added, cluster_index, delta, i)
     return delta
 
+
 def add_tag_to_item(filepath, item, tag):
     """
     Adds one tag to one item in a dataset
@@ -369,7 +370,9 @@ def add_tag_to_item(filepath, item, tag):
     data = parse_dataset(filepath)
     # add the tag to the specified item
     data[item][tag + 1] = 1
+    # set the delta file contents
     delta = f"{item}, {tag}\n"
+    # save the delta file
     generate_delta_file(delta, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
@@ -436,7 +439,9 @@ def add_tags_to_item(filepath, item, tags):
     for tag in tags:
         # add the tag to the specified item
         data = add_tag_to_data(data, item, tag)
+        # add line to delta file
         deltas += f"{item}, {tag}\n"
+    # generate delta file
     generate_delta_file(deltas, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
@@ -461,7 +466,10 @@ def add_tags_to_items(filepath, items, tags):
         for tag in tags[i]:
             # add the tag to the specified item
             data = add_tag_to_data(data, item, tag)
+            # add line to delta file
             deltas += f"{item}, {tag}\n"
+    # generate delta file
+    generate_delta_file(deltas, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
