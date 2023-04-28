@@ -17,5 +17,5 @@ def adjust_solution(new_dataset, old_dataset, old_solution):
 
     print(old_descriptor)
 
-adjust_solution("perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt",
-                "perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b_1.txt", [5, 19])
+adjust_solution("perturb_data/300n_6K_40N_4a_1b.txt/300n_6K_40N_4a_1b.txt.txt",
+                "perturb_data/300n_6K_40N_4a_1b.txt/300n_6K_40N_4a_1b.txt.txt", [5, 19])
