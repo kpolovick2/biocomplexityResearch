@@ -18,6 +18,7 @@ def generate_delta_file(delta, dataset_name, iteration_number):
         # write to the deltas file
         f.write(delta)
 
+
 def string_descriptor_to_array(D):
     """
     takes in a descriptor set D and converts it into an array of arrays of integers

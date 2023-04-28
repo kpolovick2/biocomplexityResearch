@@ -355,6 +355,7 @@ def add_all_most_common(clusters, percent_added, random_percent, cluster_index, 
             N, cluster, random_percent, percent_added, cluster_index, delta, i)
     return delta
 
+
 def add_tag_to_item(filepath, item, tag):
     """
     Adds one tag to one item in a dataset
@@ -369,6 +370,10 @@ def add_tag_to_item(filepath, item, tag):
     data = parse_dataset(filepath)
     # add the tag to the specified item
     data[item][tag + 1] = 1
+    # set the delta file contents
+    delta = f"{item}, {tag}\n"
+    # save the delta file
+    generate_delta_file(delta, dataset_name, 0)
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
@@ -383,6 +388,7 @@ def add_tag_to_data(data, item, tag):
     # adds the tag to the specified item
     data[item][tag + 1] = 1
     return data
+
 
 def add_single_least_common(N, cluster, random_percent, percent_added, cluster_index, delta, current_cluster):
     """
@@ -414,6 +420,59 @@ def add_single_least_common(N, cluster, random_percent, percent_added, cluster_i
             # note which data item was given which tag
             delta += f"{cluster_index[current_cluster][index]}, {tag + 1} \n"
     return delta
+
+
+def add_tags_to_item(filepath, item, tags):
+    """
+    Adds multiple tags to one item in a list of items
+    :param filepath: the file path of the dataset
+    :param item: the item to be perturbed
+    :param tags: a list of tags to be added
+    :return void
+    """
+    # set up the output directories if they are not already set up
+    dataset_name = setup_directories(filepath)
+    # parse the input dataset
+    data = parse_dataset(filepath)
+    deltas = ""
+    # for each tag in the list of tags
+    for tag in tags:
+        # add the tag to the specified item
+        data = add_tag_to_data(data, item, tag)
+        # add line to delta file
+        deltas += f"{item}, {tag}\n"
+    # generate delta file
+    generate_delta_file(deltas, dataset_name, 0)
+    # output the file
+    output_file_from_data(data, dataset_name, 0)
+
+
+def add_tags_to_items(filepath, items, tags):
+    """
+    Adds tags to a list of items from a list of lists corresponding to each item
+    :param filepath: the file path of the dataset
+    :param items: the item to be perturbed
+    :param tags: a list of tags to be added
+    :return void
+    """
+    # set up the output directories if they are not already set up
+    dataset_name = setup_directories(filepath)
+    # parse the input dataset
+    data = parse_dataset(filepath)
+    deltas = ""
+    # for each item
+    for (i, item) in enumerate(items):
+        # for each list of tags corresponding to that item
+        for tag in tags[i]:
+            # add the tag to the specified item
+            data = add_tag_to_data(data, item, tag)
+            # add line to delta file
+            deltas += f"{item}, {tag}\n"
+    # generate delta file
+    generate_delta_file(deltas, dataset_name, 0)
+    # output the file
+    output_file_from_data(data, dataset_name, 0)
+
 
 # TODO: add method that identifies the minimum number of tags required to
 #  change a description and adds them

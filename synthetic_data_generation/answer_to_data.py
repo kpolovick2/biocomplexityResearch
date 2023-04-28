@@ -65,7 +65,7 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
     unusable_tags_within_k = []
     for desc in D:
         # this list will be empty for each cluster to begin with
-        unusable_tags_within_k.append([[] for i in desc])
+        unusable_tags_within_k.append([])
 
     # fill the unfilled clusters indices with the largest cluster value
     while len(clusters) < n:
@@ -110,12 +110,12 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
         # generate the tags to add by selecting from a range of tag values
         # and excluding the tags that are used in the descriptor,
         # along with the tags that are no longer usable because they would change the solution of the problem
-        num_tags = min(num_tags, N - len(unusable_tags_within_k[k - 1][d_tag]))
+        num_tags = min(num_tags, N - len(unusable_tags_within_k[k - 1]))
         # check bounds
-        if num_tags > 0 and len(unusable_tags_within_k[k - 1][d_tag]) < N:
+        if num_tags > 0 and len(unusable_tags_within_k[k - 1]) < N:
             # take a random sample of tags to include, exclude all tags that are descriptor tags for the cluster
             # of the current item, and exclude all tags that would change the descriptor if added
-            tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k - 1][d_tag], num_tags)
+            tags_to_add = sample_with_exclusion(0, N, unusable_tags_within_k[k - 1], num_tags)
             # add one to the value corresponding to each tag added in the
             # list of tags used by items within the cluster that are described
             # by d_tag
@@ -139,7 +139,7 @@ def generate(n, K, N, alpha, beta, min_alpha, min_tags, max_tags, min_items, max
                     # append the tag to the list of unusable tags
                     becoming_unusable.append(i)
             # update the list of unusable tags within the cluster
-            unusable_tags_within_k[k - 1][d_tag] = list(set(unusable_tags_within_k[k - 1][d_tag]).union(set(becoming_unusable)))
+            unusable_tags_within_k[k - 1] = list(set(unusable_tags_within_k[k - 1]).union(set(becoming_unusable)))
             # add the tags to the items
             for tag in tags_to_add:
                 row[tag] = 1
