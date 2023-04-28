@@ -377,6 +377,40 @@ def remove_all_descriptor_tags_internal(filepath, dataset_name, item_number):
     # generate the contents of the delta file,
     generate_delta_file(delta, dataset_name, item_number)
 
+def remove_least_common(filepath, iteration_number, dataset_name):
+    """
+    perturbs a dataset by removing the least common tag from all it describes
+    :param filepath: the file path of the dataset
+    :param iteration_number: the number that should be added to the end of the file's name when generated
+    :param dataset_name: the name of the dataset
+    :return: void
+    """
+    # parse the dataset
+    data = parse_dataset(filepath)
+
+    # use variables to point to parameters in the output file
+    n, K, N, alpha, beta = return_parameters(data)
+
+    # convert data into clustered
+    clusters, cluster_index = convert_clusters(data)
+
+    #find least common tage
+    tag = find_least_used_tag(clusters)
+
+    # create an empty string
+    delta = ""
+    # generate the deltas based on the removed tags
+    for item in clusters:
+        delta += remove_tags_from_items(filepath, item, tag)
+
+    # generate a deltas file
+    with open(f"perturb_data/{dataset_name}_delta/{iteration_number}.txt", "w") as f:
+        # write to the deltas file
+        f.write(delta)
+    print("------------------")
+
+    # generate the output file for the perturbed dataset
+    output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iteration_number)
 
 # TODO: make a method that runs n number of perturbations with the
 #  remove_all_descriptor_tags method, one run per item
@@ -385,3 +419,5 @@ def remove_all_descriptor_tags_for_each_item(filepath, dataset_name, n):
     setup_directories(filepath)
     for i in range(1, n + 1):
         remove_all_descriptor_tags_internal(filepath, dataset_name, i)
+
+

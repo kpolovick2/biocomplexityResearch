@@ -1,3 +1,4 @@
-TODO: add tags to items which have very few tags
+TODO: add tags to items which have very few tags (would this be a large perturbation though?)
 TODO: delete from items which are described by a large number of tags
-TODO:
+TODO: add tags to items which have many tags (small perturbation)
+TODO: delete the least common tag from all items it describes
