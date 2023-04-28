@@ -83,19 +83,45 @@ def find_descriptors(directory):
         # add the explanation size to the list of changes
         changes_count.append(exp_size)
 
-    plot_tag_vs_explanation(tag_changes_count, changes_count, directory)
+    write_data(directory, tag_changes_count, changes_count)
+    plot_tag_vs_explanation(directory)
 
 
-def plot_tag_vs_explanation(tag_change_count, changes_count, directory):
+def write_data(directory, tag_count, exp_sizes):
+    """
+    Write data generated from descriptor comparison to a csv file
+    :param directory: the name of the directory that was tested
+    :param tag_count: the array containing the number of tags added
+    :param exp_sizes: the array containing the sizes of explanations
+    :return: void
+    """
+    with open(f"perturb_data/{directory}.csv", "a") as f:
+        datawriter = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        # f"Tags added/removed for {directory}"
+        # f"Cluster Changes for {directory}"
+        for (i, tag) in enumerate(tag_count):
+            datawriter.writerow([tag, exp_sizes[i]])
+
+
+def plot_tag_vs_explanation(directory):
     """
     a helper function that plots the graph of descriptor changes over tag additions
-    :param tag_change_count: a list that contains the tags added and
-    corresponds to the indexes to changes_count
-    :param changes_count: a list that contains the change in descriptor size
-    and corresponds to the indexes of tags_added-count
     :param directory: the name of the directory
     :return: void
     """
+
+    tag_change_count = []
+    changes_count = []
+
+    with open(f"perturb_data/{directory}.csv") as f:
+        datareader = csv.reader(f, delimiter=",", quotechar="|")
+        for row in datareader:
+            tag_change_count.append(int(row[0]))
+            changes_count.append(int(row[1]))
+
+    print(tag_change_count)
+    print(changes_count)
+
     # generate a list of lists to store point frequencies
     point_frequency = [[0 for i in range(max(changes_count) + 1)]
                        for j in range(max(tag_change_count) + 1)]
@@ -264,10 +290,3 @@ def find_descriptors_removed(directory):
             changes_count.append(-signed_changes)
     write_data(directory, tags_removed_count, changes_count)
 
-def write_data(directory, tag_count, change_count):
-    with open(f"perturb_data/{directory}.csv", "a") as f:
-        datawriter = csv.writer(f, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        tag_count.insert(0, f"Tags added/removed for {directory}")
-        datawriter.writerow(tag_count)
-        change_count.insert(0, f"Cluster Changes for {directory}")
-        datawriter.writerow(change_count)
