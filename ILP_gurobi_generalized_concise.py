@@ -1,5 +1,5 @@
-# Name: Keara Polovick (and William Bradford)
-# Computing ID: uzy2ws (and wcb8ze)
+# Name: Keara Polovick and William Bradford
+# Computing ID: uzy2ws and wcb8ze
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 # has a faster runtime complexity than the standard generalized version
 
@@ -37,7 +37,7 @@ def ILP_concise(filename):
     alpha = int(input_array[3])  # maximum size of descriptor for each item
     beta = int(input_array[4])  # maximum overlap
 
-    # create the list of which data items belong to which clusters
+    # create the list of which data items belong to which clusters (B-matrix)
     # create the matrix of tags
     K_VALUE_OFFSET = 6   # the six is the offset that describes the location of each K value within the array
     FIRST_TAG_INDEX = 7  # the seven corresponds to the location of the first tag value in the input array
@@ -58,14 +58,13 @@ def ILP_concise(filename):
             y[j,k] = m.addVar(vtype='B', name="k=%s y[%s,%s]"%(k,j,k))
     m.update()
 
-    # Objective function is to minimize the sum of the y[j,k] variables
+    # Set objective function: minimize the sum of the y[j,k] variables
     coef = [1 for j in range(1, N+1) for k in range(1,K+1)]
     var = [y[j, k] for j in range(1, N+1) for k in range(1,K+1)]
     m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
     m.update()
 
     # CONSTRAINTS
-
     #(a) must contain at least one tag from each of the data items in that cluster
     A = [0 for c in range(n+1)]
     constraint1 = []
@@ -74,6 +73,7 @@ def ILP_concise(filename):
             k = clusters[i-1]
             if B[i - 1][j - 1] == 1:
                 A[i] += y[j, k]
+        # add constraint
         constraint1.append(m.addConstr(A[i], ">=", 1))
         m.update()
 
@@ -83,6 +83,7 @@ def ILP_concise(filename):
     for k in range(1, K+1):
         var = [y[j, k] for j in range(1, N+1)]
         columns.append(var)
+        # add constraint
         m.addConstr(LinExpr(coef, var), "<=", alpha)
         m.update()
 
@@ -94,10 +95,11 @@ def ILP_concise(filename):
     for k in range(K-1, 0, -1):
         z_sum_2 += dot(columns[k-1], internal_sum)
         internal_sum = add(columns[k-1], internal_sum)
-
+    # add constraint
     m.addConstr(z_sum_2, "<=", beta)
     m.update()
 
+    # solve the ILP
     m.optimize()
 
     # get the values of variables

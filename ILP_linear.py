@@ -1,5 +1,5 @@
-# Name: Keara Polovick (and William Bradford)
-# Computing ID: uzy2ws (and wcb8ze)
+# Name: Keara Polovick and William Bradford
+# Computing ID: uzy2ws and wcb8ze
 # duplicate of ILP_gurobi for the purpose of generalizing the algorithm
 # has a faster runtime complexity than the standard generalized version
 
