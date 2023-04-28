@@ -377,6 +377,7 @@ def add_tag_to_item(filepath, item, tag):
     # output the file
     output_file_from_data(data, dataset_name, 0)
 
+
 def add_tag_to_data(data, item, tag):
     """
         adds a specified tag from an item in data
