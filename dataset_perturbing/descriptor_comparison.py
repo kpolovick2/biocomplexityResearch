@@ -178,10 +178,10 @@ def plot_tag_vs_explanation(directory):
     colorbar.set_label("Frequency of Change", rotation=270)
 
     # use the following calculations to calculate the bounds of the graph
-    upper_x = max(tag_change_count) + 0.25
-    lower_x = min(tag_change_count) - 0.25
-    upper_y = max(changes_count) + 0.25
-    lower_y = min(changes_count) - 0.25
+    upper_x = max(tag_change_count) + 0.25 * (max(tag_change_count) - min(tag_change_count))
+    lower_x = min(tag_change_count) - 0.25 * (max(tag_change_count) - min(tag_change_count))
+    upper_y = max(changes_count) + 0.25 * (max(changes_count) - min(changes_count))
+    lower_y = min(changes_count) - 0.25 * (max(changes_count) - min(changes_count))
 
     # print the r value of the line of best fit
     print(f"R value: {r_value}")
