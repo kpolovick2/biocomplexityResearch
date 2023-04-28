@@ -11,6 +11,7 @@ import numpy as np
 import scipy
 
 import ILP_linear as ilp_solve
+
 from perturb_utilities import *
 
 
@@ -242,4 +243,8 @@ def find_descriptors_removed(directory):
 
             tags_removed_count.append(tags_removed)
             changes_count.append(sum_changes)
-    # plot_tag_additions(tags_removed_count, changes_count, directory)
+
+    plot_tag_additions(tags_removed_count, changes_count, directory)
+
+
+#find_descriptors_added("300n_6K_40N_4a_1b")
