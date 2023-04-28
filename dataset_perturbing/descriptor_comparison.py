@@ -95,7 +95,7 @@ def write_data(directory, tag_count, exp_sizes):
     :param exp_sizes: the array containing the sizes of explanations
     :return: void
     """
-    with open(f"perturb_data/{directory}.csv", "a") as f:
+    with open(f"perturb_data/csv/{directory}.csv", "a") as f:
         datawriter = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # f"Tags added/removed for {directory}"
         # f"Cluster Changes for {directory}"
@@ -113,7 +113,7 @@ def plot_tag_vs_explanation(directory):
     tag_change_count = []
     changes_count = []
 
-    with open(f"perturb_data/{directory}.csv") as f:
+    with open(f"perturb_data/csv/{directory}.csv") as f:
         datareader = csv.reader(f, delimiter=",", quotechar="|")
         for row in datareader:
             tag_change_count.append(int(row[0]))
