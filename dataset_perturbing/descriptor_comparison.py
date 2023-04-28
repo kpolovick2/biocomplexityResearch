@@ -83,7 +83,9 @@ def find_descriptors(directory):
         # add the explanation size to the list of changes
         changes_count.append(exp_size)
 
+    # write the data to a csv file
     write_data(directory, tag_changes_count, changes_count)
+    # generate the graph corresponding to the data generated
     plot_tag_vs_explanation(directory)
 
 
@@ -95,7 +97,7 @@ def write_data(directory, tag_count, exp_sizes):
     :param exp_sizes: the array containing the sizes of explanations
     :return: void
     """
-    with open(f"perturb_data/csv/{directory}.csv", "a") as f:
+    with open(f"perturb_data/csv/{directory}.csv", "w") as f:
         datawriter = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # f"Tags added/removed for {directory}"
         # f"Cluster Changes for {directory}"
@@ -106,10 +108,10 @@ def write_data(directory, tag_count, exp_sizes):
 def plot_tag_vs_explanation(directory):
     """
     a helper function that plots the graph of descriptor changes over tag additions
-    :param directory: the name of the directory
+    :param directory: the name of the directory that was parsed
     :return: void
     """
-
+    # create lists to store the data read from the directory
     tag_change_count = []
     changes_count = []
 
