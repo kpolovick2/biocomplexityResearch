@@ -47,6 +47,8 @@ def add_single_tag(dataset, desc, tag_added, item):
         # if added_vec has min >= 2, then we know the tag should be added
         # then iterate by subtracting the vector that is no longer being considered
         # and adding added_vec
+
+        # could also add add_vec and then subtract and look for zeros
         if min(sum_vectors(vec_desc_copy)) != 0:
             replaced.append(i)
             use_tag = True
