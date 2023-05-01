@@ -6,7 +6,7 @@ import add_perturb
 import remove_perturb
 import descriptor_comparison
 
-dataset = "remove_perturb_test_2"
+dataset = "remove_perturb_test"
 
 # on the dataset "9x28," the test statistic of the test for absence of correlation is -1.2525
 #               this means that the p-value is 0.23, meaning we do not have enough evidence to reject
@@ -18,5 +18,5 @@ dataset = "remove_perturb_test_2"
 # remove_perturb.remove_all_descriptor_tags_for_each_item(f"../test_txt_files/{dataset}.txt", dataset, 300)
 # descriptor_comparison.find_descriptors_removed(dataset)
 
-remove_perturb.remove_all_descriptor_tags_for_each_item(f"../test_txt_files/{dataset}.txt", dataset, 6)
+remove_perturb.remove_all_descriptor_tags_for_each_item(f"../test_txt_files/{dataset}.txt", dataset, 10)
 descriptor_comparison.find_descriptors(dataset)
