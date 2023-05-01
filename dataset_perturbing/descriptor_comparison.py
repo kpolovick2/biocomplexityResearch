@@ -12,6 +12,7 @@ import numpy as np
 import scipy
 import csv
 from colour import Color
+from matplotlib import ticker
 
 import ILP_linear as ilp_solve
 from perturb_utilities import *
@@ -114,6 +115,9 @@ def plot_tag_vs_explanation(directory):
     # create lists to store the data read from the directory
     tag_change_count = []
     changes_count = []
+
+    fig, ax = plt.subplots()
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
 
     with open(f"perturb_data/csv/{directory}.csv") as f:
         datareader = csv.reader(f, delimiter=",", quotechar="|")
