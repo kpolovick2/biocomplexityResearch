@@ -42,6 +42,11 @@ def add_single_tag(dataset, desc, tag_added, item):
     for (i, v) in enumerate(vec_desc):
         vec_desc_copy = vec_desc.copy()
         vec_desc_copy[i] = added_vec
+        # new proposition:
+        # sum them, store that, then add added_vec
+        # if added_vec has min >= 2, then we know the tag should be added
+        # then iterate by subtracting the vector that is no longer being considered
+        # and adding added_vec
         if min(sum_vectors(vec_desc_copy)) != 0:
             replaced.append(i)
             use_tag = True
