@@ -167,7 +167,7 @@ def add_multi_item(dataset, desc, tag_added, items):
     # O(descriptor size * log(descriptor size))
     #       amortized O(n)
     # could be reduced to O(n) by partitioning around the singular tag
-    # not worth the time because
+    # not worth the time because it already runs in O(n) time because it's one tag
     if len(new_desc) < len(desc):
         return sorted(new_desc)
 
@@ -180,6 +180,7 @@ def update_descriptor_multi_item(data, desc, new_data):
     Given two files representing a dataset and a perturbed version of
     that dataset, return the modified descriptor
     This method can only handle single tag perturbations of multiple item, where all tags are the same
+    Runs in O(n*N + descriptor size * n) time
     :param data: the initial dataset
     :param desc: the initial descriptor
     :param new_data: the new dataset after perturbation
@@ -194,6 +195,7 @@ def update_descriptor_multi_item(data, desc, new_data):
     # empty list of items
     items = []
     # for each item in the dataset
+    # O(n * N)
     for (i, item) in enumerate(dataset):
         # for each tag value in the item
         for (j, t) in enumerate(item):
