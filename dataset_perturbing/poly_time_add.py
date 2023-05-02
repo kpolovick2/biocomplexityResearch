@@ -1,8 +1,18 @@
+"""poly_time_add.py: recalculates the descriptor of a perturbed dataset in polynomial time"""
+__author__ = "William Bradford"
+__email__ = "wcb8ze@virginia.edu"
+
 from perturb_utilities import *
 import ILP_linear as ILP
 
 
 def get_col(mat, col):
+    """
+    a helper function that returns a column from a list of lists
+    :param mat: a matrix (list of lists)
+    :param col: a column
+    :return: a list containing the values of the specified column of the matrix
+    """
     vec = []
     for row in mat[1:]:
         # O(n)
@@ -11,6 +21,11 @@ def get_col(mat, col):
 
 
 def sum_vectors(vector_list):
+    """
+    sums a list of lists at each i value
+    :param vector_list: a list of lists
+    :return: a list that contains the sum of each list v[i] at each i value
+    """
     sum = [0 for i in range(len(vector_list[0]))]
     for v in vector_list:
         for i in range(len(v)):
@@ -19,6 +34,12 @@ def sum_vectors(vector_list):
 
 
 def vec_sum(v1, v2):
+    """
+    sums two lists at each i value
+    :param v1: list 1
+    :param v2: list 2
+    :return: a list containing the sum of v1[i] + v2[i] at list[i]
+    """
     sum = v1.copy()
     for (i, v) in enumerate(v2):
         sum[i] += v
@@ -26,6 +47,12 @@ def vec_sum(v1, v2):
 
 
 def vec_diff(v1, v2):
+    """
+    takes the difference of two lists at each i value
+    :param v1: list 1
+    :param v2: list 2
+    :return: a list containing the sum of v1[i] - v2[i] at list[i]
+    """
     sum = v1.copy()
     for (i, v) in enumerate(v2):
         sum[i] -= v
