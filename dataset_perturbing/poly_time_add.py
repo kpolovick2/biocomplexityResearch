@@ -75,6 +75,7 @@ def add_single_tag(dataset, desc, tag_added, item):
             use_tag = True
 
     # copy the descriptor
+    # O(descriptor size)
     new_desc = desc.copy()
     # for each index in replaced
     # O(descriptor size)
@@ -84,15 +85,16 @@ def add_single_tag(dataset, desc, tag_added, item):
 
     # if the tag should be appended, append it
     # O(1)
-    if use_tag: new_desc.append(tag_added)
+    new_desc.append(tag_added) if use_tag else None
 
     # remove all -1 tags from the descriptor
     # O(descriptor size)
-    while min(new_desc) == -1:
-        new_desc.remove(-1)
+    new_desc = [i for i in new_desc if i != -1]
 
     # if the descriptor is improved, return it
+    # O(1)
     if len(new_desc) < len(desc):
+        # O(descriptor size log (descriptor size))
         return sorted(new_desc)
 
     # if not, return the original descriptor
@@ -112,6 +114,7 @@ def add_multi_item(dataset, desc, tag_added, items):
     vec_desc = []
 
     # for each tag in the descriptor
+    # O(descriptor size)
     for tag in desc:
         # add the vector representing the tag of the descriptor
         vec_desc.append(get_col(dataset, tag + 1))
@@ -119,6 +122,7 @@ def add_multi_item(dataset, desc, tag_added, items):
     # find the vector representing the modified column
     added_vec = get_col(dataset, tag_added + 1)
     # add the tag to the item slot in the vector
+    # O(n)
     for item in items:
         # add the tag to the modified column
         added_vec[item - 1] = 1
@@ -128,10 +132,13 @@ def add_multi_item(dataset, desc, tag_added, items):
     # create an empty replaced array
     replaced = []
     # sum the vectors of descriptor tags
+    # O(descriptor size * n)
     desc_sum = sum_vectors(vec_desc)
     # add the tag vector of the added tag
+    # O(n)
     desc_sum = vec_sum(desc_sum, added_vec)
 
+    # O(descriptor size * n)
     for (i, v) in enumerate(vec_desc):
         # could speed up (physically, not asymptotically)
         # by removing copy in the sum and diff functions, making this a mutation
@@ -149,13 +156,18 @@ def add_multi_item(dataset, desc, tag_added, items):
         new_desc[idx] = -1
 
     # if the tag should be appended, append it
-    if use_tag: new_desc.append(tag_added)
+    # O(1)
+    new_desc.append(tag_added) if use_tag else None
 
     # remove all -1 tags from the descriptor
-    while min(new_desc) == -1:
-        new_desc.remove(-1)
+    # O(descriptor size)
+    new_desc = [i for i in new_desc if i != -1]
 
     # if the descriptor is improved, return it
+    # O(descriptor size * log(descriptor size))
+    #       amortized O(n)
+    # could be reduced to O(n) by partitioning around the singular tag
+    # not worth the time because
     if len(new_desc) < len(desc):
         return sorted(new_desc)
 
@@ -194,10 +206,12 @@ def update_descriptor_multi_item(data, desc, new_data):
 
     return add_multi_item(dataset, desc, tag_added, items)
 
+
 data1 = parse_dataset(f"../test_txt_files/add_perturb_test_1K.txt")
 desc1 = string_descriptor_to_array(ILP.ILP_linear(f"../test_txt_files/add_perturb_test_1K.txt"))[0]
 tag_added1 = 5
 item1 = [2, 4]
 
 print(f"New Descriptor: {add_multi_item(data1, desc1, tag_added1, item1)}")
-print(update_descriptor_multi_item(f"../test_txt_files/add_perturb_test_1K.txt", desc1, f"../test_txt_files/add_perturb_test_1K_2.txt"))
+print(update_descriptor_multi_item(f"../test_txt_files/add_perturb_test_1K.txt", desc1,
+                                   f"../test_txt_files/add_perturb_test_1K_2.txt"))
