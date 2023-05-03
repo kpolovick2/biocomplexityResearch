@@ -1,4 +1,4 @@
-TODO: add tags to items which have very few tags (would this be a large perturbation though?)
+TODO: add tags to items which have very few tags (would this be a large perturbation though?) -> this would be a small perturbation because the size of a perturbation is determined by the number of tags added, not the change it results in
 TODO: delete from items which are described by a large number of tags
 TODO: add tags to items which have many tags (small perturbation)
 TODO: delete the least common tag from all items it describes

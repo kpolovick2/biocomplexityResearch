@@ -12,6 +12,7 @@ import numpy as np
 import scipy
 import csv
 from colour import Color
+from matplotlib import ticker
 
 import ILP_linear as ilp_solve
 from perturb_utilities import *
@@ -37,13 +38,13 @@ def find_descriptors(directory):
         solutions.append(ilp_solve.ILP_linear(f"perturb_data/{directory}/{file}"))
 
     # create an empty list of deltas
-    deltas_text = ["" for i in range(len(delta_files))]
+    deltas_text = ["" for i in range(len(delta_files) + 1)]
     # for each delta
     for i, file in enumerate(delta_files):
         # open the file
         with open(f"perturb_data/{directory}_delta/{file}") as f:
             # read the file
-            deltas_text[i] = f.read()
+            deltas_text[i+1] = f.read()
 
     # create an empty list of deltas
     deltas = []
@@ -115,50 +116,34 @@ def plot_tag_vs_explanation(directory):
     tag_change_count = []
     changes_count = []
 
+    fig, ax = plt.subplots()
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+
     with open(f"perturb_data/csv/{directory}.csv") as f:
         datareader = csv.reader(f, delimiter=",", quotechar="|")
         for row in datareader:
             tag_change_count.append(int(row[0]))
             changes_count.append(int(row[1]))
 
-    # generate a list of lists to store point frequencies
-    point_frequency = [[0 for i in range(max(changes_count) + 1)]
-                       for j in range(max(tag_change_count) + 1)]
+    # average cluster size
+    avg_cluster_size = {t: [0, 0] for t in tag_change_count}
+    for (i, t) in enumerate(tag_change_count):
+        avg_cluster_size[t][0] += changes_count[i]
+        avg_cluster_size[t][1] += 1
 
-    # store max and minimum frequencies of points
-    max_freq = 0
-    min_freq = math.inf
-    # store the number of occurrences of each point
-    for (i, tags) in enumerate(tag_change_count):
-        # increment the value of the index in the array corresponding to each point
-        point_frequency[tags][changes_count[i]] += 1
-        # assign max_freq to the value of point_frequency if it is higher than the current max_freq
-        max_freq = point_frequency[tags][changes_count[i]] \
-            if point_frequency[tags][changes_count[i]] > max_freq \
-            else max_freq
+    for t in avg_cluster_size.keys():
+        avg_cluster_size[t] = avg_cluster_size[t][0] / avg_cluster_size[t][1]
 
-    # for each point
-    for (i, tags) in enumerate(tag_change_count):
-        # check if min frequency, store if so
-        min_freq = point_frequency[tags][changes_count[i]] \
-            if point_frequency[tags][changes_count[i]] < min_freq \
-            else min_freq
-
-    # create an array to store the color values of points in the scatter plot
-    # this works by looking up the frequencies of each point (stored in point_frequency)
-    # and storing it in the index that corresponds to the point that has been looked up
-    colors = [point_frequency[tags][changes_count[i]] for (i, tags) in enumerate(tag_change_count)]
-
-    # generate a custom color map
-    color_map = matplotlib.colors.LinearSegmentedColormap.from_list("", ["#91e2f6", "#f527ed"])
+    tag_change_count = list(avg_cluster_size.keys())
+    changes_count = list(avg_cluster_size.values())
 
     # label the two axes
-    plt.ylabel("Cluster Size", rotation=90)
+    plt.ylabel("Average Explanation Size", rotation=90)
     plt.xlabel("Tags Added/Removed", rotation=0)
 
     # plot the points of each run of the graph as a
     # function of reduction in overall solution size over number of tags added
-    plt.scatter(tag_change_count, changes_count, c=colors, cmap=color_map, zorder=2)
+    plt.scatter(tag_change_count, changes_count, color="#91e2f6", zorder=2)
 
     # calculate the slope and y-intercept of the line of best fit
     m, b, r_value, p_value, std_err = scipy.stats.linregress(tag_change_count, changes_count)
@@ -166,22 +151,12 @@ def plot_tag_vs_explanation(directory):
     x = np.linspace(min(tag_change_count), max(tag_change_count), 120)
     # plot the line of best fit
     plt.plot(x, m * x + b, "#8853a6", 2.5, zorder=1)
-    # create and plot the color legend
-    colorbar = plt.colorbar()
-    # set the padding of the color legend
-    colorbar.ax.get_yaxis().labelpad = 15
-    # set the number of y ticks to be at 3, positioned at the bottom, middle, and top
-    colorbar.ax.set_yticks([min_freq, ((max_freq - min_freq) / 2) + min_freq, max_freq])
-    # label the ticks low, medium, and high
-    colorbar.ax.set_yticklabels(['Low', 'Medium', 'High'])
-    # set the label of the color legend
-    colorbar.set_label("Frequency of Change", rotation=270)
 
     # use the following calculations to calculate the bounds of the graph
-    upper_x = max(tag_change_count) + 0.25
-    lower_x = min(tag_change_count) - 0.25
-    upper_y = max(changes_count) + 0.25
-    lower_y = min(changes_count) - 0.25
+    upper_x = max(tag_change_count) + 0.15 * (max(tag_change_count) - min(tag_change_count))
+    lower_x = min(tag_change_count) - 0.15 * (max(tag_change_count) - min(tag_change_count))
+    upper_y = max(changes_count) + 0.15 * (max(changes_count) - min(changes_count))
+    lower_y = min(changes_count) - 0.15 * (max(changes_count) - min(changes_count))
 
     # print the r value of the line of best fit
     print(f"R value: {r_value}")
