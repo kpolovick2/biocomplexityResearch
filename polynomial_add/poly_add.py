@@ -235,6 +235,21 @@ def update_descriptor_multi_item(data, desc, new_data):
 
     return add_multi_item(dataset, desc, tag_added, items)
 
+#
+# a = [0,1,2]
+# b = [1,2]
+#
+#
+# def contain_sub(v1, v2):
+#     for i in range(len(v2) - len(v1) + 1):
+#         v3 = v2[i:len(v2)-i]
+#         if v1 == v3:
+#             return True
+#     return False
+#
+#
+#
+# print(contain_sub(b, a))
 
 def add_tags(dataset, desc, tags, items):
     """
@@ -265,7 +280,7 @@ def add_tags(dataset, desc, tags, items):
             # noinspection PyTypeChecker
             added_vecs[i][item - 1] = 1
 
-    use_tag = [False for i in added_vecs]
+    use_tag = [[False for j in desc] for i in added_vecs]
     replaced = [[] for i in added_vecs]
     desc_sum = sum_vectors(vec_desc)
     num_replaced = {t: 0 for t in tags}
@@ -278,20 +293,14 @@ def add_tags(dataset, desc, tags, items):
                 # add the tag to the list of replaced tags
                 replaced[j].append(i)
                 # update use_tag
-                use_tag[j] = True
+                use_tag[j][i] = True
                 num_replaced[tags[j]] += 1
 
     # FIXME: make a function to remove a tag from the list of tags to add if it another tag covers it instead
-    # for each replaced list
-    for (i, rep) in enumerate(replaced):
-        # for each tag
-        for t in rep:
-            for rep2 in replaced[:i]:
-                if t in rep2 and num_replaced[t]:
-                    replaced[i].remove(t)
-            for rep2 in replaced[i+1:]:
-                if t in rep2:
-                    replaced[i].remove(t)
+    #  for each replaced list
+    # for (i, v1) in enumerate(replaced):
+    #     for (j, v2) in enumerate(replaced[i+1:]):
+
 
     print(replaced)
     for (i, rep) in enumerate(replaced):
@@ -317,7 +326,7 @@ def add_tags(dataset, desc, tags, items):
     # if the descriptor is improved, return it
     # O(descriptor size * log(descriptor size))
     #       amortized O(n)
-    # could be reduced to O(n) by partitioning around the singular tag
+    # could be reduced to strictly O(n) by partitioning around the singular tag
     # not worth the time because it already runs in O(n) time because it's one tag
     if len(new_desc) < len(desc):
         return sorted(new_desc)
@@ -325,9 +334,9 @@ def add_tags(dataset, desc, tags, items):
     # if not, return the original descriptor
     return desc
 
-dataset = parse_dataset(f"../test_txt_files/add_perturb_test_1K.txt")
-desc = [1, 5, 7, 8]
-tags = [1, 2]
-items = [[1], [1, 2, 3, 4]]
-
-print(add_tags(dataset, desc, tags, items))
+# dataset = parse_dataset(f"../test_txt_files/add_perturb_test_1K.txt")
+# desc = [1, 5, 7, 8]
+# tags = [1, 2]
+# items = [[1], [1, 2, 3, 4]]
+#
+# print(add_tags(dataset, desc, tags, items))
