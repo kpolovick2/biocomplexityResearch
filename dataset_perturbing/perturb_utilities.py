@@ -212,7 +212,7 @@ def output_file_from_clusters(n, K, N, alpha, beta, clusters, dataset_name, iter
         f.write(output_string)
 
 
-def output_file_from_data(data, dataset_name, iteration_number):
+def output_file_from_data(data, dataset_name, iteration_number, dir="perturb_data"):
     """
     uses a dataset in list format to generate an output file
     :param data: a dataset in list format
@@ -227,7 +227,7 @@ def output_file_from_data(data, dataset_name, iteration_number):
         output_string += "\n"
 
     # create a new text file to store the perturbed tag set
-    with open(f"perturb_data/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
+    with open(f"{dir}/{dataset_name}/{dataset_name}_{iteration_number}.txt", "w") as f:
         # write the output file
         f.write(output_string)
 

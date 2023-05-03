@@ -4,8 +4,8 @@ import dataset_perturbing.perturb_utilities as ptu
 
 test_count = 1
 
-orig_file = "add_perturb_test_1K.txt"
-file = "add_perturb_test_1K_2.txt"
+orig_file = "1000diagonal.txt"
+file = "1000diagonal_1.txt"
 
 desc = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{file}"))[0]
 
