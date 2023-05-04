@@ -37,13 +37,11 @@ def ILP_one_cluster(filename):
     for j in range(1, N + 1):
         for k in range(1, K + 1):
             y[j, k] = m.addVar(vtype=gp.GRB.BINARY, name="k=%s y[%s,%s]" % (k, j, k))
-    m.update()
 
     # Objective function is to minimize the sum of the variables in A
     coef = [1 for j in range(1, N + 1) for k in range(1, K + 1)]
     var = [y[j, k] for j in range(1, N + 1) for k in range(1, K + 1)]
     objective = m.setObjective(LinExpr(coef, var), gp.GRB.MINIMIZE)
-    m.update()
 
     # CONSTRAINTSs
     # (a) must contain at least one tag from each of the data items in that cluster
@@ -57,14 +55,13 @@ def ILP_one_cluster(filename):
                 # add the constraint that a descriptor must describe each data item within the cluster
                 A[i] += y[j, k]
         constraint1.append(m.addConstr(A[i], ">=", 1))
-        m.update()
 
     # (b) size of each descriptor must be at most alpha
     coef = [1 for j in range(1, N + 1)]
     for k in range(1, K + 1):
         var = [y[j, k] for j in range(1, N + 1)]
         constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
-        m.update()
+    m.update()
 
     # (c) overlap between any pair of descriptors must be at most beta
     # z = {}

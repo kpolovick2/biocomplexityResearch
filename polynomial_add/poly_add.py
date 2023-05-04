@@ -189,14 +189,14 @@ def add_multi_item(dataset, desc, tag_added, items):
 
     # O(descriptor size * n)
     for (i, v) in enumerate(vec_desc):
-        # could speed up (physically, not asymptotically)
         mut_vec_diff(desc_sum, v)
         if min(desc_sum) >= 1:
             # add the tag to the list of replaced tags
             replaced.append(i)
             # update use_tag
             use_tag = True
-        mut_vec_sum(desc_sum, v)
+        else:
+            mut_vec_sum(desc_sum, v)
 
     # copy the descriptor
     new_desc = desc.copy()

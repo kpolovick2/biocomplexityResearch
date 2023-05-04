@@ -7,3 +7,7 @@ The polynomial time algorithm required 0.2682 seconds per execution.
 Overall, this was a 1.408x speedup.
 This was likely drastically slowed due to the copying practices implemented in the algorithm. An in-place memory-efficient version of the algorithm will be tested in the future.
 ---------------------
+In a test of 120 executions on a dataset of size n=1000, the ILP solution required 0.3726 seconds per execution on average.
+The polynomial time algorithm required 0.2353 seconds per execution.
+Overall, this was a 1.5838x speedup.
+This speedup occurred because the code was modified to mutate the lists instead of copying them.
