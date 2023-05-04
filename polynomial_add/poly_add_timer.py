@@ -2,7 +2,7 @@ import timeit
 import one_cluster_ilp as ILP
 import dataset_perturbing.perturb_utilities as ptu
 
-test_count = 120
+test_count = 10
 
 orig_file = "1000diagonal.txt"
 file = "1000diagonal_1.txt"

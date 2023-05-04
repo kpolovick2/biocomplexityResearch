@@ -59,6 +59,28 @@ def vec_diff(v1, v2):
     return sum
 
 
+def mut_vec_sum(v1, v2):
+    """
+    returns the sum of two vectors stored in the first vector
+    :param v1: the first vector
+    :param v2: the second vector
+    :return: void
+    """
+    for (i, v) in enumerate(v2):
+        v1[i] += v
+
+
+def mut_vec_diff(v1, v2):
+    """
+    returns the difference between two vectors stored in the first vector
+    :param v1: the first vector
+    :param v2: the second vector
+    :return: void
+    """
+    for (i, v) in enumerate(v2):
+        v1[i] -= v
+
+
 def add_single_tag(dataset, desc, tag_added, item):
     """
     Add a single tag to an item in the dataset and return the new descriptor, if updated
@@ -168,12 +190,13 @@ def add_multi_item(dataset, desc, tag_added, items):
     # O(descriptor size * n)
     for (i, v) in enumerate(vec_desc):
         # could speed up (physically, not asymptotically)
-        # by removing copy in the sum and diff functions, making this a mutation
-        if min(vec_diff(desc_sum, v)) >= 1:
+        mut_vec_diff(desc_sum, v)
+        if min(desc_sum) >= 1:
             # add the tag to the list of replaced tags
             replaced.append(i)
             # update use_tag
             use_tag = True
+        mut_vec_sum(desc_sum, v)
 
     # copy the descriptor
     new_desc = desc.copy()
