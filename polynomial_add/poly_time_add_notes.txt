@@ -1,3 +1,7 @@
-In a test of 120000 executions on a dataset of size n=1000, the ILP solution required 0.0009174 seconds per execution on average.
+In a test of 120000 executions on a dataset of size n=10, the ILP solution required 0.0009174 seconds per execution on average.
 The polynomial time algorithm required 9.331e-05 seconds per execution.
 Overall, this was a 9.8318x speedup.
+---------------------
+In a test of 120 executions on a dataset of size n=1000, the ILP solution required -- seconds per execution on average.
+The polynomial time algorithm required -- seconds per execution.
+Overall, this was a --x speedup.

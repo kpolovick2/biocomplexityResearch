@@ -215,10 +215,10 @@ def update_descriptor_multi_item(data, desc, new_data):
     """
     # parse the initial dataset
     dataset = parse_dataset(data)
-    dataset = dataset[:-1] if len(dataset[-1] == 0) else dataset
+    dataset = dataset[:-1] if len(dataset[-1]) == 0 else dataset
     # parse the new dataset
     new_dataset = parse_dataset(new_data)
-    new_dataset = new_dataset[:-1] if len(new_dataset[-1] == 0) else new_dataset
+    new_dataset = new_dataset[:-1] if len(new_dataset[-1]) == 0 else new_dataset
     # placeholder tag added
     tag_added = -1
     # empty list of items

@@ -35,4 +35,4 @@ def n_dimensional_diaognal(n):
 
     output_file(data, f"{n}diagonal_1", "../test_txt_files")
 
-n_dimensional_diaognal(10)
+n_dimensional_diaognal(10000)
