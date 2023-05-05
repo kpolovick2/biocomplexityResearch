@@ -2,12 +2,12 @@ import timeit
 import one_cluster_ilp as ILP
 import dataset_perturbing.perturb_utilities as ptu
 
-test_count = 121
+test_count = 12
 
-orig_file = "5000diagonal.txt"
-file = "5000diagonal_1.txt"
+orig_file = "100diagonal.txt"
+file = "100diagonal_1.txt"
 
-desc = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{file}"))[0]
+desc = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{orig_file}"))[0]
 
 ilp_time = timeit.timeit(f"a.ILP_linear('../test_txt_files/{file}')",  setup="import ILP_linear as a",
                          number=test_count)
