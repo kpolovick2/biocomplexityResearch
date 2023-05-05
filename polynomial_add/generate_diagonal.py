@@ -35,4 +35,26 @@ def n_dimensional_diaognal(n):
 
     output_file(data, f"{n}diagonal_1", "../test_txt_files")
 
-n_dimensional_diaognal(100)
+def n_dimensional_diaognal_split(n, f):
+    data = [[n, 1, 3, 3, 0]]
+
+    for i in range(n):
+        temp = [0 for i in range(5)]
+
+        temp[0] = i + 1
+        temp[1] = 1
+        if i < f:
+            temp[2] = 1
+        else:
+            temp[3] = 1
+        data.append(temp)
+
+
+    output_file(data, f"{n}diagonal", "../test_txt_files")
+
+    for i in range(1, len(data)):
+        data[i][-1] = 1
+
+    output_file(data, f"{n}diagonal_1", "../test_txt_files")
+
+n_dimensional_diaognal_split(1000, 500)

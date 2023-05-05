@@ -4,6 +4,7 @@ __email__ = "wcb8ze@virginia.edu"
 
 from dataset_perturbing.perturb_utilities import *
 import one_cluster_ilp as ILP
+import cupy as cp
 
 
 def get_col(mat, col):
@@ -206,19 +207,59 @@ def add_multi_item(dataset, desc, tag_added, items):
     return desc
 
 
-# TODO: remove
-def parse_columns(filepath):
-    with open(filepath) as dataset:
-        file_in = dataset.read()
+def cuda_multi_item(dataset, desc, tag_added, items):
+    """
+    Add a single tag to multiple items in a dataset and return the new descriptor, if updated
+    :param dataset: the dataset to be perturbed
+    :param desc: the dataset's descriptor
+    :param tag_added: the tag that is added
+    :param items: the list of items that the tag should be added to
+    :return: the minimum descriptor of the modified cluster
+    """
+    # create an empty list to store a list of vectors in the descriptor
+    vec_desc = []
 
-    rows = [row.split() for row in file_in.split("\n")]
+    # for each tag in the descriptor
+    # O(descriptor size)
+    for tag in desc:
+        # add the vector representing the tag of the descriptor
+        vec_desc.append(cp.asarray(get_col(dataset, tag + 1)))
 
-    B = [[0 for i in range(int(rows[0][0]))] for j in range(int(rows[0][2]))]
-    for (i, row) in enumerate(rows[1:]):
-        for (j, e) in enumerate(row[2:]):
-            B[j][i] = int(e)
-    
-    return B
+    # find the vector representing the modified column
+    added_vec = cp.asarray(get_col(dataset, tag_added + 1))
+    # add the tag to the item slot in the vector
+    # O(n)
+    for item in items:
+        # add the tag to the modified column
+        added_vec[item - 1] = 1
+
+    # create an empty replaced array
+    replaced = []
+    # sum the vectors of descriptor tags
+    # O(descriptor size * n)
+    desc_sum = vec_desc[0]
+    for v in vec_desc[1:]:
+        desc_sum = desc_sum + v
+    # add the tag vector of the added tag
+    # O(n)
+    desc_sum = desc_sum + added_vec
+
+    # O(descriptor size * n)
+    for (i, v) in enumerate(vec_desc):
+        desc_sum -= v
+        if min(desc_sum) >= 1:
+            # add the tag to the list of replaced tags
+            replaced.append(i)
+        else:
+            desc_sum += v
+
+    if len(replaced) > 1:
+        new_desc = remove_from_set(desc, replaced)
+        new_desc.append(tag_added)
+        return new_desc
+
+    # if not, return the original descriptor
+    return desc
 
 
 def remove_from_set(desc, removed):
@@ -227,71 +268,6 @@ def remove_from_set(desc, removed):
         if i not in removed:
             new_desc.append(t)
     return new_desc
-
-
-# TODO: remove
-def opt_multi_item(dataset, desc, tag_added, added_vec):
-    # create an empty list to store a list of vectors in the descriptor
-    vec_desc = []
-
-    # for each tag in the descriptor
-    # O(descriptor size)
-    for tag in desc:
-        # add the vector representing the tag of the descriptor
-        vec_desc.append(dataset[tag-1])
-
-    # a bool that tracks if the tag should be used
-    use_tag = False
-    # create an empty replaced array
-    replaced = []
-    # sum the vectors of descriptor tags
-    # O(descriptor size * n)
-    desc_sum = sum_vectors(vec_desc)
-    # add the tag vector of the added tag
-    # O(n)
-    mut_vec_sum(desc_sum, added_vec)
-
-    # O(descriptor size * n)
-    for (i, v) in enumerate(vec_desc):
-        mut_vec_diff(desc_sum, v)
-        if min(desc_sum) >= 1:
-            # add the tag to the list of replaced tags
-            replaced.append(i)
-            # update use_tag
-            use_tag = True
-        else:
-            mut_vec_sum(desc_sum, v)
-
-    if len(replaced) > 1:
-        desc = remove_from_set(desc, replaced)
-
-        desc.append(tag_added) if use_tag else None
-
-    # if not, return the original descriptor
-    return desc
-
-
-# TODO: remove
-def update_multi_item(data, desc, new_data):
-    # parse the initial dataset
-    dataset = parse_columns(data)
-    # parse the new dataset
-    new_dataset = parse_columns(new_data)
-    # placeholder tag added
-    tag_added = -1
-    # empty list of items
-    items = []
-    # for each item in the dataset
-    # O(n * N)
-    for (i, item) in enumerate(dataset):
-        # for each tag value in the item
-        for (j, t) in enumerate(item):
-            # if the two datasets do not match
-            if t != new_dataset[i][j]:
-                # set tag_added to the tag
-                tag_added = i+1
-
-    return opt_multi_item(dataset, desc, tag_added, new_dataset[tag_added-1])
 
 
 def update_descriptor_multi_item(data, desc, new_data):
@@ -434,9 +410,9 @@ def add_tags(dataset, desc, tags, items):
 # items = [[1], [1, 2, 3, 4]]
 #
 # print(add_tags(dataset, desc, tags, items))
-
+#
 # file = "10diagonal.txt"
 # file_new = "10diagonal_1.txt"
 #
 # desc = string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{file}"))[0]
-# print(update_multi_item(f"../test_txt_files/{file}", desc, f"../test_txt_files/{file_new}"))
+# print(update_descriptor_multi_item(f"../test_txt_files/{file}", desc, f"../test_txt_files/{file_new}"))
