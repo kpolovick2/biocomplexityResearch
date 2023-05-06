@@ -1,5 +1,6 @@
 """poly_add_mem.py: recalculates the descriptor of a perturbed dataset in polynomial time using
-more memory efficient means"""
+more memory efficient means.
+This file is an alternate version of poly_add.py, which uses a more memory efficient version of the same algorithm."""
 __author__ = "William Bradford"
 __email__ = "wcb8ze@virginia.edu"
 
@@ -51,7 +52,7 @@ def sum_desc(V, n):
 def remove_from_set(desc, removed):
     new_desc = []
     for (i, t) in enumerate(desc):
-        if i not in removed:
+        if t not in removed:
             new_desc.append(t)
     return new_desc
 

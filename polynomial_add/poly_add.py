@@ -174,7 +174,6 @@ def add_multi_item(dataset, desc, tag_added, items):
         # add the vector representing the tag of the descriptor
         vec_desc.append(get_col(dataset, tag + 1))
 
-    # TODO: test encoding as char
     # find the vector representing the modified column
     added_vec = get_col(dataset, tag_added + 1)
     # add the tag to the item slot in the vector

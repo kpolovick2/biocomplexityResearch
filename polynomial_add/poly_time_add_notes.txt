@@ -1,3 +1,9 @@
+To try:
+- segment the lists into smaller lists, which are operated on in their entirety, then move on to other segments
+- network flow algorithm
+- min set cover algorithm
+- try making a rust library to deal with memory more directly
+---------------------
 Tested:
 - Cupy: drastically slower because hardware interfacing, could try again
 - Storing indices instead of raw vectors: much faster, still slow
