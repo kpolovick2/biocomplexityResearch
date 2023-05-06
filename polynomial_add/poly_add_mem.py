@@ -24,24 +24,48 @@ def get_col(mat, col):
 
 
 def vec_sum(v1, idxs):
+    """
+    Takes a vector and the indexes at which one should be addded, returns the result
+    :param v1: a vector
+    :param idxs: the indexes at which one should be added
+    :return: the sum of the two "vectors"
+    """
     for i in idxs:
         v1[i] += 1
     return v1
 
 
 def vec_diff(v1, idxs):
+    """
+    Takes a vector and the indexes at which one should be subtracted, returns the result
+    :param v1: a vector
+    :param idxs: the indexes at which one should be subtracted
+    :return: the difference of the two "vectors"
+    """
     for i in idxs:
         v1[i] -= 1
     return v1
 
 
 def add_vecs(v1, v2):
+    """
+    Add two vectors
+    :param v1: vector 1
+    :param v2: vector 2
+    :return: v1 + v2
+    """
     for (i, val) in enumerate(v2):
         v1[i] += val
     return v1
 
 
 def sum_desc(V, n):
+    """
+    Sums the vectors in list V
+    :param V: a list of vectors, stored in the form of indexes at which a 1 is present
+    :param n: the number of items in the dataset
+    :return: the sum of each of the descriptor vectors
+    """
     sum = [0 for i in range(n)]
     for v in V:
         for idx in v:
@@ -50,6 +74,12 @@ def sum_desc(V, n):
 
 
 def remove_from_set(desc, removed):
+    """
+    Takes a descriptor in list form, removes the list removed from it
+    :param desc: a descriptor
+    :param removed: a list of tags to remove
+    :return: a copy of the descriptor without any tags present in removed
+    """
     new_desc = []
     for (i, t) in enumerate(desc):
         if t not in removed:
@@ -94,17 +124,24 @@ def add_multi_item(dataset, desc, tag_added, items):
 
     # O(descriptor size * n)
     for (i, v) in enumerate(vec_desc):
+        # subtract the corresponding vector
         vec_diff(desc_sum, v)
+        # if the minimum of the vector is greater than or equal to 1
         if min(desc_sum) >= 1:
             # add the tag to the list of replaced tags
             replaced.append(i)
         else:
+            # add the vector back to the descriptor sum
             vec_sum(desc_sum, v)
 
+    # if more than one tag is removed
     if len(replaced) > 1:
+        # generate the new descriptor without tag_added
         new_desc = remove_from_set(desc, replaced)
+        # add tag_added
         new_desc.append(tag_added)
-        return new_desc
+        # return the sorted list
+        return sorted(new_desc)
 
     # if not, return the original descriptor
     return desc
