@@ -16,3 +16,11 @@ When considering cases of n=25,200,and 1000, N=3, where the items are in two set
 we find that the speedup of this new algorithm generally tends to increase as n increases, however in the diagonal case,
 the speedup tends to decrease as n increases. In other words, the algorithm behaves like a polynomial-time
 algorithm while the size of the descriptor is small
+---------------------
+poly_add algorithm 5.272x on 10diagonal at n=12000
+poly_add_mem algorithm 9.691x on 10diagonal at n=12000
+poly_add algorithm 0.7007x on 1000diagonal at n=12
+poly_add_mem algorithm 1.052x on 1000diagonal at n=12
+
+conclusion: memory seems to be an issue
+---------------------
