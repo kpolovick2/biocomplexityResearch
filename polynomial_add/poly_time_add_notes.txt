@@ -35,3 +35,6 @@ poly_add_mem algorithm 1.052x on 1000diagonal at n=12
 
 Conclusion: memory seems to be an issue. Future iterations of this algorithm will take that into account.
 ---------------------
+Max Flow Formulation:
+Turned out to be SLOWER than the original poly-time solution (makes sense).
+On 100diagonal, n=12, the max flow formulation was found to be 0.0874x the speed of the ILP.
