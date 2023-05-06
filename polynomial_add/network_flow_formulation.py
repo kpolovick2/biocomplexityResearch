@@ -11,7 +11,7 @@ def update_descriptor_multi_item(data, desc, new_data):
     Given two files representing a dataset and a perturbed version of
     that dataset, return the modified descriptor
     This method can only handle single tag perturbations of multiple item, where all tags are the same
-    Runs in O(n*N + descriptor size * n) time
+    Runs in O(?) time
     :param data: the initial dataset
     :param desc: the initial descriptor
     :param new_data: the new dataset after perturbation
@@ -47,7 +47,7 @@ def get_col(mat, col):
     a helper function that returns a column from a list of lists
     :param mat: a matrix (list of lists)
     :param col: a column
-    :return: a list containing the indexes at which 1 is present in the column of the matrix
+    :return: a list containing the (indexes + 1) at which 1 is present in the column of the matrix
     """
     vec = []
     for (i, row) in enumerate(mat[1:]):
@@ -58,6 +58,12 @@ def get_col(mat, col):
 
 
 def remove_from_set(desc, removed):
+    """
+    Remove the items from the removed list from the desc list
+    :param desc: a descriptor
+    :param removed: the tags to remove from said descriptor
+    :return:
+    """
     new_desc = []
     for (i, t) in enumerate(desc):
         if t not in removed:
@@ -67,42 +73,68 @@ def remove_from_set(desc, removed):
 
 
 def recalculate_desc(data, desc, tag_added, items):
+    """
+    A network flow formulation of the polynomial time tag addition algorithm
+    :param data: the dataset being perturbed
+    :param desc: the original descriptor
+    :param tag_added: the tag to be added to the descriptor
+    :param items: the items that tag "covers"
+    :return: the updated descriptor
+    """
+    # create new digraph
     G = nx.DiGraph()
+    # make a list to store the items that each tag "covers"
     item_desc = []
 
+    # store n
     n = data[0][0]
 
+    # fill the item_desc list with the items that each tag in the descriptor describes
     for t in desc:
         item_desc.append(get_col(data, t + 1))
 
+    # create n nodes, each representing an item
     for n in range(1, n+1):
         # add n nodes, each representing an item
         G.add_node(f"i{n}")
 
+    # add the tag_added node
     G.add_node(f"tag_added")
 
+    # for each tag in the descriptor, add a node corresponding to the tag
     for t in desc:
+        # add the node with name t{t}
         G.add_node(f"t{t}")
 
+    # for each list in item_desc, add an edge from the item each tag decribes to the tag
     for (i, l) in enumerate(item_desc):
         for item in l:
             G.add_edge(f"i{item}", f"t{desc[i]}", capacity=1)
 
+    # for each item
     for i in items:
+        # add an edge from the tag_added node to the item
         G.add_edge("tag_added", f"i{i}", capacity=1)
 
-    G.add_node("sink")
-
+    # create an empty list to store the tags to be replaced
     replaced = []
 
+    # for each tag in the descriptor
     for (i, t) in enumerate(desc):
+        # calculate the max flow from the added tag to the descriptor tag
         f = nx.maximum_flow_value(G, "tag_added", f"t{t}")
+        # if the max flow is equal to the number of incoming edges
         if f == len(item_desc[i]):
+            # add t to the list of tags to be replaced
             replaced.append(t)
 
+    # if more than one tag is replaced
     if len(replaced) > 1:
+        # form the new descriptor with items excluded
         new_desc = remove_from_set(desc, replaced)
+        # add the tag added
         new_desc.append(tag_added)
+        # return the sorted descriptor
         return sorted(new_desc)
 
     return desc
