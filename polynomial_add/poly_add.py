@@ -4,7 +4,9 @@ __email__ = "wcb8ze@virginia.edu"
 
 from dataset_perturbing.perturb_utilities import *
 import one_cluster_ilp as ILP
-import cupy as cp
+
+
+# TODO: try max flow formulation
 
 
 def get_col(mat, col):
@@ -172,6 +174,7 @@ def add_multi_item(dataset, desc, tag_added, items):
         # add the vector representing the tag of the descriptor
         vec_desc.append(get_col(dataset, tag + 1))
 
+    # TODO: test encoding as char
     # find the vector representing the modified column
     added_vec = get_col(dataset, tag_added + 1)
     # add the tag to the item slot in the vector
@@ -197,61 +200,6 @@ def add_multi_item(dataset, desc, tag_added, items):
             replaced.append(i)
         else:
             mut_vec_sum(desc_sum, v)
-
-    if len(replaced) > 1:
-        new_desc = remove_from_set(desc, replaced)
-        new_desc.append(tag_added)
-        return new_desc
-
-    # if not, return the original descriptor
-    return desc
-
-
-def cuda_multi_item(dataset, desc, tag_added, items):
-    """
-    Add a single tag to multiple items in a dataset and return the new descriptor, if updated
-    :param dataset: the dataset to be perturbed
-    :param desc: the dataset's descriptor
-    :param tag_added: the tag that is added
-    :param items: the list of items that the tag should be added to
-    :return: the minimum descriptor of the modified cluster
-    """
-    # create an empty list to store a list of vectors in the descriptor
-    vec_desc = []
-
-    # for each tag in the descriptor
-    # O(descriptor size)
-    for tag in desc:
-        # add the vector representing the tag of the descriptor
-        vec_desc.append(cp.asarray(get_col(dataset, tag + 1)))
-
-    # find the vector representing the modified column
-    added_vec = cp.asarray(get_col(dataset, tag_added + 1))
-    # add the tag to the item slot in the vector
-    # O(n)
-    for item in items:
-        # add the tag to the modified column
-        added_vec[item - 1] = 1
-
-    # create an empty replaced array
-    replaced = []
-    # sum the vectors of descriptor tags
-    # O(descriptor size * n)
-    desc_sum = vec_desc[0]
-    for v in vec_desc[1:]:
-        desc_sum = desc_sum + v
-    # add the tag vector of the added tag
-    # O(n)
-    desc_sum = desc_sum + added_vec
-
-    # O(descriptor size * n)
-    for (i, v) in enumerate(vec_desc):
-        desc_sum -= v
-        if min(desc_sum) >= 1:
-            # add the tag to the list of replaced tags
-            replaced.append(i)
-        else:
-            desc_sum += v
 
     if len(replaced) > 1:
         new_desc = remove_from_set(desc, replaced)
