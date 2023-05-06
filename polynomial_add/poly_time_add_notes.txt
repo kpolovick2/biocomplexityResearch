@@ -1,3 +1,8 @@
+Tested:
+- Cupy: drastically slower because hardware interfacing, could try again
+- Storing indices instead of raw vectors: much faster, still slow
+- Encoding as char: doesn't work in python because += not supported for char
+---------------------
 In a test of 120000 executions on a dataset of size n=10, the ILP solution required 0.0009174 seconds per execution on average.
 The polynomial time algorithm required 9.331e-05 seconds per execution.
 Overall, this was a 9.8318x speedup.
@@ -22,5 +27,5 @@ poly_add_mem algorithm 9.691x on 10diagonal at n=12000
 poly_add algorithm 0.7007x on 1000diagonal at n=12
 poly_add_mem algorithm 1.052x on 1000diagonal at n=12
 
-conclusion: memory seems to be an issue
+Conclusion: memory seems to be an issue. Future iterations of this algorithm will take that into account.
 ---------------------
