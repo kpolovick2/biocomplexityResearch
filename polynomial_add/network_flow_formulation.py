@@ -119,10 +119,19 @@ def recalculate_desc(data, desc, tag_added, items):
     # create an empty list to store the tags to be replaced
     replaced = []
 
+    G.add_node("source")
+
+    for v in G.nodes:
+        G.add_edge("source", v)
+
     # for each tag in the descriptor
     for (i, t) in enumerate(desc):
+        # remove the edge between the source and t
+        G.remove_edge("source", f"t{t}")
         # calculate the max flow from the added tag to the descriptor tag
-        f = nx.maximum_flow_value(G, "tag_added", f"t{t}")
+        f = nx.maximum_flow_value(G, "source", f"t{t}")
+        # add the previous edge back
+        G.add_edge("source", f"t{t}")
         # if the max flow is equal to the number of incoming edges
         if f == len(item_desc[i]):
             # add t to the list of tags to be replaced
