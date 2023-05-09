@@ -99,7 +99,7 @@ def recalculate_desc(data, desc, tag_added, items):
         G.add_node(f"i{n}")
 
     # add the tag_added node
-    G.add_node(f"tag_added")
+    G.add_node(tag_added)
 
     # for each tag in the descriptor, add a node corresponding to the tag
     for t in desc:
@@ -109,44 +109,41 @@ def recalculate_desc(data, desc, tag_added, items):
     # for each list in item_desc, add an edge from the item each tag decribes to the tag
     for (i, l) in enumerate(item_desc):
         for item in l:
-            G.add_edge(f"i{item}", f"t{desc[i]}", capacity=1)
+            G.add_edge(f"t{desc[i]}", f"i{item}", capacity=1)
 
     # for each item
     for i in items:
         # add an edge from the tag_added node to the item
-        G.add_edge("tag_added", f"i{i}", capacity=1)
+        G.add_edge(tag_added, f"i{i}", capacity=1)
 
     # create an empty list to store the tags to be replaced
     replaced = []
 
     G.add_node("source")
+    G.add_edge("source", tag_added, capacity=math.inf)
 
-    for v in G.nodes:
-        G.add_edge("source", v)
+    for t in desc:
+        G.add_edge("source", f"t{t}")
+
+    G.add_node("sink")
+
+    for i in range(1, n + 1):
+        G.add_edge(f"i{i}", "sink")
+
+    R = None
 
     # for each tag in the descriptor
     for (i, t) in enumerate(desc):
         # remove the edge between the source and t
         G.remove_edge("source", f"t{t}")
         # calculate the max flow from the added tag to the descriptor tag
-        f = nx.maximum_flow_value(G, "source", f"t{t}")
-        # add the previous edge back
-        G.add_edge("source", f"t{t}")
-        # if the max flow is equal to the number of incoming edges
-        if f == len(item_desc[i]):
-            # add t to the list of tags to be replaced
-            replaced.append(t)
+        R = nx.algorithms.flow.preflow_push(G, "source", "sink", residual=R)
+        # if the max flow is not equal to the number of items...
+        if not R.graph["flow_value"] >= n:
+            # add the previous edge back
+            G.add_edge("source", f"t{t}")
 
-    # if more than one tag is replaced
-    if len(replaced) > 1:
-        # form the new descriptor with items excluded
-        new_desc = remove_from_set(desc, replaced)
-        # add the tag added
-        new_desc.append(tag_added)
-        # return the sorted descriptor
-        return sorted(new_desc)
-
-    return desc
+    return list(nx.all_neighbors(G, "source"))
 
 
 
