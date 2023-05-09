@@ -41,3 +41,4 @@ On 100diagonal, n=12, the max flow formulation was found to be 0.0874x the speed
 After further experimentation, it ran slower than the ILP solution by a large margin, even when not recalculating the
 max flow on every iteration. For some reason, the speedup was only 1.7489x when for loop was completely ignored.
 That is, when the answer was not calculated, there was only a 1.7489x speedup.
+Also of note, consolidating for loops in the beginning brought this to a 2.086x speedup.
