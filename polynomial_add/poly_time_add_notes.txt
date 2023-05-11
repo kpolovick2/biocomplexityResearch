@@ -27,6 +27,10 @@ In a test of 12 executions on a dataset of size n=1000, the ILP solution require
 THe polynomial time algorithm required 0.0853 seconds per execution.
 Overall, this was a 0.03967x speedup.
 ---------------------
+In a test of 120 executions on a dataset of size n=2000, the ILP solution required 0.07248 seconds per execution.
+THe polynomial time algorithm required 0.184 seconds per execution.
+Overall, this was a 0.3938x speedup.
+---------------------
 When considering cases of n=25,200,and 1000, N=3, where the items are in two sets at first, then merged into one with a tag perturbation,
 we find that the speedup of this new algorithm generally tends to increase as n increases, however in the diagonal case,
 the speedup tends to decrease as n increases. In other words, the algorithm behaves like a polynomial-time
