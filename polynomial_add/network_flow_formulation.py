@@ -137,8 +137,8 @@ def recalculate_desc(data, desc, tag_added, items):
 
 
 
-# file = "10diagonal.txt"
-# file_new = "10diagonal_1.txt"
-#
-# desc = string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{file}"))[0]
-# print(update_descriptor_multi_item(f"../test_txt_files/{file}", desc, f"../test_txt_files/{file_new}"))
+file = "1000diagonal.txt"
+file_new = "1000diagonal_1.txt"
+
+desc = string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{file}"))[0]
+print(update_descriptor_multi_item(f"../test_txt_files/{file}", desc, f"../test_txt_files/{file_new}"))
