@@ -6,9 +6,6 @@ from dataset_perturbing.perturb_utilities import *
 import one_cluster_ilp as ILP
 
 
-# TODO: try max flow formulation
-
-
 def get_col(mat, col):
     """
     a helper function that returns a column from a list of lists
