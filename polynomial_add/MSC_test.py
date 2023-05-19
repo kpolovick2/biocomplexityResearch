@@ -32,32 +32,32 @@ def generate_sets(num_sets):
 def gen_MSC(sets):
     MSC_base = ptu.parse_dataset(f"../test_txt_files/MSC_steps/MSC_0.txt")
 
+    output_file_from_data(MSC_base, "MSC", 0)
+
     MSC_full_problem = MSC_base.copy()
     for (i, row) in enumerate(sets):
         for (j, t) in enumerate(row):
             MSC_full_problem[i+1][j+6] = t
 
-    output_file_from_data(MSC_full_problem[:-1], "MSC", "full_problem")
+    output_file_from_data(MSC_full_problem, "MSC", "full_problem")
 
     for (i, row) in enumerate(sets):
         MSC_full_problem[i + 1][len(row) + 5] = 0
 
-    output_file_from_data(MSC_full_problem[:-1], "MSC", 3)
+    output_file_from_data(MSC_full_problem, "MSC", 3)
 
     for (i, row) in enumerate(sets):
         MSC_full_problem[i + 1][len(row) + 4] = 0
 
-    output_file_from_data(MSC_full_problem[:-1], "MSC", 2)
+    output_file_from_data(MSC_full_problem, "MSC", 2)
 
     for (i, row) in enumerate(sets):
         MSC_full_problem[i + 1][len(row) + 3] = 0
 
-    print(MSC_full_problem)
+    output_file_from_data(MSC_full_problem, "MSC", 1)
 
-    output_file_from_data(MSC_full_problem[:-1], "MSC", 1)
 
-    output_file_from_data(MSC_base, "MSC", 0)
-
+# print(gen_MSC(generate_sets(4)))
 
 initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
 final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_full_problem.txt"))[0]
@@ -74,10 +74,8 @@ desc_4 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_3.txt
 print(f"The ILP solution: {final}")
 print(f"The polynomial time solution: {desc_4}")
 
-print(gen_MSC(generate_sets(4)))
-
 if checker.check_descriptor(desc_1, f"../test_txt_files/MSC_steps/MSC_full_problem.txt") and len(desc_4) == len(final):
     print("Solution working")
 else:
-    print("Solution not working")
+    print("Solution NOT working")
     raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {desc_4} / ILP solution: {final}")
