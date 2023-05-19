@@ -2,8 +2,9 @@
 # wcb8ze
 # solution checker file to verify that solutions truly are minimum descriptors for the problem in question
 
-import ILP_linear as ilp_L
-import ILP_gurobi_generalized_concise as ilp_G
+# import ILP_linear as ilp_L
+# import ILP_gurobi_generalized_concise as ilp_G
+import dataset_perturbing.perturb_utilities as ptu
 
 def check(solution_string, filename):
 
@@ -107,5 +108,21 @@ def check(solution_string, filename):
     print("All constraints satisfied.")
     return True
 
-# check(ilp_G.ILP_concise("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")
-check(ilp_L.ILP_linear("dataset_perturbing/perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt"), "dataset_perturbing/perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt")
+
+def check_descriptor(desc, filename):
+    data = ptu.parse_dataset(filename)
+
+    B = [d[2:] for d in data[1:]]
+    lines = [0 for i in range(len(B))]
+    for t in desc:
+        for (i, line) in enumerate(B):
+            if line[t-1] > 0:
+                lines[i] += 1
+
+    if min(lines) >= 1:
+        return True
+    return False
+
+
+# # check(ilp_G.ILP_concise("test_txt_files/100n_7K_100N_15a_1b.txt"), "test_txt_files/100n_7K_100N_15a_1b.txt")
+# check(ilp_L.ILP_linear("dataset_perturbing/perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt"), "dataset_perturbing/perturb_data/10n_1K_20N_4a_1b/10n_1K_20N_4a_1b.txt")
