@@ -29,6 +29,7 @@ def generate_sets(num_sets, num_items=4):
     sets = [[random.randint(0, 1) for i in range(num_sets)] for i in range(num_items)]
     return sets
 
+
 def gen_MSC(sets):
     MSC_base = ptu.parse_dataset(f"../test_txt_files/MSC_steps/MSC_0.txt")
 

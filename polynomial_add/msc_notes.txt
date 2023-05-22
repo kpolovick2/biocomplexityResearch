@@ -1,0 +1,6 @@
+General procedure:
+1. remove duplicate tag vectors
+2. sort tag positions by largest overlap last
+3. run incremental addition algorithm
+
+In all observed instances, this will find the minimum set cover in polynomial time
