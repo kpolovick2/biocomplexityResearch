@@ -25,8 +25,8 @@ def output_file_from_data(data, dataset_name, iteration_number):
         f.write(output_string)
 
 
-def generate_sets(num_sets):
-    sets = [[random.randint(0, 1) for i in range(num_sets)] for i in range(4)]
+def generate_sets(num_sets, num_items=4):
+    sets = [[random.randint(0, 1) for i in range(num_sets)] for i in range(num_items)]
     return sets
 
 def gen_MSC(sets):
@@ -56,26 +56,26 @@ def gen_MSC(sets):
 
     output_file_from_data(MSC_full_problem, "MSC", 1)
 
+while True:
+    print(gen_MSC(generate_sets(4)))
 
-# print(gen_MSC(generate_sets(4)))
+    initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
+    final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_full_problem.txt"))[0]
 
-initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
-final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_full_problem.txt"))[0]
+    desc_1 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_0.txt", initial,
+                                             f"../test_txt_files/MSC_steps/MSC_1.txt")
+    desc_2 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_1.txt", desc_1,
+                                             f"../test_txt_files/MSC_steps/MSC_2.txt")
+    desc_3 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_2.txt", desc_2,
+                                             f"../test_txt_files/MSC_steps/MSC_3.txt")
+    desc_4 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_3.txt", desc_3,
+                                             f"../test_txt_files/MSC_steps/MSC_full_problem.txt")
 
-desc_1 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_0.txt", initial,
-                                         f"../test_txt_files/MSC_steps/MSC_1.txt")
-desc_2 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_1.txt", desc_1,
-                                         f"../test_txt_files/MSC_steps/MSC_2.txt")
-desc_3 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_2.txt", desc_2,
-                                         f"../test_txt_files/MSC_steps/MSC_3.txt")
-desc_4 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_3.txt", desc_3,
-                                         f"../test_txt_files/MSC_steps/MSC_full_problem.txt")
+    print(f"The ILP solution: {final}")
+    print(f"The polynomial time solution: {desc_4}")
 
-print(f"The ILP solution: {final}")
-print(f"The polynomial time solution: {desc_4}")
-
-if checker.check_descriptor(desc_1, f"../test_txt_files/MSC_steps/MSC_full_problem.txt") and len(desc_4) == len(final):
-    print("Solution working")
-else:
-    print("Solution NOT working")
-    raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {desc_4} / ILP solution: {final}")
+    if checker.check_descriptor(desc_1, f"../test_txt_files/MSC_steps/MSC_full_problem.txt") and len(desc_4) == len(final):
+        print("Solution working")
+    else:
+        print("Solution NOT working")
+        raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {desc_4} / ILP solution: {final}")

@@ -248,7 +248,7 @@ def update_descriptor_multi_item(data, desc, new_data):
                 items.append(i)
 
     if tag_added == -1:
-        raise Exception("tag_added is still -1")
+        return desc
     return add_multi_item(dataset, desc, tag_added, items)
 
 #
