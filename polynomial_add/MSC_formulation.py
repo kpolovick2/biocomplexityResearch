@@ -45,7 +45,10 @@ def sort_sets(sets):
 
 def gen_appendage(sets, num_sets, num_items):
     sorted_sets = sort_sets(sets)
-    B = [[0 for i in range(num_items)] for j in range(num_sets)]
+    B = [[0 for i in range(num_sets)] for j in range(num_items)]
+
+    for row in B:
+        print(row)
 
     for (i, s) in enumerate(sorted_sets):
         for (j, e) in enumerate(s):
@@ -70,6 +73,7 @@ def get_base(num_sets, num_items):
 
     return data
 
+
 def generate_full(num_sets, num_items):
     appendage = gen_appendage(gen_sets(num_sets, num_items), num_sets, num_items)
     base = get_base(num_sets, num_items)
@@ -82,17 +86,10 @@ def generate_full(num_sets, num_items):
         for (j, t) in enumerate(row):
             full[i + 1][j + num_items + 2] = t
 
-    output_file_from_data(full, "MSC", "full_problem")
+    output_file_from_data(full, "MSC", num_sets)
 
     for i in range(num_sets, 0, -1):
         for (j, row) in enumerate(appendage):
             full[j + 1][num_items + i + 1] = 0
 
         output_file_from_data(full, "MSC", i-1)
-
-
-S = [[1, 3], [1, 2], [3, 4], [1, 3]]
-
-print(gen_appendage(gen_sets(4, 4), 4, 4))
-get_base(4, 4)
-generate_full(4, 4)

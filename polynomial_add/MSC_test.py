@@ -3,6 +3,7 @@ import dataset_perturbing.perturb_utilities as ptu
 import one_cluster_ilp as ILP
 import solution_checker as checker
 import random
+import MSC_formulation
 
 
 def output_file_from_data(data, dataset_name, iteration_number):
@@ -58,26 +59,29 @@ def gen_MSC(sets):
 
     output_file_from_data(MSC_full_problem, "MSC", 1)
 
-while True:
-    print(gen_MSC(generate_sets(4)))
+
+def test_msc(num_sets, num_items):
+    print(MSC_formulation.generate_full(num_sets, num_items))
 
     initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
-    final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_full_problem.txt"))[0]
+    final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_{num_sets}.txt"))[0]
 
-    desc_1 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_0.txt", initial,
-                                             f"../test_txt_files/MSC_steps/MSC_1.txt")
-    desc_2 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_1.txt", desc_1,
-                                             f"../test_txt_files/MSC_steps/MSC_2.txt")
-    desc_3 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_2.txt", desc_2,
-                                             f"../test_txt_files/MSC_steps/MSC_3.txt")
-    desc_4 = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_3.txt", desc_3,
-                                             f"../test_txt_files/MSC_steps/MSC_full_problem.txt")
+    temp_desc = initial.copy()
+
+    for i in range(num_sets):
+        temp_desc = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_{i}.txt", temp_desc,
+                                             f"../test_txt_files/MSC_steps/MSC_{i+1}.txt")
 
     print(f"The ILP solution: {final}")
-    print(f"The polynomial time solution: {desc_4}")
+    print(f"The polynomial time solution: {temp_desc}")
 
-    if checker.check_descriptor(desc_1, f"../test_txt_files/MSC_steps/MSC_full_problem.txt") and len(desc_4) == len(final):
+    if checker.check_descriptor(temp_desc, f"../test_txt_files/MSC_steps/MSC_{num_sets}.txt") \
+            and len(temp_desc) == len(final):
         print("Solution working")
     else:
         print("Solution NOT working")
-        raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {desc_4} / ILP solution: {final}")
+        raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {temp_desc} / ILP solution: {final}")
+
+
+while True:
+    test_msc(5, 9)
