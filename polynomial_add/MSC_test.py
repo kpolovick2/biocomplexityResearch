@@ -40,6 +40,6 @@ def test_msc(num_sets, num_items):
             raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {temp_desc} "
                             f"/ ILP solution: {final}")
 
-#
+
 # while True:
-test_msc(6, 12)
+test_msc(12, 12)
