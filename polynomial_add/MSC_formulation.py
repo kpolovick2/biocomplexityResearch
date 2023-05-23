@@ -32,7 +32,7 @@ def sort_sets(sets):
                 del sets[j]
 
     overlap = [0 for i in range(len(sets))]
-    sums = [sum(s) for s in sets]
+    sums = [len(s) for s in sets]
 
     # count the overlap
     for (i, s1) in enumerate(sets):
@@ -46,6 +46,19 @@ def sort_sets(sets):
 
     # return the list sets sorted in ascending order of overlap
     return [x for _, x in sorted(zip(overlap, sets))]
+
+
+def reverse_sets(sets):
+    # remove duplicates
+    for (i, s1) in enumerate(sets):
+        for (j, s2) in enumerate(sets):
+            if s1 == s2 and i != j:
+                del sets[j]
+
+    sums = [len(s) for s in sets]
+
+    # return the list sets sorted in ascending order of overlap
+    return list(reversed([x for _, x in sorted(zip(sums, sets))]))
 
 
 def gen_appendage(sets, num_sets, num_items):
@@ -78,7 +91,7 @@ def get_base(num_sets, num_items):
 
 
 def generate_reverse(num_sets, num_items, sets):
-    appendage = gen_appendage(list(reversed(sets)), num_sets, num_items)
+    appendage = gen_appendage(reverse_sets(sets), num_sets, num_items)
     base = get_base(num_sets, num_items)
 
     output_file_from_data(base, "MSC", 0)
@@ -99,6 +112,14 @@ def generate_reverse(num_sets, num_items, sets):
 
 
 def generate_full(num_sets, num_items, sets=None):
+    """
+    a generation algorithm to generate msc problems in the form of clustering problems
+    :param num_sets: the number of sets to generate
+    :param num_items: the number of items to generate
+    :param sets: the sets to use if sets are already generated
+    :return: void (outputs the generated problems as files)
+    """
+    # generate
     sets = gen_sets(num_sets, num_items) if sets == None else sets
     appendage = gen_appendage(sets, num_sets, num_items)
     base = get_base(num_sets, num_items)

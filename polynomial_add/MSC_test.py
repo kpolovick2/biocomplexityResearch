@@ -7,10 +7,10 @@ import MSC_formulation
 
 def test_msc(num_sets, num_items):
     """
-    a test housing to confirm that the
-    :param num_sets: 
-    :param num_items: 
-    :return: 
+    a test housing to test the quality of the heuristic algorithm for solving minimum set cover
+    :param num_sets: the number of sets in a test
+    :param num_items: the number of items in a test
+    :return: void
     """
     s = MSC_formulation.generate_full(num_sets, num_items)
 
@@ -25,15 +25,17 @@ def test_msc(num_sets, num_items):
 
     desc_1 = temp_desc.copy()
 
-    temp_desc = initial.copy()
+    if len(desc_1) != len(final):
 
-    MSC_formulation.generate_reverse(num_sets, num_items, s)
+        temp_desc = initial.copy()
 
-    for i in range(num_sets):
-        temp_desc = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_{i}.txt", temp_desc,
-                                                    f"../test_txt_files/MSC_steps/MSC_{i + 1}.txt")
+        MSC_formulation.generate_reverse(num_sets, num_items, s)
 
-    temp_desc = temp_desc if len(temp_desc) < len(desc_1) else desc_1
+        for i in range(num_sets):
+            temp_desc = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_{i}.txt", temp_desc,
+                                                        f"../test_txt_files/MSC_steps/MSC_{i + 1}.txt")
+
+        temp_desc = temp_desc if len(temp_desc) < len(desc_1) else desc_1
 
     print(f"The ILP solution: {final}")
     print(f"The polynomial time solution: {temp_desc}")
@@ -51,7 +53,7 @@ def test_msc(num_sets, num_items):
         if len(temp_desc) - 1 > len(final):
             raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {temp_desc} "
                             f"/ ILP solution: {final}"
-                            f"sets = {s}")
+                            f"\nsets = {s}")
 
 
 while True:
