@@ -24,13 +24,15 @@ def output_file_from_data(data, dataset_name, iteration_number):
 
 
 def sort_sets(sets):
-    overlap = [0 for i in range(len(sets))]
 
     # remove duplicates
     for (i, s1) in enumerate(sets):
         for (j, s2) in enumerate(sets):
             if s1 == s2 and i != j:
                 del sets[j]
+
+    overlap = [0 for i in range(len(sets))]
+    sums = [sum(s) for s in sets]
 
     # count the overlap
     for (i, s1) in enumerate(sets):
@@ -39,6 +41,9 @@ def sort_sets(sets):
                 if e in s2 and i != j:
                     overlap[i] += 1
 
+    for (i, s) in enumerate(overlap):
+        overlap[i] /= sums[i]
+
     # return the list sets sorted in ascending order of overlap
     return [x for _, x in sorted(zip(overlap, sets))]
 
@@ -46,9 +51,6 @@ def sort_sets(sets):
 def gen_appendage(sets, num_sets, num_items):
     sorted_sets = sort_sets(sets)
     B = [[0 for i in range(num_sets)] for j in range(num_items)]
-
-    for row in B:
-        print(row)
 
     for (i, s) in enumerate(sorted_sets):
         for (j, e) in enumerate(s):

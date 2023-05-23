@@ -197,7 +197,7 @@ def add_multi_item(dataset, desc, tag_added, items):
         else:
             mut_vec_sum(desc_sum, v)
 
-    if len(replaced) > 1:
+    if len(replaced) >= 1:
         new_desc = remove_from_set(desc, replaced)
         new_desc.append(tag_added)
         return new_desc
