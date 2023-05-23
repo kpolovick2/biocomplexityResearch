@@ -191,15 +191,21 @@ def add_multi_item(dataset, desc, tag_added, items):
     # O(descriptor size * n)
     for (i, v) in enumerate(vec_desc):
         min = mut_vec_diff(desc_sum, v)
+        print(desc_sum)
+        print(min)
+        print(tag_added)
         if min >= 1:
             # add the tag to the list of replaced tags
             replaced.append(i)
         else:
             mut_vec_sum(desc_sum, v)
 
+    print(f"\n\n\n\n\n\nReplaced: {replaced}")
+
     if len(replaced) >= 1:
         new_desc = remove_from_set(desc, replaced)
         new_desc.append(tag_added)
+        print(new_desc)
         return new_desc
 
     # if not, return the original descriptor

@@ -12,7 +12,7 @@ def test_msc(num_sets, num_items):
     :param num_items: 
     :return: 
     """
-    MSC_formulation.generate_full(num_sets, num_items)
+    # MSC_formulation.generate_full(num_sets, num_items)
 
     initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
     final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_{num_sets}.txt"))[0]
@@ -40,6 +40,6 @@ def test_msc(num_sets, num_items):
             raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {temp_desc} "
                             f"/ ILP solution: {final}")
 
-
-while True:
-    test_msc(6, 12)
+#
+# while True:
+test_msc(6, 12)
