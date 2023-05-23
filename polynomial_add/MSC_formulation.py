@@ -76,8 +76,9 @@ def get_base(num_sets, num_items):
     return data
 
 
-def generate_full(num_sets, num_items):
-    appendage = gen_appendage(gen_sets(num_sets, num_items), num_sets, num_items)
+
+def generate_reverse(num_sets, num_items, sets):
+    appendage = gen_appendage(list(reversed(sets)), num_sets, num_items)
     base = get_base(num_sets, num_items)
 
     output_file_from_data(base, "MSC", 0)
@@ -95,3 +96,27 @@ def generate_full(num_sets, num_items):
             full[j + 1][num_items + i + 1] = 0
 
         output_file_from_data(full, "MSC", i-1)
+
+
+def generate_full(num_sets, num_items, sets=None):
+    sets = gen_sets(num_sets, num_items) if sets == None else sets
+    appendage = gen_appendage(sets, num_sets, num_items)
+    base = get_base(num_sets, num_items)
+
+    output_file_from_data(base, "MSC", 0)
+
+    full = copy.deepcopy(base)
+
+    for (i, row) in enumerate(appendage):
+        for (j, t) in enumerate(row):
+            full[i + 1][j + num_items + 2] = t
+
+    output_file_from_data(full, "MSC", num_sets)
+
+    for i in range(num_sets, 0, -1):
+        for (j, row) in enumerate(appendage):
+            full[j + 1][num_items + i + 1] = 0
+
+        output_file_from_data(full, "MSC", i-1)
+
+    return sets

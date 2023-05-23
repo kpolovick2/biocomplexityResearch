@@ -12,7 +12,7 @@ def test_msc(num_sets, num_items):
     :param num_items: 
     :return: 
     """
-    # MSC_formulation.generate_full(num_sets, num_items)
+    s = MSC_formulation.generate_full(num_sets, num_items)
 
     initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
     final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_{num_sets}.txt"))[0]
@@ -22,6 +22,18 @@ def test_msc(num_sets, num_items):
     for i in range(num_sets):
         temp_desc = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_{i}.txt", temp_desc,
                                              f"../test_txt_files/MSC_steps/MSC_{i+1}.txt")
+
+    desc_1 = temp_desc.copy()
+
+    temp_desc = initial.copy()
+
+    MSC_formulation.generate_reverse(num_sets, num_items, s)
+
+    for i in range(num_sets):
+        temp_desc = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_{i}.txt", temp_desc,
+                                                    f"../test_txt_files/MSC_steps/MSC_{i + 1}.txt")
+
+    temp_desc = temp_desc if len(temp_desc) < len(desc_1) else desc_1
 
     print(f"The ILP solution: {final}")
     print(f"The polynomial time solution: {temp_desc}")
@@ -38,8 +50,9 @@ def test_msc(num_sets, num_items):
         print("Solution NOT working")
         if len(temp_desc) - 1 > len(final):
             raise Exception(f"Solution is not a minimum descriptor: \n Polynomial solution: {temp_desc} "
-                            f"/ ILP solution: {final}")
+                            f"/ ILP solution: {final}"
+                            f"sets = {s}")
 
 
-# while True:
-test_msc(12, 12)
+while True:
+    test_msc(12, 12)
