@@ -135,6 +135,9 @@ def ILP_linear(filename):
                 # add the tag number to the corresponding descriptor
                 D[i].append(j)
 
+            # print the number of solutions
+            print(f"\nNumber of solutions found: {m.getAttr('SolCount')}")
+
             # create an empty output string
             output_string = ""
             # print the values of the solution that equal one
