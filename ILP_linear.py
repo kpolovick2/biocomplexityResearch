@@ -25,6 +25,7 @@ def add(arr1, arr2):
 
 # takes a file as an argument and finds the minimum descriptor of the file using linear method
 def ILP_linear(filename):
+    # the beginning code simply disables gurobi's console output
     with gp.Env(empty=True) as env:
         env.setParam('OutputFlag', 0)
         env.start()
