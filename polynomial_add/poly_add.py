@@ -207,6 +207,12 @@ def add_multi_item(dataset, desc, tag_added, items):
 
 
 def remove_from_set(desc, removed):
+    """
+    remove the items in "removed" from the descriptor
+    :param desc: a descriptor
+    :param removed: the items to be removed
+    :return: the descriptor without the specified items
+    """
     new_desc = []
     for (i, t) in enumerate(desc):
         if i not in removed:
@@ -251,21 +257,6 @@ def update_descriptor_multi_item(data, desc, new_data):
         return desc
     return add_multi_item(dataset, desc, tag_added, items)
 
-#
-# a = [0,1,2]
-# b = [1,2]
-#
-#
-# def contain_sub(v1, v2):
-#     for i in range(len(v2) - len(v1) + 1):
-#         v3 = v2[i:len(v2)-i]
-#         if v1 == v3:
-#             return True
-#     return False
-#
-#
-#
-# print(contain_sub(b, a))
 
 def add_tags(dataset, desc, tags, items):
     """
@@ -312,17 +303,10 @@ def add_tags(dataset, desc, tags, items):
                 use_tag[j][i] = True
                 num_replaced[tags[j]] += 1
 
-    # FIXME: make a function to remove a tag from the list of tags to add if it another tag covers it instead
-    #  for each replaced list
-    # for (i, v1) in enumerate(replaced):
-    #     for (j, v2) in enumerate(replaced[i+1:]):
-
-
     print(replaced)
     for (i, rep) in enumerate(replaced):
         if len(rep) == 0:
             use_tag[i] = False
-
 
     # copy the descriptor
     new_desc = desc.copy()
