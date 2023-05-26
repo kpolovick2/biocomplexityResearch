@@ -1,3 +1,5 @@
+
+
 import poly_add as pa
 import dataset_perturbing.perturb_utilities as ptu
 import one_cluster_ilp as ILP
@@ -12,7 +14,7 @@ def test_msc(num_sets, num_items):
     :param num_items: the number of items in a test
     :return: void
     """
-    s = MSC_formulation.generate_full(num_sets, num_items)
+    s = MSC_formulation.generate_full(num_sets, num_items, [[1, 3, 5, 6, 9, 10], [1, 6, 8, 10, 11, 12], [1, 2, 3, 6, 8], [1, 3, 5, 7, 10, 11], [4, 8, 12], [1, 3, 5, 6, 7, 8, 9, 11], [4], [1, 2, 3, 5, 7, 8], [1, 4, 5, 6, 7, 8], [1, 2, 3], [2], [1, 2, 3, 4, 5, 7, 8, 9]])
 
     initial = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_0.txt"))[0]
     final = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/MSC_steps/MSC_{num_sets}.txt"))[0]
@@ -29,7 +31,7 @@ def test_msc(num_sets, num_items):
 
         temp_desc = initial.copy()
 
-        MSC_formulation.generate_reverse(num_sets, num_items, s)
+        MSC_formulation.gen_reverse(num_sets, num_items, s)
 
         for i in range(num_sets):
             temp_desc = pa.update_descriptor_multi_item(f"../test_txt_files/MSC_steps/MSC_{i}.txt", temp_desc,
