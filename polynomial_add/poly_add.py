@@ -2,6 +2,13 @@
 __author__ = "William Bradford"
 __email__ = "wcb8ze@virginia.edu"
 
+# TODO: work on using dynamic programming to make this algorithm solve all possible minimum set covers
+#  possibly use a hashing algorithm (prove non-collision correctness) to store and count the descriptors
+#  there may be a way to do this in polynomial time?
+#  prospective hashing algorithm:
+#       - (sum (number of described * tag index^2) - smallest) % num solutions
+#       (might produce zero collisions?)
+
 from dataset_perturbing.perturb_utilities import *
 import one_cluster_ilp as ILP
 
