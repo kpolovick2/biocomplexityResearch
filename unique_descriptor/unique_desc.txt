@@ -1,0 +1,12 @@
+There cannot be a jagged zipper condition in a dataset of size n = 4, where N is some arbitrary value.
+When we examine the zipper possibilities, we find the following B matrices:
+1 0
+0 1
+1 0
+0 1
+
+1 0
+0 1
+0 1
+1 0
+

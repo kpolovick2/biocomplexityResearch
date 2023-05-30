@@ -67,8 +67,8 @@ def sort_sets(sets):
 def reverse_sets(sets):
     """
     takes a set of sets from the minimum descriptor problem and sort them in descending order of size
-    :param sets:
-    :return:
+    :param sets: the sets from the msc
+    :return: the list of sets sorted by size in descending order
     """
     # remove duplicates
     for (i, s1) in enumerate(sets):
