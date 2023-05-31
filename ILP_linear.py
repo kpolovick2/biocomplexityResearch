@@ -8,21 +8,6 @@ from gurobipy import LinExpr
 import gurobipy as gp
 
 
-# compute the dot product of two arrays (as if they were vectors)
-def dot(arr1, arr2):
-    answer = 0
-    for i in range(len(arr1)):
-        answer += (arr1[i] * arr2[i])
-    return answer
-
-
-# compute an array that stores the sums of the ith array elements at index i
-def add(arr1, arr2):
-    answer = []
-    for i in range(len(arr1)):
-        answer.append(arr1[i] + arr2[i])
-    return answer
-
 # takes a file as an argument and finds the minimum descriptor of the file using linear method
 def ILP_linear(filename):
     # the beginning code simply disables gurobi's console output
