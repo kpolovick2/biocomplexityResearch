@@ -163,4 +163,4 @@ def ILP_linear(filename):
                 output_string += f"{descriptor} \n"
                 print(descriptor)
 
-            return output_string
+            return D

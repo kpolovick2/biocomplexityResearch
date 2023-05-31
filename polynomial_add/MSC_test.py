@@ -16,7 +16,7 @@ def test_msc(num_sets, num_items):
     :return: void
     """
     # generate an msc
-    s = MSC_formulation.generate_full(num_sets, num_items, [[1, 3, 5, 6, 9, 10], [1, 6, 8, 10, 11, 12], [1, 2, 3, 6, 8], [1, 3, 5, 7, 10, 11], [4, 8, 12], [1, 3, 5, 6, 7, 8, 9, 11], [4], [1, 2, 3, 5, 7, 8], [1, 4, 5, 6, 7, 8], [1, 2, 3], [2], [1, 2, 3, 4, 5, 7, 8, 9]])
+    s = MSC_formulation.generate_full(num_sets, num_items)
 
     # find the initial descriptor, which can be done in polynomial time because
     # we already know the minimum descriptor due to the formulation of the problem
@@ -79,4 +79,4 @@ def test_msc(num_sets, num_items):
 # use an infinite loop to randomly generate problems until the algorithm gets the wrong solution
 while True:
     # run the generation and testing algorithms
-    test_msc(12, 12)
+    test_msc(20, 20)
