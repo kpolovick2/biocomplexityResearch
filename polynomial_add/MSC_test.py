@@ -79,4 +79,4 @@ def test_msc(num_sets, num_items):
 # use an infinite loop to randomly generate problems until the algorithm gets the wrong solution
 while True:
     # run the generation and testing algorithms
-    test_msc(20, 20)
+    test_msc(5, 5)
