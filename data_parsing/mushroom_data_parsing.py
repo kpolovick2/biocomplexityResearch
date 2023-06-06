@@ -35,11 +35,11 @@ output = f"{len(data)} {len(clusters)} {prev_len - 1} {prev_len} 1 \n"
 
 B = []
 for (i, row) in enumerate(data):
-    temp = [0 for r in range(prev_len+1)]
+    temp = [0 for r in range(prev_len+2)]
     temp[0], temp[1] = i + 1, clusters[row[0]]
     for (j, item) in enumerate(row[1:]):
         if item != '?':
-            temp[col_key[j][item]] = 1
+            temp[col_key[j][item]+2] = 1
     B.append(temp)
 
 for (i, row) in enumerate(B):

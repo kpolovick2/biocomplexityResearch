@@ -42,9 +42,9 @@ dataset = [[0 for i in range(N + 2)] for j in range(len(clusters))]
 for (i, row) in enumerate(dataset):
     dataset[i][0] = i + 1
     dataset[i][1] = cluster_dict[clusters[i]]
-    dataset[i][ash_dict[ash[i]]] = 1
-    dataset[i][phenol_dict[phenol[i]]] = 1
-    dataset[i][proline_dict[proline[i]]] = 1
+    dataset[i][ash_dict[ash[i]]+2] = 1
+    dataset[i][phenol_dict[phenol[i]]+2] = 1
+    dataset[i][proline_dict[proline[i]]+2] = 1
 
 for (i, row) in enumerate(dataset):
     for item in row:
