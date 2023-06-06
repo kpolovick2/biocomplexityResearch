@@ -31,7 +31,7 @@ for (i, c) in enumerate(col_key):
     prev_len += len(c)
 
 # make the first line of the output file
-output = f"{len(data)} {len(clusters)} {prev_len - 1} {prev_len} 1 \n"
+output = f"{len(data)} {len(clusters)} {prev_len} {prev_len} 1 \n"
 
 B = []
 for (i, row) in enumerate(data):
