@@ -4,8 +4,11 @@ def get_col(data, col):
 
 
 def get_key(data, col):
-    c = get_col(data, col)
-    return [*set(c)]
+    key = get_col(data, col)
+    key = [*set(key)]
+    if "?" in key:
+        key.remove("?")
+    return key
 
 
 with open("../UCI datasets/agaricus-lepiota.data") as f:
@@ -13,7 +16,41 @@ with open("../UCI datasets/agaricus-lepiota.data") as f:
 
 data = [row.split(",") for row in input.split("\n")][:-1]
 
-for row in data:
-    print(row)
+col_key = [[] for i in range(len(data[0]))]
 
-print(get_key(data, 0))
+for (i, row) in enumerate(col_key):
+    col_key[i] = get_key(data, i)
+
+# set the clusters map to the
+clusters = {item: i+1 for (i, item) in enumerate(col_key[0])}
+col_key = col_key[1:]
+
+prev_len = 0
+for (i, c) in enumerate(col_key):
+    col_key[i] = {v: j + prev_len for (j, v) in enumerate(c)}
+    prev_len += len(c)
+
+# make the first line of the output file
+output = f"{len(data)} {len(clusters)} {prev_len - 1} {prev_len} 1 \n"
+
+B = []
+for (i, row) in enumerate(data):
+    temp = [0 for r in range(prev_len+1)]
+    temp[0], temp[1] = i + 1, clusters[row[0]]
+    for (j, item) in enumerate(row[1:]):
+        if item != '?':
+            temp[col_key[j][item]] = 1
+    B.append(temp)
+
+for (i, row) in enumerate(B):
+    temp = ""
+    for item in row:
+        temp += f"{item} "
+    if i != len(B) - 1:
+        temp += "\n"
+    output += temp
+
+with open("../UCI datasets/mushroom_data.txt", "w") as f:
+    f.write(output)
+
+# print(get_key(data, 0))
