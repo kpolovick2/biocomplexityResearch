@@ -1,3 +1,5 @@
+import ILP_linear as ilp
+
 
 def get_col(data, col):
     return [row[col] for row in data]
@@ -54,6 +56,9 @@ def generate_ILP(name):
     with open(f"../UCI datasets/{name}_data.txt", "w") as f:
         f.write(output)
 
+    get_meaning(name, col_key, prev_len)
+
+
 def generate_ILP_clusters_last(name):
     with open(f"../UCI datasets/{name}.data") as f:
         input = f.read()
@@ -67,7 +72,7 @@ def generate_ILP_clusters_last(name):
 
     # set the clusters map to the
     clusters = {item: i+1 for (i, item) in enumerate(col_key[-1])}
-    col_key = col_key[:-1]
+    col_key = col_key
 
     prev_len = 0
     for (i, c) in enumerate(col_key):
@@ -80,8 +85,9 @@ def generate_ILP_clusters_last(name):
     B = []
     for (i, row) in enumerate(data):
         temp = [0 for r in range(prev_len+2)]
-        temp[0], temp[1] = i + 1, clusters[row[0]]
-        for (j, item) in enumerate(row[1:]):
+
+        temp[0], temp[1] = i + 1, clusters[row[-1]]
+        for (j, item) in enumerate(row[:-1]):
             if item != '?':
                 temp[col_key[j][item]+2] = 1
         B.append(temp)
@@ -95,6 +101,27 @@ def generate_ILP_clusters_last(name):
         output += temp
 
     with open(f"../UCI datasets/{name}_data.txt", "w") as f:
+        f.write(output)
+
+    get_meaning(name, col_key, prev_len)
+
+
+def get_meaning(name, col_key, prev_len):
+    D = ilp.ILP_linear(f"../UCI datasets/{name}_data.txt")
+
+    reverse_key = [None for i in range(prev_len)]
+    for (j, key) in enumerate(col_key):
+        for i in key.keys():
+            reverse_key[key[i]] = f"{i} col {j}"
+
+    output = ""
+    for (i, d) in enumerate(D):
+        temp = f"{i}: "
+        for item in d:
+            temp += f"{reverse_key[item - 1]}, "
+        output += temp + "\n"
+
+    with open(f"../UCI datasets/{name}_writeup.txt", "w") as f:
         f.write(output)
 
 

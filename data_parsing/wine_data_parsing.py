@@ -52,5 +52,5 @@ for (i, row) in enumerate(dataset):
     if i != len(dataset) - 1:
         output += "\n"
 
-with open("../UCI datasets/wine.txt", "w") as f:
+with open("../UCI datasets/wine_data.txt", "w") as f:
     f.write(output)
