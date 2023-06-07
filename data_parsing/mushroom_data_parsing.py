@@ -10,6 +10,7 @@ def get_key(data, col):
         key.remove("?")
     return key
 
+
 def generate_ILP(name):
     with open(f"../UCI datasets/{name}.data") as f:
         input = f.read()
