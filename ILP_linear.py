@@ -66,14 +66,14 @@ def ILP_linear(filename):
                     if B[i - 1][j - 1] == 1:
                         # add the constraint that a descriptor must describe each data item within the cluster
                         A[i] += y[j, k]
-                constraint1.append(m.addConstr(A[i], ">=", 1))
+                constraint1.append(m.addLConstr(A[i], ">=", 1))
                 m.update()
 
             # (b) size of each descriptor must be at most alpha
             coef = [1 for j in range(1, N + 1)]
             for k in range(1, K+1):
                 var = [y[j, k] for j in range(1, N+1)]
-                constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
+                constraint2 = m.addLConstr(LinExpr(coef, var), "<=", alpha)
                 m.update()
 
             # (c) overlap between any pair of descriptors must be at most beta
@@ -84,12 +84,12 @@ def ILP_linear(filename):
                     for j in range(1, N + 1):
                         if B[k-1][j-1] * B[l-1][j-1] == 1:
                             z[j, k, l] = m.addVar(vtype=gp.GRB.BINARY, name=f"z[%s,%s,%s]" % (j, k, l))
-                            m.addConstr(z[j,k,l], "<=", y[j, k])
-                            m.addConstr(z[j,k,l], "<=", y[j, l])
-                            m.addConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
+                            m.addLConstr(z[j,k,l], "<=", y[j, k])
+                            m.addLConstr(z[j,k,l], "<=", y[j, l])
+                            m.addLConstr(z[j,k,l], ">=", y[j,k] + y[j,l] - 1)
                             z_sum += z[j,k,l]
                             m.update()
-            m.addConstr(z_sum, "<=", beta)
+            m.addLConstr(z_sum, "<=", beta)
             m.update()
 
             m.optimize()
