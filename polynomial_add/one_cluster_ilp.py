@@ -59,11 +59,6 @@ def ILP_one_cluster(filename):
                         A[i] += y[j, k]
                 constraint1.append(m.addConstr(A[i], ">=", 1))
 
-            # (b) size of each descriptor must be at most alpha
-            coef = [1 for j in range(1, N + 1)]
-            for k in range(1, K + 1):
-                var = [y[j, k] for j in range(1, N + 1)]
-                constraint2 = m.addConstr(LinExpr(coef, var), "<=", alpha)
             m.update()
 
             m.optimize()
