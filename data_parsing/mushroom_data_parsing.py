@@ -14,7 +14,7 @@ def get_key(data, col):
 
 
 def generate_ILP(name):
-    with open(f"../UCI datasets/{name}.data") as f:
+    with open(f"../UCI datasets/{name}/{name}.data") as f:
         input = f.read()
 
     data = [row.split(",") for row in input.split("\n")][:-1]
@@ -53,14 +53,14 @@ def generate_ILP(name):
             temp += "\n"
         output += temp
 
-    with open(f"../UCI datasets/{name}_data.txt", "w") as f:
+    with open(f"../UCI datasets/{name}/{name}_data.txt", "w") as f:
         f.write(output)
 
     get_meaning(name, col_key, prev_len)
 
 
 def generate_ILP_clusters_last(name):
-    with open(f"../UCI datasets/{name}.data") as f:
+    with open(f"../UCI datasets/{name}/{name}.data") as f:
         input = f.read()
 
     data = [row.split(",") for row in input.split("\n")][:-1]
@@ -100,16 +100,16 @@ def generate_ILP_clusters_last(name):
             temp += "\n"
         output += temp
 
-    with open(f"../UCI datasets/{name}_data.txt", "w") as f:
+    with open(f"../UCI datasets/{name}/{name}_data.txt", "w") as f:
         f.write(output)
 
     get_meaning(name, col_key, prev_len)
 
 
 def get_meaning(name, col_key, prev_len):
-    D = ilp.ILP_linear(f"../UCI datasets/{name}_data.txt")
+    D = ilp.ILP_linear(f"../UCI datasets/{name}/{name}_data.txt")
 
-    with open(f"../UCI datasets/{name}.categories") as f:
+    with open(f"../UCI datasets/{name}/{name}.categories") as f:
         categories = f.read()
 
     categories = categories.split(",")
@@ -126,7 +126,7 @@ def get_meaning(name, col_key, prev_len):
             temp += f"{reverse_key[item - 1]}, "
         output += temp + "\n"
 
-    with open(f"../UCI datasets/{name}_writeup.txt", "w") as f:
+    with open(f"../UCI datasets/{name}/{name}_writeup.txt", "w") as f:
         f.write(output)
 
 
