@@ -109,10 +109,15 @@ def generate_ILP_clusters_last(name):
 def get_meaning(name, col_key, prev_len):
     D = ilp.ILP_linear(f"../UCI datasets/{name}_data.txt")
 
+    with open(f"../UCI datasets/{name}.categories") as f:
+        categories = f.read()
+
+    categories = categories.split(",")
+
     reverse_key = [None for i in range(prev_len)]
     for (j, key) in enumerate(col_key):
         for i in key.keys():
-            reverse_key[key[i]] = f"{i} col {j}"
+            reverse_key[key[i]] = f"{categories[j]}: {i}"
 
     output = ""
     for (i, d) in enumerate(D):
