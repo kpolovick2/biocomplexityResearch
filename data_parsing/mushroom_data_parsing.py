@@ -131,3 +131,5 @@ def get_meaning(name, col_key, prev_len):
 
 
 generate_ILP_clusters_last("iris")
+generate_ILP("wine")
+generate_ILP("mushroom")
