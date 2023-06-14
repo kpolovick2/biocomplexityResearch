@@ -134,4 +134,5 @@ def get_meaning(name, col_key, prev_len):
         f.write(output)
 
 
-generate_ILP("mushroom", exclude_col=[14, 15, 16, 17])
+# generate_ILP("mushroom", exclude_col=[14, 15, 16, 17])
+generate_ILP("real_estate")
