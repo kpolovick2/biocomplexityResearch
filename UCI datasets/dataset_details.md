@@ -40,9 +40,9 @@ This dataset contains 23 attributes, listed in the following order:
 The first attribute can and should be used as cluster information, meaning there are two clusters.
 Attributes 14-17 for this dataset are identical for all data items, so should ideally be excluded from the dataset in an experimental setting.
 There are 8124 data items in this dataset.
+Check [here](https://archive-beta.ics.uci.edu/dataset/73/mushroom) for information about the exact meanings of each tag.
 
 # The Wine Dataset
-
 There are 13 attributes in this dataset, which are as follows:
 1. Alcohol
 2. Malic acid 

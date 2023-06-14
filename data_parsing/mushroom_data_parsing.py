@@ -13,7 +13,7 @@ def get_key(data, col):
     return key
 
 
-def generate_ILP(name):
+def generate_ILP(name, exclude_col=None):
     with open(f"../UCI datasets/{name}/{name}.data") as f:
         input = f.read()
 
@@ -41,7 +41,9 @@ def generate_ILP(name):
         temp = [0 for r in range(prev_len+2)]
         temp[0], temp[1] = i + 1, clusters[row[0]]
         for (j, item) in enumerate(row[1:]):
-            if item != '?':
+            if exclude_col and j in exclude_col:
+                temp[col_key[j][item] + 2] = 0
+            elif item != '?':
                 temp[col_key[j][item]+2] = 1
         B.append(temp)
 
@@ -59,7 +61,7 @@ def generate_ILP(name):
     get_meaning(name, col_key, prev_len)
 
 
-def generate_ILP_clusters_last(name):
+def generate_ILP_clusters_last(name, exclude_col=None):
     with open(f"../UCI datasets/{name}/{name}.data") as f:
         input = f.read()
 
@@ -88,8 +90,10 @@ def generate_ILP_clusters_last(name):
 
         temp[0], temp[1] = i + 1, clusters[row[-1]]
         for (j, item) in enumerate(row[:-1]):
-            if item != '?':
-                temp[col_key[j][item]+2] = 1
+            if exclude_col and j in exclude_col:
+                temp[col_key[j][item] + 2] = 0
+            elif item != '?':
+                temp[col_key[j][item] + 2] = 1
         B.append(temp)
 
     for (i, row) in enumerate(B):
@@ -130,6 +134,4 @@ def get_meaning(name, col_key, prev_len):
         f.write(output)
 
 
-generate_ILP_clusters_last("iris")
-generate_ILP("wine")
-generate_ILP("mushroom")
+generate_ILP("mushroom", exclude_col=[14, 15, 16, 17])
