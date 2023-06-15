@@ -13,7 +13,7 @@ def get_key(data, col):
     return key
 
 
-def generate_ILP(name, exclude_col=None):
+def generate_ilp(name, exclude_col=None):
     with open(f"../UCI datasets/{name}/{name}.data") as f:
         input = f.read()
 
@@ -61,7 +61,7 @@ def generate_ILP(name, exclude_col=None):
     get_meaning(name, col_key, prev_len)
 
 
-def generate_ILP_clusters_last(name, exclude_col=None):
+def generate_ilp_clusters_last(name, exclude_col=None):
     with open(f"../UCI datasets/{name}/{name}.data") as f:
         input = f.read()
 
@@ -135,4 +135,4 @@ def get_meaning(name, col_key, prev_len):
 
 
 # generate_ILP("mushroom", exclude_col=[14, 15, 16, 17])
-generate_ILP("real_estate")
+generate_ilp("real_estate")
