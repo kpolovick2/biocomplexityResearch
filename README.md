@@ -21,3 +21,6 @@ Within the polynomial_add directory, we explore heuristic algorithms for adding 
 There were multiple reductions written to show that there these algorithms are somewhat accurate heuristics.
 This particular heuristic algorithm was chosen because it can be parallelized in mass using a GPU or multithreading for hardware acceleration,
 making it significantly faster than integer linear programming.
+
+As suggested by multiple proofs, it appears that any and all adjustments to the tags of a cluster are hard problems, meaning they cannot be accurately solved in polynomial time.
+These results are in the process of being confirmed, and heuristics for these changes are being developed currently.
