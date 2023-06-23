@@ -107,6 +107,7 @@ def ILP_linear(filename):
 
             # sort the array alphabetically
             vars_used.sort()
+            print(vars_used)
 
             # create an array of descriptors
             D = [[] for i in range(K+1)]
@@ -149,3 +150,5 @@ def ILP_linear(filename):
                 print(descriptor)
 
             return D
+
+print(ILP_linear("test_txt_files/4x14.txt"))
