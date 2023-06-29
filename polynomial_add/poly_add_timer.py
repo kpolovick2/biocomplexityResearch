@@ -9,11 +9,13 @@ file = "2000diagonal_1.txt"
 
 desc = ptu.string_descriptor_to_array(ILP.ILP_one_cluster(f"../test_txt_files/{orig_file}"))[0]
 
-ilp_time = timeit.timeit(f"a.ILP_linear('../test_txt_files/{file}')",  setup="import ILP_linear as a",
-                         number=test_count)
+# ilp_time = timeit.timeit(f"a.ILP_linear('../test_txt_files/{file}')",  setup="import ILP_linear as a",
+#                          number=test_count)
 revised_time = timeit.timeit(f"print(p.update_descriptor_multi_item('../test_txt_files/{orig_file}',"
-                             f" {desc}, '../test_txt_files/{file}'))", setup="import network_flow_formulation as p", number=test_count)
+                             f" {desc}, '../test_txt_files/{file}'))", setup="import poly_add as p", number=test_count)
+np_time = timeit.timeit(f"print(p.add_tags('../test_txt_files/{orig_file}',"
+                             f" {desc}, '../test_txt_files/{file}'))", setup="import parallel_add as p", number=test_count)
 
-print(f"The ILP solved this problem in {ilp_time/test_count} seconds per execution.")
+print(f"The ILP solved this problem in {np_time/test_count} seconds per execution.")
 print(f"The polynomial time add algorithm solved this problem in {revised_time/test_count} seconds per execution.")
-print(f"The polynomial algorithm was {ilp_time/revised_time} times faster.")
+print(f"The polynomial algorithm was {np_time/revised_time} times faster.")
