@@ -150,5 +150,3 @@ def ILP_linear(filename):
                 print(descriptor)
 
             return D
-
-print(ILP_linear("test_txt_files/4x14.txt"))

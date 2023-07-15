@@ -5,3 +5,11 @@ General procedure:
 3. run incremental addition algorithm
 
 In all observed instances, this will find the minimum set cover in polynomial time
+
+A 120 test benchmark of the 1001 tag diagonal case:
+
+The ILP solved this problem in 0.6194267080333248 seconds per execution.
+The polynomial time add algorithm solved this problem in 0.7803283446166612 seconds per execution.
+The polynomial algorithm was 0.7938026502646397 times faster.
+
+Interestingly, the Rust version of this heuristic, which returns the same answer, took 0.057659 seconds +/- 800,000 ns per execution.

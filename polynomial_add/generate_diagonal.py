@@ -57,4 +57,4 @@ def n_dimensional_diaognal_split(n, f):
 
     output_file(data, f"{n}diagonal_1", "../test_txt_files")
 
-n_dimensional_diaognal_split(2000, 1000)
+n_dimensional_diaognal(1000)
